@@ -1,0 +1,152 @@
+buildscript {
+    ext {
+        springBootVersion = "1.3.1.RELEASE"
+        springCloudVersion = "Brixton.M4"
+        jyallMvnRepoRrlBase = "http://10.10.10.60:8081/nexus/content"
+    }
+    repositories {
+        maven { url "${jyallMvnRepoRrlBase}/groups/public" }
+        maven { url "http://repo.spring.io/libs-release" }
+        maven { url "http://repo.spring.io/libs-snapshot" }
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "io.spring.gradle:dependency-management-plugin:0.5.4.RELEASE"
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.0'
+    }
+    configurations {
+        compile.exclude module: "spring-boot-starter-tomcat"
+    }
+}
+
+apply plugin: "java"
+apply plugin: "eclipse"
+apply plugin: "maven-publish"
+apply plugin: "spring-boot"
+apply plugin: "io.spring.dependency-management"
+apply plugin: 'org.sonarqube'
+
+// 版本信息
+version = "0.0.1"
+group = "com.jyall"
+// 发布包的文件名前缀
+def prjArtifactId = "jyall-common"
+
+jar {
+    baseName = prjArtifactId
+}
+
+def jdkVersion = 1.8
+sourceCompatibility = jdkVersion
+targetCompatibility = jdkVersion
+sonarqube {
+    properties {
+        property "sonar.sourceEncoding", "UTF-8"
+    }
+}
+repositories {
+    // 本地 Maven 镜像
+    maven { url "${jyallMvnRepoRrlBase}/groups/public" }
+    maven { url "http://repo.spring.io/libs-snapshot" }
+    maven { url "http://repo.spring.io/libs-release" }
+    maven { url "http://repo.spring.io/libs-milestone" }
+    jcenter()
+    mavenCentral()
+}
+
+// 公共Jar包
+task commonJar(type: Jar) {
+    from sourceSets.main.output
+    exclude "**/demo/**", "**/static/**", "**/*.yml", "**/*.xml", "**/*.sql"
+
+    manifest {
+        attributes(
+                "Created-By": "${System.getProperty('java.version')} (金色家园网络科技有限公司)",
+                "Implementation-Version": project.version
+        )
+    }
+}
+
+// 源码包
+task commonSourcesJar(type: Jar) {
+    classifier "sources"
+
+    from sourceSets.main.allJava
+    exclude "**/demo/**", "**/static/**", "**/*.yml", "**/*.xml", "**/*.sql"
+
+    manifest {
+        attributes(
+                "Created-By": "${System.getProperty('java.version')} (金色家园网络科技有限公司)",
+                "Implementation-Version": project.version
+        )
+    }
+}
+
+// 发布JAR包
+publishing {
+    publications {
+        common(MavenPublication) {
+            artifactId prjArtifactId
+
+            from components.java
+            artifacts.clear()
+
+            artifacts = [commonJar]
+            //artifacts = [commonJar, commonSourcesJar]
+        }
+
+        all {
+            pom.withXml {
+                asNode().dependencies."*".findAll() {
+                    it.scope.text() == "runtime" && project.configurations.compile.allDependencies.find { dep ->
+                        dep.name == it.artifactId.text()
+                    }
+                }.each {
+                    it.scope*.value = "compile"
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            url "${jyallMvnRepoRrlBase}/repositories/jsjy-${project.version.endsWith('-SNAPSHOT') ? 'snapshot' : 'release'}"
+            credentials {
+                username = "deploy"
+                password = "eBbef58C"
+            }
+        }
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-starter-parent:${springCloudVersion}"
+    }
+}
+dependencies {
+    compile "org.springframework.boot:spring-boot-starter-undertow"
+    compile "org.springframework.boot:spring-boot-starter-jersey"
+    compile "org.springframework.cloud:spring-cloud-starter-eureka"
+    compile "org.springframework.cloud:spring-cloud-starter-feign"
+
+    // Utilities
+    compile "com.alibaba:fastjson:1.2.7"
+    //swagger
+    compile("com.wordnik:swagger-jersey2-jaxrs_2.10:1.3.8") {
+        exclude(module: 'jsr311-api')
+    }
+}
+
+eclipse {
+    classpath {
+        containers.remove("org.eclipse.jdt.launching.JRE_CONTAINER")
+        containers "org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = "2.9"
+}
