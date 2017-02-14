@@ -1,7 +1,8 @@
-package com.netflix.discovery;
+package com.jyall.jyctrller;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.netflix.appinfo.InstanceInfo;
+import com.netflix.discovery.InstanceInfoReplicator;
 import com.netflix.discovery.util.RateLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

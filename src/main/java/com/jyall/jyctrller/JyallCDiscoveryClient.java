@@ -1,10 +1,11 @@
-package com.netflix.discovery;
+package com.jyall.jyctrller;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Inject;
 import com.netflix.appinfo.*;
+import com.netflix.discovery.*;
 import com.netflix.discovery.endpoint.EndpointUtils;
 import com.netflix.discovery.shared.Application;
 import com.netflix.discovery.shared.Applications;
@@ -776,7 +777,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
      * @param instanceZone   The zone in which the client resides
      * @param preferSameZone true if we have to prefer the same zone as the client, false otherwise
      * @return The list of all eureka service urls for the eureka client to talk to
-     * @deprecated see replacement in {@link com.netflix.discovery.endpoint.EndpointUtils}
+     * @deprecated see replacement in {@link EndpointUtils}
      * <p>
      * Get the list of all eureka service urls from properties file for the eureka client to talk to.
      */
@@ -1250,7 +1251,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
      * @param instanceZone   The zone in which the client resides.
      * @param preferSameZone true if we have to prefer the same zone as the client, false otherwise.
      * @return The list of all eureka service urls for the eureka client to talk to.
-     * @deprecated see replacement in {@link com.netflix.discovery.endpoint.EndpointUtils}
+     * @deprecated see replacement in {@link EndpointUtils}
      * <p>
      * Get the list of all eureka service urls from DNS for the eureka client to
      * talk to. The client picks up the service url from its zone and then fails over to
@@ -1264,7 +1265,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
     }
 
     /**
-     * @deprecated see replacement in {@link com.netflix.discovery.endpoint.EndpointUtils}
+     * @deprecated see replacement in {@link EndpointUtils}
      */
     @Deprecated
     @Override
@@ -1276,7 +1277,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
      * @param dnsName The dns name of the zone-specific CNAME
      * @param type    CNAME or EIP that needs to be retrieved
      * @return The list of EC2 URLs associated with the dns name
-     * @deprecated see replacement in {@link com.netflix.discovery.endpoint.EndpointUtils}
+     * @deprecated see replacement in {@link EndpointUtils}
      * <p>
      * Get the list of EC2 URLs given the zone name.
      */
@@ -1527,7 +1528,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
     /**
      * @param myInfo - The InstanceInfo object of the instance.
      * @return - The zone in which the particular instance belongs to.
-     * @deprecated see {@link com.netflix.appinfo.InstanceInfo#getZone(String[], com.netflix.appinfo.InstanceInfo)}
+     * @deprecated see {@link InstanceInfo#getZone(String[], InstanceInfo)}
      * <p>
      * Get the zone that a particular instance is in.
      */
@@ -1539,7 +1540,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
 
     /**
      * @return - The region in which the particular instance belongs to.
-     * @deprecated see replacement in {@link com.netflix.discovery.endpoint.EndpointUtils}
+     * @deprecated see replacement in {@link EndpointUtils}
      * <p>
      * Get the region that this particular instance is in.
      */

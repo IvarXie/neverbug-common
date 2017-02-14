@@ -1,8 +1,12 @@
-package com.netflix.discovery;
+package com.jyall.jyctrller;
 
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.appinfo.EurekaInstanceConfig;
 import com.netflix.appinfo.InstanceInfo;
+import com.netflix.discovery.DiscoveryClient;
+import com.netflix.discovery.DiscoveryManager;
+import com.netflix.discovery.EurekaClient;
+import com.netflix.discovery.EurekaClientConfig;
 import com.netflix.discovery.shared.LookupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

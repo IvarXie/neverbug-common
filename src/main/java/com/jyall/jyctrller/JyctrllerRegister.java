@@ -1,8 +1,6 @@
 package com.jyall.jyctrller;
 
 import com.netflix.appinfo.ApplicationInfoManager;
-import com.netflix.discovery.DiscoveryClient;
-import com.netflix.discovery.JyallCDiscoveryClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
