@@ -1,12 +1,8 @@
-package com.jyall.jyctrller;
+package com.netflix.discovery;
 
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.appinfo.EurekaInstanceConfig;
 import com.netflix.appinfo.InstanceInfo;
-import com.netflix.discovery.DiscoveryClient;
-import com.netflix.discovery.DiscoveryManager;
-import com.netflix.discovery.EurekaClient;
-import com.netflix.discovery.EurekaClientConfig;
 import com.netflix.discovery.shared.LookupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,23 +12,23 @@ import org.slf4j.LoggerFactory;
  * create on 2017/2/14 18:14
  * the email is zhao.weiwei@jyall.com.
  */
-public class JyallCDiscoveryManager {
+public class JyctrllerDiscoveryManager {
 
     private static final Logger logger = LoggerFactory.getLogger(DiscoveryManager.class);
-    private JyallCDiscoveryClient discoveryClient;
+    private JyctrllerDiscoveryClient discoveryClient;
 
     private EurekaInstanceConfig eurekaInstanceConfig;
     private EurekaClientConfig eurekaClientConfig;
-    private static final JyallCDiscoveryManager s_instance = new JyallCDiscoveryManager();
+    private static final JyctrllerDiscoveryManager s_instance = new JyctrllerDiscoveryManager();
 
-    private JyallCDiscoveryManager() {
+    private JyctrllerDiscoveryManager() {
     }
 
-    public static JyallCDiscoveryManager getInstance() {
+    public static JyctrllerDiscoveryManager getInstance() {
         return s_instance;
     }
 
-    public void setDiscoveryClient(JyallCDiscoveryClient discoveryClient) {
+    public void setDiscoveryClient(JyctrllerDiscoveryClient discoveryClient) {
         this.discoveryClient = discoveryClient;
     }
 
@@ -53,7 +49,7 @@ public class JyallCDiscoveryManager {
      * @param eurekaConfig the eureka client configuration of the instance.
      */
     public void initComponent(EurekaInstanceConfig config,
-                              EurekaClientConfig eurekaConfig, JyallCDiscoveryClient.DiscoveryClientOptionalArgs args) {
+                              EurekaClientConfig eurekaConfig, JyctrllerDiscoveryClient.DiscoveryClientOptionalArgs args) {
         this.eurekaInstanceConfig = config;
         this.eurekaClientConfig = eurekaConfig;
         if (ApplicationInfoManager.getInstance().getInfo() == null) {
@@ -62,7 +58,7 @@ public class JyallCDiscoveryManager {
         }
         InstanceInfo info = ApplicationInfoManager.getInstance().getInfo();
 //        discoveryClient = new JyallCDiscoveryClient(info, eurekaConfig, args);
-        discoveryClient = new JyallCDiscoveryClient(info,eurekaConfig);
+        discoveryClient = new JyctrllerDiscoveryClient(info,eurekaConfig);
     }
 
     public void initComponent(EurekaInstanceConfig config,
@@ -96,7 +92,7 @@ public class JyallCDiscoveryManager {
      * @return the client that is used to talk to eureka.
      */
     @Deprecated
-    public JyallCDiscoveryClient getDiscoveryClient() {
+    public JyctrllerDiscoveryClient getDiscoveryClient() {
         return discoveryClient;
     }
 

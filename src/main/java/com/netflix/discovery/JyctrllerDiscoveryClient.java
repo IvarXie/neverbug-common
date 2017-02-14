@@ -1,11 +1,10 @@
-package com.jyall.jyctrller;
+package com.netflix.discovery;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Inject;
 import com.netflix.appinfo.*;
-import com.netflix.discovery.*;
 import com.netflix.discovery.endpoint.EndpointUtils;
 import com.netflix.discovery.shared.Application;
 import com.netflix.discovery.shared.Applications;
@@ -44,8 +43,8 @@ import static com.netflix.discovery.EurekaClientNames.METRIC_REGISTRY_PREFIX;
  * create on 2017/2/14 18:07
  * the email is zhao.weiwei@jyall.com.
  */
-public class JyallCDiscoveryClient implements EurekaClient {
-    private static Logger logger = LoggerFactory.getLogger(JyallCDiscoveryClient.class);
+public class JyctrllerDiscoveryClient implements EurekaClient {
+    private static Logger logger = LoggerFactory.getLogger(JyctrllerDiscoveryClient.class);
 
     // Constants
     public static String HTTP_X_DISCOVERY_ALLOW_REDIRECT = "X-JyallCDiscovery-AllowRedirect";
@@ -92,7 +91,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
 
     private EndpointUtils.ServiceUrlRandomizer urlRandomizer = null;
     private Provider<BackupRegistry> backupRegistryProvider = null;
-    private JyallCDiscoveryClient.EurekaTransport eurekaTransport = null;
+    private JyctrllerDiscoveryClient.EurekaTransport eurekaTransport = null;
 
     private volatile HealthCheckHandler healthCheckHandler;
     private volatile Map<String, Applications> remoteRegionVsApps = new ConcurrentHashMap<>();
@@ -102,7 +101,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
     private String appPathIdentifier;
     private ApplicationInfoManager.StatusChangeListener statusChangeListener;
 
-    private JyallCInstanceInfoReplicator instanceInfoReplicator;
+    private JyctrllerInstanceInfoReplicator instanceInfoReplicator;
 
     private volatile int registrySize = 0;
     private volatile long lastSuccessfulRegistryFetchTimestamp = -1;
@@ -218,7 +217,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
      * @deprecated use constructor that takes ApplicationInfoManager instead of InstanceInfo directly
      */
     @Deprecated
-    public JyallCDiscoveryClient(InstanceInfo myInfo, EurekaClientConfig config) {
+    public JyctrllerDiscoveryClient(InstanceInfo myInfo, EurekaClientConfig config) {
         this(myInfo, config, null);
     }
 
@@ -228,15 +227,15 @@ public class JyallCDiscoveryClient implements EurekaClient {
      * @deprecated use constructor that takes ApplicationInfoManager instead of InstanceInfo directly
      */
     @Deprecated
-    public JyallCDiscoveryClient(InstanceInfo myInfo, EurekaClientConfig config, JyallCDiscoveryClient.DiscoveryClientOptionalArgs args) {
+    public JyctrllerDiscoveryClient(InstanceInfo myInfo, EurekaClientConfig config, JyctrllerDiscoveryClient.DiscoveryClientOptionalArgs args) {
         this(ApplicationInfoManager.getInstance(), config, args);
     }
 
-    public JyallCDiscoveryClient(ApplicationInfoManager applicationInfoManager, EurekaClientConfig config) {
+    public JyctrllerDiscoveryClient(ApplicationInfoManager applicationInfoManager, EurekaClientConfig config) {
         this(applicationInfoManager, config, null);
     }
 
-    public JyallCDiscoveryClient(ApplicationInfoManager applicationInfoManager, EurekaClientConfig config, JyallCDiscoveryClient.DiscoveryClientOptionalArgs args) {
+    public JyctrllerDiscoveryClient(ApplicationInfoManager applicationInfoManager, EurekaClientConfig config, JyctrllerDiscoveryClient.DiscoveryClientOptionalArgs args) {
         this(applicationInfoManager, config, args, new Provider<BackupRegistry>() {
             private volatile BackupRegistry backupRegistryInstance;
 
@@ -269,8 +268,8 @@ public class JyallCDiscoveryClient implements EurekaClient {
     }
 
     @Inject
-    JyallCDiscoveryClient(ApplicationInfoManager applicationInfoManager, EurekaClientConfig config, JyallCDiscoveryClient.DiscoveryClientOptionalArgs args,
-                          Provider<BackupRegistry> backupRegistryProvider) {
+    JyctrllerDiscoveryClient(ApplicationInfoManager applicationInfoManager, EurekaClientConfig config, JyctrllerDiscoveryClient.DiscoveryClientOptionalArgs args,
+                             Provider<BackupRegistry> backupRegistryProvider) {
         if (args != null) {
             this.healthCheckHandlerProvider = args.healthCheckHandlerProvider;
             this.healthCheckCallbackProvider = args.healthCheckCallbackProvider;
@@ -325,8 +324,8 @@ public class JyallCDiscoveryClient implements EurekaClient {
 
             // This is a bit of hack to allow for existing code using DiscoveryManager.getInstance()
             // to work with DI'd DiscoveryClient
-            JyallCDiscoveryManager.getInstance().setDiscoveryClient(this);
-            JyallCDiscoveryManager.getInstance().setEurekaClientConfig(config);
+            JyctrllerDiscoveryManager.getInstance().setDiscoveryClient(this);
+            JyctrllerDiscoveryManager.getInstance().setEurekaClientConfig(config);
 
             initTimestampMs = System.currentTimeMillis();
 
@@ -360,7 +359,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
                             .build()
             );  // use direct handoff
 
-            eurekaTransport = new JyallCDiscoveryClient.EurekaTransport();
+            eurekaTransport = new JyctrllerDiscoveryClient.EurekaTransport();
             scheduleServerEndpointTask(eurekaTransport, args);
 
             AzToRegionMapper azToRegionMapper;
@@ -390,16 +389,16 @@ public class JyallCDiscoveryClient implements EurekaClient {
 
         // This is a bit of hack to allow for existing code using DiscoveryManager.getInstance()
         // to work with DI'd DiscoveryClient
-        JyallCDiscoveryManager.getInstance().setDiscoveryClient(this);
-        JyallCDiscoveryManager.getInstance().setEurekaClientConfig(config);
+        JyctrllerDiscoveryManager.getInstance().setDiscoveryClient(this);
+        JyctrllerDiscoveryManager.getInstance().setEurekaClientConfig(config);
 
         initTimestampMs = System.currentTimeMillis();
         logger.info("JyallCDiscovery Client initialized at timestamp {} with initial instances count: {}",
                 initTimestampMs, this.getApplications().size());
     }
 
-    private void scheduleServerEndpointTask(JyallCDiscoveryClient.EurekaTransport eurekaTransport,
-                                            JyallCDiscoveryClient.DiscoveryClientOptionalArgs args) {
+    private void scheduleServerEndpointTask(JyctrllerDiscoveryClient.EurekaTransport eurekaTransport,
+                                            JyctrllerDiscoveryClient.DiscoveryClientOptionalArgs args) {
 
         Collection<ClientFilter> additionalFilters = args == null
                 ? Collections.<ClientFilter>emptyList()
@@ -1173,7 +1172,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
                             registryFetchIntervalSeconds,
                             TimeUnit.SECONDS,
                             expBackOffBound,
-                            new JyallCDiscoveryClient.CacheRefreshThread()
+                            new JyctrllerDiscoveryClient.CacheRefreshThread()
                     ),
                     registryFetchIntervalSeconds, TimeUnit.SECONDS);
         }
@@ -1192,12 +1191,12 @@ public class JyallCDiscoveryClient implements EurekaClient {
                             renewalIntervalInSecs,
                             TimeUnit.SECONDS,
                             expBackOffBound,
-                            new JyallCDiscoveryClient.HeartbeatThread()
+                            new JyctrllerDiscoveryClient.HeartbeatThread()
                     ),
                     renewalIntervalInSecs, TimeUnit.SECONDS);
 
             // InstanceInfo replicator
-            instanceInfoReplicator = new JyallCInstanceInfoReplicator(
+            instanceInfoReplicator = new JyctrllerInstanceInfoReplicator(
                     this,
                     instanceInfo,
                     clientConfig.getInstanceInfoReplicationIntervalSeconds(),
@@ -1321,7 +1320,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
     }
 
     @VisibleForTesting
-    JyallCInstanceInfoReplicator getInstanceInfoReplicator() {
+    JyctrllerInstanceInfoReplicator getInstanceInfoReplicator() {
         return instanceInfoReplicator;
     }
 

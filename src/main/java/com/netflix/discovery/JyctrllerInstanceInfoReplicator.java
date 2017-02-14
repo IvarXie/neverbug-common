@@ -1,8 +1,7 @@
-package com.jyall.jyctrller;
+package com.netflix.discovery;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.netflix.appinfo.InstanceInfo;
-import com.netflix.discovery.InstanceInfoReplicator;
 import com.netflix.discovery.util.RateLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +18,10 @@ import java.util.concurrent.atomic.AtomicReference;
  * create on 2017/2/14 18:24
  * the email is zhao.weiwei@jyall.com.
  */
-public class JyallCInstanceInfoReplicator implements Runnable {
-    private static final Logger logger = LoggerFactory.getLogger(InstanceInfoReplicator.class);
+public class JyctrllerInstanceInfoReplicator implements Runnable {
+    private static final Logger logger = LoggerFactory.getLogger(JyctrllerInstanceInfoReplicator.class);
 
-    private final JyallCDiscoveryClient discoveryClient;
+    private final JyctrllerDiscoveryClient discoveryClient;
     private final InstanceInfo instanceInfo;
 
     private final int replicationIntervalSeconds;
@@ -34,7 +33,7 @@ public class JyallCInstanceInfoReplicator implements Runnable {
     private final int burstSize;
     private final int allowedRatePerMinute;
 
-    JyallCInstanceInfoReplicator(JyallCDiscoveryClient discoveryClient, InstanceInfo instanceInfo, int replicationIntervalSeconds, int burstSize) {
+    JyctrllerInstanceInfoReplicator(JyctrllerDiscoveryClient discoveryClient, InstanceInfo instanceInfo, int replicationIntervalSeconds, int burstSize) {
         this.discoveryClient = discoveryClient;
         this.instanceInfo = instanceInfo;
         this.scheduler = Executors.newScheduledThreadPool(1,
@@ -80,7 +79,7 @@ public class JyallCInstanceInfoReplicator implements Runnable {
                         latestPeriodic.cancel(false);
                     }
 
-                    JyallCInstanceInfoReplicator.this.run();
+                    JyctrllerInstanceInfoReplicator.this.run();
                 }
             });
             return true;
