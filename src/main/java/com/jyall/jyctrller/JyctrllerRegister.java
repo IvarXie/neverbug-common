@@ -1,7 +1,7 @@
 package com.jyall.jyctrller;
 
 import com.netflix.appinfo.ApplicationInfoManager;
-import com.netflix.discovery.DiscoveryClient;
+import com.netflix.discovery.JyctrllerDiscoveryClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,7 +41,7 @@ public class JyctrllerRegister {
             BeanUtils.copyProperties(config, bean);
             bean.getServiceUrl().put("defaultZone", ctrllerRegistryUrls);
             bean.setRegisterWithEureka(true);
-            new DiscoveryClient(applicationInfoManager, bean);
+            new JyctrllerDiscoveryClient(applicationInfoManager, bean);
         }
     }
 }
