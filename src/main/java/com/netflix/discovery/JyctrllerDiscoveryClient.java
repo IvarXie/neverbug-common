@@ -47,7 +47,7 @@ public class JyctrllerDiscoveryClient implements EurekaClient {
     private static Logger logger = LoggerFactory.getLogger(JyctrllerDiscoveryClient.class);
 
     // Constants
-    public static String HTTP_X_DISCOVERY_ALLOW_REDIRECT = "X-JyallCDiscovery-AllowRedirect";
+    public static String HTTP_X_DISCOVERY_ALLOW_REDIRECT = "X-JyctrllerDiscovery-AllowRedirect";
 
     private static String VALUE_DELIMITER = ",";
     private static String COMMA_STRING = VALUE_DELIMITER;
@@ -59,7 +59,7 @@ public class JyctrllerDiscoveryClient implements EurekaClient {
     private static EurekaClientConfig staticClientConfig;
 
     // Timers
-    private static String PREFIX = "JyallCDiscoveryClient_";
+    private static String PREFIX = "JyctrllerDiscoveryClient_";
     private Counter RECONCILE_HASH_CODES_MISMATCH = Monitors.newCounter(PREFIX + "ReconcileHashCodeMismatch");
     private com.netflix.servo.monitor.Timer FETCH_REGISTRY_TIMER = Monitors
             .newTimer(PREFIX + "FetchRegistry");
@@ -329,7 +329,7 @@ public class JyctrllerDiscoveryClient implements EurekaClient {
 
             initTimestampMs = System.currentTimeMillis();
 
-            logger.info("JyallCDiscovery Client initialized at timestamp {} with initial instances count: {}",
+            logger.info("JyctrllerDiscovery Client initialized at timestamp {} with initial instances count: {}",
                     initTimestampMs, this.getApplications().size());
             return;  // no need to setup up an network tasks and we are done
         }
@@ -337,7 +337,7 @@ public class JyctrllerDiscoveryClient implements EurekaClient {
         try {
             scheduler = Executors.newScheduledThreadPool(3,
                     new ThreadFactoryBuilder()
-                            .setNameFormat("JyallCDiscoveryClient-%d")
+                            .setNameFormat("JyctrllerDiscoveryClient-%d")
                             .setDaemon(true)
                             .build());
 
@@ -345,7 +345,7 @@ public class JyctrllerDiscoveryClient implements EurekaClient {
                     1, clientConfig.getHeartbeatExecutorThreadPoolSize(), 0, TimeUnit.SECONDS,
                     new SynchronousQueue<Runnable>(),
                     new ThreadFactoryBuilder()
-                            .setNameFormat("JyallCDiscoveryClient-HeartbeatExecutor-%d")
+                            .setNameFormat("JyctrllerDiscoveryClient-HeartbeatExecutor-%d")
                             .setDaemon(true)
                             .build()
             );  // use direct handoff
@@ -354,7 +354,7 @@ public class JyctrllerDiscoveryClient implements EurekaClient {
                     1, clientConfig.getCacheRefreshExecutorThreadPoolSize(), 0, TimeUnit.SECONDS,
                     new SynchronousQueue<Runnable>(),
                     new ThreadFactoryBuilder()
-                            .setNameFormat("JyallCDiscoveryClient-CacheRefreshExecutor-%d")
+                            .setNameFormat("JyctrllerDiscoveryClient-CacheRefreshExecutor-%d")
                             .setDaemon(true)
                             .build()
             );  // use direct handoff
@@ -373,7 +373,7 @@ public class JyctrllerDiscoveryClient implements EurekaClient {
             }
             instanceRegionChecker = new InstanceRegionChecker(azToRegionMapper, clientConfig.getRegion());
         } catch (Throwable e) {
-            throw new RuntimeException("Failed to initialize JyallCDiscoveryClient!", e);
+            throw new RuntimeException("Failed to initialize JyctrllerDiscoveryClient!", e);
         }
 
         if (clientConfig.shouldFetchRegistry() && !fetchRegistry(false)) {
@@ -384,7 +384,7 @@ public class JyctrllerDiscoveryClient implements EurekaClient {
         try {
             Monitors.registerObject(this);
         } catch (Throwable e) {
-            logger.warn("JyallC Cannot register timers", e);
+            logger.warn("Jyctrller Cannot register timers", e);
         }
 
         // This is a bit of hack to allow for existing code using DiscoveryManager.getInstance()
@@ -393,7 +393,7 @@ public class JyctrllerDiscoveryClient implements EurekaClient {
         JyctrllerDiscoveryManager.getInstance().setEurekaClientConfig(config);
 
         initTimestampMs = System.currentTimeMillis();
-        logger.info("JyallCDiscovery Client initialized at timestamp {} with initial instances count: {}",
+        logger.info("JyctrllerDiscovery Client initialized at timestamp {} with initial instances count: {}",
                 initTimestampMs, this.getApplications().size());
     }
 
@@ -794,7 +794,7 @@ public class JyctrllerDiscoveryClient implements EurekaClient {
     @Override
     public synchronized void shutdown() {
         if (isShutdown.compareAndSet(false, true)) {
-            logger.info("Shutting down JyallCDiscoveryClient ...");
+            logger.info("Shutting down JyctrllerDiscoveryClient ...");
 
             if (statusChangeListener != null && applicationInfoManager != null) {
                 applicationInfoManager.unregisterStatusChangeListener(statusChangeListener.getId());
