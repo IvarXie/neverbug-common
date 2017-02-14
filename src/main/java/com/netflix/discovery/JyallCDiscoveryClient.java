@@ -44,13 +44,13 @@ import static com.netflix.discovery.EurekaClientNames.METRIC_REGISTRY_PREFIX;
  * the email is zhao.weiwei@jyall.com.
  */
 public class JyallCDiscoveryClient implements EurekaClient {
-    private static  Logger logger = LoggerFactory.getLogger(DiscoveryClient.class);
+    private static Logger logger = LoggerFactory.getLogger(JyallCDiscoveryClient.class);
 
     // Constants
-    public static  String HTTP_X_DISCOVERY_ALLOW_REDIRECT = "X-Discovery-AllowRedirect";
+    public static String HTTP_X_DISCOVERY_ALLOW_REDIRECT = "X-JyallCDiscovery-AllowRedirect";
 
-    private static  String VALUE_DELIMITER = ",";
-    private static  String COMMA_STRING = VALUE_DELIMITER;
+    private static String VALUE_DELIMITER = ",";
+    private static String COMMA_STRING = VALUE_DELIMITER;
 
     /**
      * @deprecated here for legacy support as the client config has moved to be an instance variable
@@ -59,11 +59,11 @@ public class JyallCDiscoveryClient implements EurekaClient {
     private static EurekaClientConfig staticClientConfig;
 
     // Timers
-    private static  String PREFIX = "DiscoveryClient_";
-    private  Counter RECONCILE_HASH_CODES_MISMATCH = Monitors.newCounter(PREFIX + "ReconcileHashCodeMismatch");
-    private  com.netflix.servo.monitor.Timer FETCH_REGISTRY_TIMER = Monitors
+    private static String PREFIX = "JyallCDiscoveryClient_";
+    private Counter RECONCILE_HASH_CODES_MISMATCH = Monitors.newCounter(PREFIX + "ReconcileHashCodeMismatch");
+    private com.netflix.servo.monitor.Timer FETCH_REGISTRY_TIMER = Monitors
             .newTimer(PREFIX + "FetchRegistry");
-    private  Counter REREGISTER_COUNTER = Monitors.newCounter(PREFIX
+    private Counter REREGISTER_COUNTER = Monitors.newCounter(PREFIX
             + "Reregister");
 
     // instance variables
@@ -72,31 +72,31 @@ public class JyallCDiscoveryClient implements EurekaClient {
      * - updating service urls
      * - scheduling a TimedSuperVisorTask
      */
-    private  ScheduledExecutorService scheduler = null;
+    private ScheduledExecutorService scheduler = null;
     // additional executors for supervised subtasks
-    private  ThreadPoolExecutor heartbeatExecutor = null;
-    private  ThreadPoolExecutor cacheRefreshExecutor = null;
+    private ThreadPoolExecutor heartbeatExecutor = null;
+    private ThreadPoolExecutor cacheRefreshExecutor = null;
 
-    private  Provider<HealthCheckHandler> healthCheckHandlerProvider = null;
-    private  Provider<HealthCheckCallback> healthCheckCallbackProvider = null;
-    private  AtomicReference<Applications> localRegionApps = new AtomicReference<Applications>();
-    private  Lock fetchRegistryUpdateLock = new ReentrantLock();
+    private Provider<HealthCheckHandler> healthCheckHandlerProvider = null;
+    private Provider<HealthCheckCallback> healthCheckCallbackProvider = null;
+    private AtomicReference<Applications> localRegionApps = new AtomicReference<Applications>();
+    private Lock fetchRegistryUpdateLock = new ReentrantLock();
     // monotonically increasing generation counter to ensure stale threads do not reset registry to an older version
-    private  AtomicLong fetchRegistryGeneration = null;
-    private  ApplicationInfoManager applicationInfoManager = null;
-    private  InstanceInfo instanceInfo = null;
-    private  AtomicReference<String> remoteRegionsToFetch = null;
-    private  AtomicReference<String[]> remoteRegionsRef = null;
-    private  InstanceRegionChecker instanceRegionChecker = null;
+    private AtomicLong fetchRegistryGeneration = null;
+    private ApplicationInfoManager applicationInfoManager = null;
+    private InstanceInfo instanceInfo = null;
+    private AtomicReference<String> remoteRegionsToFetch = null;
+    private AtomicReference<String[]> remoteRegionsRef = null;
+    private InstanceRegionChecker instanceRegionChecker = null;
 
-    private  EndpointUtils.ServiceUrlRandomizer urlRandomizer = null;
-    private  Provider<BackupRegistry> backupRegistryProvider = null;
-    private  JyallCDiscoveryClient.EurekaTransport eurekaTransport = null;
+    private EndpointUtils.ServiceUrlRandomizer urlRandomizer = null;
+    private Provider<BackupRegistry> backupRegistryProvider = null;
+    private JyallCDiscoveryClient.EurekaTransport eurekaTransport = null;
 
     private volatile HealthCheckHandler healthCheckHandler;
     private volatile Map<String, Applications> remoteRegionVsApps = new ConcurrentHashMap<>();
     private volatile InstanceInfo.InstanceStatus lastRemoteInstanceStatus = InstanceInfo.InstanceStatus.UNKNOWN;
-    private  CopyOnWriteArraySet<EurekaEventListener> eventListeners = new CopyOnWriteArraySet<>();
+    private CopyOnWriteArraySet<EurekaEventListener> eventListeners = new CopyOnWriteArraySet<>();
 
     private String appPathIdentifier;
     private ApplicationInfoManager.StatusChangeListener statusChangeListener;
@@ -106,17 +106,17 @@ public class JyallCDiscoveryClient implements EurekaClient {
     private volatile int registrySize = 0;
     private volatile long lastSuccessfulRegistryFetchTimestamp = -1;
     private volatile long lastSuccessfulHeartbeatTimestamp = -1;
-    private  ThresholdLevelsMetric heartbeatStalenessMonitor = null;
-    private  ThresholdLevelsMetric registryStalenessMonitor = null;
+    private ThresholdLevelsMetric heartbeatStalenessMonitor = null;
+    private ThresholdLevelsMetric registryStalenessMonitor = null;
 
-    private  AtomicBoolean isShutdown = new AtomicBoolean(false);
+    private AtomicBoolean isShutdown = new AtomicBoolean(false);
 
-    protected  EurekaClientConfig clientConfig = null;
-    protected  EurekaTransportConfig transportConfig = null;
+    protected EurekaClientConfig clientConfig = null;
+    protected EurekaTransportConfig transportConfig = null;
 
-    private  long initTimestampMs = 10;
+    private long initTimestampMs = 10;
 
-    private static  class EurekaTransport {
+    private static class EurekaTransport {
         private ClosableResolver bootstrapResolver;
         private TransportClientFactory transportClientFactory;
 
@@ -173,7 +173,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
         }
 
         @Inject(optional = true)
-        public void setEventBus( EventBus eventBus) {
+        public void setEventBus(EventBus eventBus) {
             if (eventListeners == null) {
                 eventListeners = new HashSet<>();
             }
@@ -235,7 +235,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
         this(applicationInfoManager, config, null);
     }
 
-    public JyallCDiscoveryClient(ApplicationInfoManager applicationInfoManager,  EurekaClientConfig config, JyallCDiscoveryClient.DiscoveryClientOptionalArgs args) {
+    public JyallCDiscoveryClient(ApplicationInfoManager applicationInfoManager, EurekaClientConfig config, JyallCDiscoveryClient.DiscoveryClientOptionalArgs args) {
         this(applicationInfoManager, config, args, new Provider<BackupRegistry>() {
             private volatile BackupRegistry backupRegistryInstance;
 
@@ -329,7 +329,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
 
             initTimestampMs = System.currentTimeMillis();
 
-            logger.info("Discovery Client initialized at timestamp {} with initial instances count: {}",
+            logger.info("JyallCDiscovery Client initialized at timestamp {} with initial instances count: {}",
                     initTimestampMs, this.getApplications().size());
             return;  // no need to setup up an network tasks and we are done
         }
@@ -337,7 +337,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
         try {
             scheduler = Executors.newScheduledThreadPool(3,
                     new ThreadFactoryBuilder()
-                            .setNameFormat("DiscoveryClient-%d")
+                            .setNameFormat("JyallCDiscoveryClient-%d")
                             .setDaemon(true)
                             .build());
 
@@ -345,7 +345,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
                     1, clientConfig.getHeartbeatExecutorThreadPoolSize(), 0, TimeUnit.SECONDS,
                     new SynchronousQueue<Runnable>(),
                     new ThreadFactoryBuilder()
-                            .setNameFormat("DiscoveryClient-HeartbeatExecutor-%d")
+                            .setNameFormat("JyallCDiscoveryClient-HeartbeatExecutor-%d")
                             .setDaemon(true)
                             .build()
             );  // use direct handoff
@@ -354,7 +354,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
                     1, clientConfig.getCacheRefreshExecutorThreadPoolSize(), 0, TimeUnit.SECONDS,
                     new SynchronousQueue<Runnable>(),
                     new ThreadFactoryBuilder()
-                            .setNameFormat("DiscoveryClient-CacheRefreshExecutor-%d")
+                            .setNameFormat("JyallCDiscoveryClient-CacheRefreshExecutor-%d")
                             .setDaemon(true)
                             .build()
             );  // use direct handoff
@@ -373,7 +373,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
             }
             instanceRegionChecker = new InstanceRegionChecker(azToRegionMapper, clientConfig.getRegion());
         } catch (Throwable e) {
-            throw new RuntimeException("Failed to initialize DiscoveryClient!", e);
+            throw new RuntimeException("Failed to initialize JyallCDiscoveryClient!", e);
         }
 
         if (clientConfig.shouldFetchRegistry() && !fetchRegistry(false)) {
@@ -384,7 +384,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
         try {
             Monitors.registerObject(this);
         } catch (Throwable e) {
-            logger.warn("Cannot register timers", e);
+            logger.warn("JyallC Cannot register timers", e);
         }
 
         // This is a bit of hack to allow for existing code using DiscoveryManager.getInstance()
@@ -393,7 +393,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
         JyallCDiscoveryManager.getInstance().setEurekaClientConfig(config);
 
         initTimestampMs = System.currentTimeMillis();
-        logger.info("Discovery Client initialized at timestamp {} with initial instances count: {}",
+        logger.info("JyallCDiscovery Client initialized at timestamp {} with initial instances count: {}",
                 initTimestampMs, this.getApplications().size());
     }
 
@@ -794,7 +794,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
     @Override
     public synchronized void shutdown() {
         if (isShutdown.compareAndSet(false, true)) {
-            logger.info("Shutting down DiscoveryClient ...");
+            logger.info("Shutting down JyallCDiscoveryClient ...");
 
             if (statusChangeListener != null && applicationInfoManager != null) {
                 applicationInfoManager.unregisterStatusChangeListener(statusChangeListener.getId());
@@ -1433,7 +1433,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
                     apps = backupRegistryInstance.fetchRegistry();
                 }
                 if (apps != null) {
-                     Applications applications = this.filterAndShuffle(apps);
+                    Applications applications = this.filterAndShuffle(apps);
                     applications.setAppsHashCode(applications.getReconcileHashCode());
                     localRegionApps.set(applications);
                     logTotalInstances();
@@ -1517,7 +1517,7 @@ public class JyallCDiscoveryClient implements EurekaClient {
      *
      * @param event the event to send on the eventBus
      */
-    protected void fireEvent( EurekaEvent event) {
+    protected void fireEvent(EurekaEvent event) {
         for (EurekaEventListener listener : eventListeners) {
             listener.onEvent(event);
         }
