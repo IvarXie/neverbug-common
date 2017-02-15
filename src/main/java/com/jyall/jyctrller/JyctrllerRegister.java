@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Singleton;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * C层注册的bean
@@ -37,9 +39,12 @@ public class JyctrllerRegister {
 
     public void register() throws Exception {
         if (shouldRegCtrller) {
+            JyctrllerDiscoveryClient.ctrllerRegistryUrls = ctrllerRegistryUrls;
             EurekaClientConfigBean bean = new EurekaClientConfigBean();
             BeanUtils.copyProperties(config, bean);
-            bean.getServiceUrl().put("defaultZone", ctrllerRegistryUrls);
+            Map<String, String> serviceUrl = new HashMap<>();
+            serviceUrl.put("defaultZone", ctrllerRegistryUrls);
+            bean.setServiceUrl(serviceUrl);
             bean.setRegisterWithEureka(true);
             new JyctrllerDiscoveryClient(applicationInfoManager, bean);
         }
