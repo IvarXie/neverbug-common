@@ -57,7 +57,6 @@ public class JyctrllerDiscoveryManager {
             ApplicationInfoManager.getInstance().initComponent(config);
         }
         InstanceInfo info = ApplicationInfoManager.getInstance().getInfo();
-//        discoveryClient = new JyallCDiscoveryClient(info, eurekaConfig, args);
         discoveryClient = new JyctrllerDiscoveryClient(info,eurekaConfig);
     }
 

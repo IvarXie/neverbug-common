@@ -18,7 +18,6 @@ import com.netflix.servo.monitor.Monitors;
 import com.sun.jersey.api.client.filter.ClientFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cloud.netflix.eureka.EurekaClientConfigBean;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Provider;
@@ -30,6 +29,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import static com.netflix.discovery.EurekaClientNames.METRIC_REGISTRATION_PREFIX;
 
 /**
+ * C层注册的discoveryClient
+ * 精简了一些不必要的属性和操作
  * Created by zhao.weiwei
  * create on 2017/2/14 18:07
  * the email is zhao.weiwei@jyall.com.
