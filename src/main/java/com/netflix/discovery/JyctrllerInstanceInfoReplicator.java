@@ -42,20 +42,18 @@ public class JyctrllerInstanceInfoReplicator implements Runnable {
                         .setDaemon(true)
                         .build());
 
-        this.scheduledPeriodicRef = new AtomicReference<Future>();
-
+        this.scheduledPeriodicRef = new AtomicReference<>();
         this.started = new AtomicBoolean(false);
         this.rateLimiter = new RateLimiter(TimeUnit.MINUTES);
         this.replicationIntervalSeconds = replicationIntervalSeconds;
         this.burstSize = burstSize;
-
         this.allowedRatePerMinute = 60 * this.burstSize / this.replicationIntervalSeconds;
         logger.info("InstanceInfoReplicator onDemand update allowed rate per min is {}", allowedRatePerMinute);
     }
 
     public void start(int initialDelayMs) {
         if (started.compareAndSet(false, true)) {
-            instanceInfo.setIsDirty();  // for initial register
+            instanceInfo.setIsDirty();
             Future next = scheduler.schedule(this, initialDelayMs, TimeUnit.SECONDS);
             scheduledPeriodicRef.set(next);
         }
@@ -68,19 +66,14 @@ public class JyctrllerInstanceInfoReplicator implements Runnable {
 
     public boolean onDemandUpdate() {
         if (rateLimiter.acquire(burstSize, allowedRatePerMinute)) {
-            scheduler.submit(new Runnable() {
-                @Override
-                public void run() {
-                    logger.debug("Executing on-demand update of local InstanceInfo");
-
-                    Future latestPeriodic = scheduledPeriodicRef.get();
-                    if (latestPeriodic != null && !latestPeriodic.isDone()) {
-                        logger.debug("Canceling the latest scheduled update, it will be rescheduled at the end of on demand update");
-                        latestPeriodic.cancel(false);
-                    }
-
-                    JyctrllerInstanceInfoReplicator.this.run();
+            scheduler.submit(() -> {
+                logger.debug("Executing on-demand update of local InstanceInfo");
+                Future latestPeriodic = scheduledPeriodicRef.get();
+                if (latestPeriodic != null && !latestPeriodic.isDone()) {
+                    logger.debug("Canceling the latest scheduled update, it will be rescheduled at the end of on demand update");
+                    latestPeriodic.cancel(false);
                 }
+                JyctrllerInstanceInfoReplicator.this.run();
             });
             return true;
         } else {
@@ -92,7 +85,6 @@ public class JyctrllerInstanceInfoReplicator implements Runnable {
     public void run() {
         try {
             discoveryClient.refreshInstanceInfo();
-
             Long dirtyTimestamp = instanceInfo.isDirtyWithTime();
             if (dirtyTimestamp != null) {
                 discoveryClient.register();

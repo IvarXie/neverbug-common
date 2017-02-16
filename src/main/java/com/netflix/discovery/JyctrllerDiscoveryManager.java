@@ -40,35 +40,20 @@ public class JyctrllerDiscoveryManager {
         this.eurekaInstanceConfig = eurekaInstanceConfig;
     }
 
-    /**
-     * Initializes the <tt>Discovery Client</tt> with the given configuration.
-     *
-     * @param config
-     *            the instance info configuration that will be used for
-     *            registration with Eureka.
-     * @param eurekaConfig the eureka client configuration of the instance.
-     */
     public void initComponent(EurekaInstanceConfig config,
                               EurekaClientConfig eurekaConfig, JyctrllerDiscoveryClient.DiscoveryClientOptionalArgs args) {
         this.eurekaInstanceConfig = config;
         this.eurekaClientConfig = eurekaConfig;
-        if (ApplicationInfoManager.getInstance().getInfo() == null) {
-            // Initialize application info
+        if (ApplicationInfoManager.getInstance().getInfo() == null)
             ApplicationInfoManager.getInstance().initComponent(config);
-        }
         InstanceInfo info = ApplicationInfoManager.getInstance().getInfo();
-        discoveryClient = new JyctrllerDiscoveryClient(info,eurekaConfig);
+        discoveryClient = new JyctrllerDiscoveryClient(info, eurekaConfig);
     }
 
-    public void initComponent(EurekaInstanceConfig config,
-                              EurekaClientConfig eurekaConfig) {
+    public void initComponent(EurekaInstanceConfig config, EurekaClientConfig eurekaConfig) {
         initComponent(config, eurekaConfig, null);
     }
 
-    /**
-     * Shuts down the <tt>Discovery Client</tt> which unregisters the
-     * information about this instance from the <tt>Discovery Server</tt>.
-     */
     public void shutdownComponent() {
         if (discoveryClient != null) {
             try {
@@ -84,38 +69,18 @@ public class JyctrllerDiscoveryManager {
         return discoveryClient;
     }
 
-    /**
-     * @deprecated use {@link #getEurekaClient()}
-     *
-     * Get the {@link DiscoveryClient}.
-     * @return the client that is used to talk to eureka.
-     */
-    @Deprecated
     public JyctrllerDiscoveryClient getDiscoveryClient() {
         return discoveryClient;
     }
 
-    /**
-     *
-     * Get the {@link EurekaClient} implementation.
-     * @return the client that is used to talk to eureka.
-     */
     public EurekaClient getEurekaClient() {
         return discoveryClient;
     }
 
-    /**
-     * Get the instance of {@link EurekaClientConfig} this instance was initialized with.
-     * @return the instance of {@link EurekaClientConfig} this instance was initialized with.
-     */
     public EurekaClientConfig getEurekaClientConfig() {
         return eurekaClientConfig;
     }
 
-    /**
-     * Get the instance of {@link EurekaInstanceConfig} this instance was initialized with.
-     * @return the instance of {@link EurekaInstanceConfig} this instance was initialized with.
-     */
     public EurekaInstanceConfig getEurekaInstanceConfig() {
         return eurekaInstanceConfig;
     }
