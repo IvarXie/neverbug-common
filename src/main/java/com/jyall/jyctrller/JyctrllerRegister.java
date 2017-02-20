@@ -1,11 +1,12 @@
 package com.jyall.jyctrller;
 
 import com.netflix.appinfo.ApplicationInfoManager;
-import com.netflix.discovery.JyctrllerDiscoveryClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.netflix.eureka.CloudEurekaClient;
 import org.springframework.cloud.netflix.eureka.EurekaClientConfigBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -27,26 +28,23 @@ public class JyctrllerRegister {
     private EurekaClientConfigBean config;
     @Autowired
     private ApplicationInfoManager applicationInfoManager;
-
-    // 是否需要注册Controller到Eureka
     @Value("${eureka.client.jyctrller.registered:false}")
     private boolean shouldRegCtrller;
-
-    // Controller注册到的Eureka URL列表
     @Value("${eureka.client.jyctrller.registryUrls:}")
     private String ctrllerRegistryUrls;
-
+    @Autowired
+    private ApplicationContext applicationContext;
 
     public void register() throws Exception {
-        if (shouldRegCtrller) {
-            JyctrllerDiscoveryClient.ctrllerRegistryUrls = ctrllerRegistryUrls;
+        if (this.shouldRegCtrller) {
             EurekaClientConfigBean bean = new EurekaClientConfigBean();
-            BeanUtils.copyProperties(config, bean);
+            BeanUtils.copyProperties(this.config, bean);
             Map<String, String> serviceUrl = new HashMap<>();
-            serviceUrl.put("defaultZone", ctrllerRegistryUrls);
+            serviceUrl.put("defaultZone", this.ctrllerRegistryUrls);
             bean.setServiceUrl(serviceUrl);
             bean.setRegisterWithEureka(true);
-            new JyctrllerDiscoveryClient(applicationInfoManager, bean);
+            bean.setFetchRegistry(false);
+            new CloudEurekaClient(this.applicationInfoManager, bean, null, applicationContext);
         }
     }
 }
