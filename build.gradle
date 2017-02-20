@@ -131,6 +131,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-jersey"
     compile "org.springframework.cloud:spring-cloud-starter-eureka"
     compile "org.springframework.cloud:spring-cloud-starter-feign"
+    compile "org.springframework.cloud:spring-cloud-config-client"
     compile 'com.netflix.netflix-commons:netflix-commons-util:0.3.0'
     compile 'com.netflix.netflix-commons:netflix-statistics:0.3.0'
     compile 'org.springframework.retry:spring-retry:1.1.5.RELEASE'
