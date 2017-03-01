@@ -16,10 +16,7 @@ import java.lang.reflect.Parameter;
 import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -201,29 +198,30 @@ public class FeignClientContentUtil {
         File[] dirFiles = dir.listFiles(file -> (recursive && file.isDirectory())
                 || (file.getName().endsWith(".class")));
         // 循环所有文件
-        for (File file : dirFiles) {
-            // 如果是目录 则继续扫描
-            if (file.isDirectory()) {
-                findAndAddClassesInPackageByFile(packageName + "."
-                                + file.getName(), file,
-                        recursive,
-                        classes);
-            } else {
-                // 如果是java类文件 去掉后面的.class 只留下类名
-                String className = file.getName().substring(0,
-                        file.getName().length() - 6);
-                try {
-                    // 添加到集合中去
-                    //classes.add(Class.forName(packageName + '.' + className));
-                    //经过回复同学的提醒，这里用forName有一些不好，会触发static方法，没有使用classLoader
-                    // 的load干净
-                    classes.add(Thread.currentThread().getContextClassLoader
-                            ().loadClass(packageName + '.' + className));
-                } catch (ClassNotFoundException e) {
-                    logger.error("添加用户自定义视图类错误 找不到此类的.class文件", e);
+        if (dirFiles != null && dirFiles.length > 0)
+            Arrays.stream(dirFiles).forEach(file -> {
+                // 如果是目录 则继续扫描
+                if (file.isDirectory()) {
+                    findAndAddClassesInPackageByFile(packageName + "."
+                                    + file.getName(), file,
+                            recursive,
+                            classes);
+                } else {
+                    // 如果是java类文件 去掉后面的.class 只留下类名
+                    String className = file.getName().substring(0,
+                            file.getName().length() - 6);
+                    try {
+                        // 添加到集合中去
+                        //classes.add(Class.forName(packageName + '.' + className));
+                        //经过回复同学的提醒，这里用forName有一些不好，会触发static方法，没有使用classLoader
+                        // 的load干净
+                        classes.add(Thread.currentThread().getContextClassLoader
+                                ().loadClass(packageName + '.' + className));
+                    } catch (ClassNotFoundException e) {
+                        logger.error("添加用户自定义视图类错误 找不到此类的.class文件", e);
+                    }
                 }
-            }
-        }
+            });
     }
 
 
