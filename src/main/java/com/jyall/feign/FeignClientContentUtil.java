@@ -1,8 +1,11 @@
 package com.jyall.feign;
 
 import com.wordnik.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -16,10 +19,7 @@ import java.lang.reflect.Parameter;
 import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -28,17 +28,32 @@ public class FeignClientContentUtil {
     private static final Logger logger = LoggerFactory.getLogger(FeignClientContentUtil.class);
     // 前缀
     private static String applicationPath = "/v1";
-//    @Value("${spring.application.name:}")
-//    private static String serviceId;
-
+    private static Set<String> basicType = new HashSet<String>() {
+        {
+            add("int");
+            add("boolean");
+            add("float");
+            add("double");
+            add("long");
+            add("char");
+            add("byte");
+            add("short");
+        }
+    };
 
     private FeignClientContentUtil() {
     }
 
     public static String getFeignClientContent(String serviceId) {
-        StringBuilder content = new StringBuilder("@FeignClient(\"" + serviceId + "\")\n");
+        StringBuilder content = new StringBuilder();
+        content.append("@FeignClient(\"" + serviceId + "\")\n");
         content.append("public interface DemoFeignClient {\n");
         Set<Class<?>> classes = getJyallClass();
+        Set<String> importClasses = new HashSet<>();
+        importClasses.add("java.util.*");
+        importClasses.add(Path.class.getName());
+        importClasses.add(FeignClient.class.getName());
+        importClasses.add(ResponseEntity.class.getName());
         for (Class resourceClass : classes) {
             // 获取类@path注解，取出前缀
             String classPath = "";
@@ -50,12 +65,16 @@ public class FeignClientContentUtil {
             for (Method method : resourceClass.getDeclaredMethods()) {
                 // 获取HTTP方法注解
                 if (method.getAnnotation(GET.class) != null) {
+                    importClasses.add(GET.class.getName());
                     content.append("\t@GET\n");
                 } else if (method.getAnnotation(POST.class) != null) {
+                    importClasses.add(POST.class.getName());
                     content.append("\t@POST\n");
                 } else if (method.getAnnotation(PUT.class) != null) {
+                    importClasses.add(PUT.class.getName());
                     content.append("\t@PUT\n");
                 } else if (method.getAnnotation(DELETE.class) != null) {
+                    importClasses.add(DELETE.class.getName());
                     content.append("\t@DELETE\n");
                 } else {
                     continue;
@@ -74,6 +93,7 @@ public class FeignClientContentUtil {
                         (Consumes.class);
                 if (methodConsumesAnnotation != null) {
                     content.append("\t@Consumes(");
+                    importClasses.add(Consumes.class.getName());
                     if (methodConsumesAnnotation.value().length > 0) {
                         for (String v : methodConsumesAnnotation.value()) {
                             content.append("\"").append(v).append("\", ");
@@ -89,7 +109,13 @@ public class FeignClientContentUtil {
                         .response() != Void.class) {
                     try {
                         String responseClass = apiOperationAnnotation.response().getSimpleName();
-                        content.append("<").append(responseClass).append(">");
+                        importClasses.add(apiOperationAnnotation.response().getName());
+                        String responseContainer = apiOperationAnnotation.responseContainer();
+                        if (StringUtils.isNotBlank(responseContainer)) {
+                            responseContainer = responseContainer.replace(responseContainer.substring(0, 1), responseContainer.substring(0, 1).toUpperCase());
+                            content.append("<").append(responseContainer).append("<").append(responseClass).append(">>");
+                        } else
+                            content.append("<").append(responseClass).append(">");
                     } catch (Exception e) {
                         logger.trace("返回值无泛型", e);
                     }
@@ -120,6 +146,7 @@ public class FeignClientContentUtil {
                             content.append("@")
                                     .append(paramAnnotation.annotationType().getSimpleName());
                             Class paramAnnotationClass = paramAnnotation.annotationType();
+                            importClasses.add(paramAnnotation.annotationType().getName());
                             try {
                                 @SuppressWarnings("unchecked")
                                 String v = paramAnnotationClass.getMethod("value")
@@ -136,10 +163,12 @@ public class FeignClientContentUtil {
                             content.append("@RequestBody(required=")
                                     .append(((RequestBody) paramAnnotation).required())
                                     .append(") ");
+                            importClasses.add(RequestBody.class.getName());
                         }
                     }
                     // 添加参数类型
                     content.append(param.getType().getSimpleName()).append(" ");
+                    importClasses.add(param.getType().getName());
                     // 添加参数名称
                     content.append(param.getName()).append(", ");
                 }
@@ -147,12 +176,16 @@ public class FeignClientContentUtil {
                 if (method.getParameterCount() > 0) {
                     content.setLength(content.length() - ", ".length());
                 }
-
                 content.append(");\n\n");
             }
         }
         content.append("}");
-        return content.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append("package com.jyall.feignclient;\n\n");
+        importClasses.stream().filter(s -> !basicType.contains(s)).sorted(String::compareTo)
+                .forEach(s -> sb.append("import ").append(s).append(";\n"));
+        sb.append("\n/**\n*用户注解\n*/\n");
+        return sb.toString() + content.toString();
     }
 
     public static Set<Class<?>> getJyallClass() {
@@ -201,29 +234,30 @@ public class FeignClientContentUtil {
         File[] dirFiles = dir.listFiles(file -> (recursive && file.isDirectory())
                 || (file.getName().endsWith(".class")));
         // 循环所有文件
-        for (File file : dirFiles) {
-            // 如果是目录 则继续扫描
-            if (file.isDirectory()) {
-                findAndAddClassesInPackageByFile(packageName + "."
-                                + file.getName(), file,
-                        recursive,
-                        classes);
-            } else {
-                // 如果是java类文件 去掉后面的.class 只留下类名
-                String className = file.getName().substring(0,
-                        file.getName().length() - 6);
-                try {
-                    // 添加到集合中去
-                    //classes.add(Class.forName(packageName + '.' + className));
-                    //经过回复同学的提醒，这里用forName有一些不好，会触发static方法，没有使用classLoader
-                    // 的load干净
-                    classes.add(Thread.currentThread().getContextClassLoader
-                            ().loadClass(packageName + '.' + className));
-                } catch (ClassNotFoundException e) {
-                    logger.error("添加用户自定义视图类错误 找不到此类的.class文件", e);
+        if (dirFiles != null && dirFiles.length > 0)
+            Arrays.stream(dirFiles).forEach(file -> {
+                // 如果是目录 则继续扫描
+                if (file.isDirectory()) {
+                    findAndAddClassesInPackageByFile(packageName + "."
+                                    + file.getName(), file,
+                            recursive,
+                            classes);
+                } else {
+                    // 如果是java类文件 去掉后面的.class 只留下类名
+                    String className = file.getName().substring(0,
+                            file.getName().length() - 6);
+                    try {
+                        // 添加到集合中去
+                        //classes.add(Class.forName(packageName + '.' + className));
+                        //经过回复同学的提醒，这里用forName有一些不好，会触发static方法，没有使用classLoader
+                        // 的load干净
+                        classes.add(Thread.currentThread().getContextClassLoader
+                                ().loadClass(packageName + '.' + className));
+                    } catch (ClassNotFoundException e) {
+                        logger.error("添加用户自定义视图类错误 找不到此类的.class文件", e);
+                    }
                 }
-            }
-        }
+            });
     }
 
 
