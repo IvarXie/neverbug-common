@@ -13,9 +13,7 @@ import javax.ws.rs.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
+import java.lang.reflect.*;
 import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -41,6 +39,8 @@ public class FeignClientContentUtil {
         }
     };
 
+    private static Set<String> importClasses = new HashSet<>();
+
     private FeignClientContentUtil() {
     }
 
@@ -49,7 +49,7 @@ public class FeignClientContentUtil {
         content.append("@FeignClient(\"" + serviceId + "\")\n");
         content.append("public interface DemoFeignClient {\n");
         Set<Class<?>> classes = getJyallClass();
-        Set<String> importClasses = new HashSet<>();
+
         importClasses.add("java.util.*");
         importClasses.add(Path.class.getName());
         importClasses.add(FeignClient.class.getName());
@@ -349,6 +349,46 @@ public class FeignClientContentUtil {
             logger.error("添加用户自定义视图类错误 找不到此类的.class文件", e);
         }
     }
+
+    private static String assemblyGenericType(Class<?> clazz, Set<String> set) {
+        System.out.println(clazz.getGenericSuperclass());
+        Type[] types = clazz.getGenericInterfaces();
+        StringBuilder sb = new StringBuilder();
+        if (types != null && types.length > 0) {
+            sb.append(clazz.getSimpleName()).append("<");
+            Arrays.stream(types).forEach(t -> {
+                        set.add(t.getClass().getName());
+                        sb.append(t.getClass().getSimpleName()).append(",");
+                    }
+            );
+            sb.setCharAt(sb.length()-1,'>');
+        } else
+            return clazz.getSimpleName();
+        return sb.toString();
+    }
+
+//    public  static  void main(String args[]){
+//        Class<?> clazz  =FeignClientContentUtil.class;
+//        Method methods[] = clazz.getDeclaredMethods();
+//        for(Method method:methods) {
+//            if(method.getName().equals("maps")) {
+//                Type [] t = method.getGenericParameterTypes();//获取参数泛型
+//                for(Type paramType:t){
+//                    if(paramType instanceof ParameterizedType){
+//                        Type[]genericTypes = ((ParameterizedType)paramType).getActualTypeArguments();
+//                        for(Type genericType:genericTypes){
+//                            System.out.println("泛型类型"+genericType);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//
+//    public static Map<String,String> maps(Map<String,String> m,Map<String,String> m2){
+//        return null;
+//    }
 }
 
 
