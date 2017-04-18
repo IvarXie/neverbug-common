@@ -15,20 +15,30 @@
  */
 package com.jyall.feign.jaxrs;
 
-import feign.Contract;
-import feign.MethodMetadata;
-
-import javax.ws.rs.*;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.Collection;
-
 import static feign.Util.checkState;
 import static feign.Util.emptyToNull;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+
+import feign.Contract;
+import feign.MethodMetadata;
+
 /**
  * Please refer to the
- * <a href="https://github.com/Netflix/feign/tree/master/jaxrs">Feign JAX-RS README</a>.
+ * <a href="https://github.com/Netflix/feign/tree/master/jaxrs">Feign JAX-RS
+ * README</a>.
  */
 public final class JAXRSContract extends Contract.BaseContract {
 
@@ -38,10 +48,11 @@ public final class JAXRSContract extends Contract.BaseContract {
 	// Protected so unittest can call us
 	// XXX: Should parseAndValidateMetadata(Class, Method) be public instead?
 	// The old deprecated parseAndValidateMetadata(Method) was public..
-//	@Override
-//	protected MethodMetadata parseAndValidateMetadata(Class<?> targetType, Method method) {
-//		return super.parseAndValidateMetadata(targetType, method);
-//	}
+	// @Override
+	// protected MethodMetadata parseAndValidateMetadata(Class<?> targetType,
+	// Method method) {
+	// return super.parseAndValidateMetadata(targetType, method);
+	// }
 
 	@Override
 	protected void processAnnotationOnClass(MethodMetadata data, Class<?> clz) {
@@ -49,7 +60,7 @@ public final class JAXRSContract extends Contract.BaseContract {
 		if (path != null) {
 			String pathValue = emptyToNull(path.value());
 			checkState(pathValue != null, "Path.value() was empty on type %s", clz.getName());
-			if(pathValue == null){
+			if (pathValue == null) {
 				return;
 			}
 			if (!pathValue.startsWith("/")) {
@@ -151,5 +162,13 @@ public final class JAXRSContract extends Contract.BaseContract {
 			}
 		}
 		return isHttpParam;
+	}
+
+	@Override
+	protected Collection<String> addTemplatedParam(Collection<String> possiblyNull, String name) {
+		if (possiblyNull == null) 
+			possiblyNull = new ArrayList<String>();
+		possiblyNull.add(name);
+		return possiblyNull;
 	}
 }

@@ -7,23 +7,21 @@
  * ========================================================
  */
 package com.jyall.exception.handler;
-/**
- * Created by li.jianqiu on 2016-3-28.
- */
-
-import com.alibaba.fastjson.JSON;
-import com.jyall.exception.ErrorCode;
-import com.jyall.util.ResponseUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-import java.util.List;
-import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.alibaba.fastjson.JSON;
+import com.jyall.exception.ErrorCode;
+import com.jyall.util.ResponseUtil;
 
 /**
  * @ClassName: ValidationException </p>

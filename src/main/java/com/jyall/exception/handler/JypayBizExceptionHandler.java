@@ -23,13 +23,9 @@ public class JypayBizExceptionHandler extends BaseExceptionHandler implements Ex
 
 	@Override
 	public Response toResponse(JypayBizException ex) {
-		// TODO Auto-generated method stub
 		logger.error(ex.getMessage(), ex);
-
-		if (logger.isDebugEnabled()) {
+		if (logger.isDebugEnabled()) 
 			return ResponseUtil.getBizErrorResponse(ex.getCode(), ex.getMessage(), getErrorStackTrace(ex));
-		}
-
 		return ResponseUtil.getBizErrorResponse(ex.getCode(), ex.getMessage());
 	}
 

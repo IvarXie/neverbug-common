@@ -1,20 +1,23 @@
 package com.jyall.exception.handler;
 
+import java.lang.reflect.UndeclaredThrowableException;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.alibaba.fastjson.JSON;
 import com.jyall.exception.ErrorCode;
 import com.jyall.exception.ErrorMsg;
 import com.jyall.exception.JyBizException;
 import com.jyall.util.ResponseUtil;
 import com.netflix.hystrix.exception.HystrixRuntimeException;
-import feign.FeignException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
-import java.lang.reflect.UndeclaredThrowableException;
+import feign.FeignException;
 
 /**
  * Unchecked Exception Handler
@@ -29,7 +32,6 @@ public class GenericExceptionHandler extends BaseExceptionHandler implements Exc
 
 	@Override
 	public Response toResponse(Throwable ex) {
-		// TODO Auto-generated method stub
 		logger.error(ex.getMessage(), ex);
 
 		ErrorMsg errMsg = new ErrorMsg(ErrorCode.GENERIC_ERROR.value(), ex.getMessage());

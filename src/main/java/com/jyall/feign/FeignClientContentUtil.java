@@ -1,6 +1,30 @@
 package com.jyall.feign;
 
-import com.wordnik.swagger.annotations.ApiOperation;
+import java.io.File;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.net.JarURLConnection;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,17 +33,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.ws.rs.*;
-import java.io.File;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
-import java.net.JarURLConnection;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.*;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 @Component
 public class FeignClientContentUtil {
@@ -27,7 +41,9 @@ public class FeignClientContentUtil {
     // 前缀
     private static String applicationPath = "/v1";
     private static Set<String> basicType = new HashSet<String>() {
-        {
+		private static final long serialVersionUID = -6692338976283596607L;
+
+		{
             add("int");
             add("boolean");
             add("float");
@@ -54,10 +70,10 @@ public class FeignClientContentUtil {
         importClasses.add(Path.class.getName());
         importClasses.add(FeignClient.class.getName());
         importClasses.add(ResponseEntity.class.getName());
-        for (Class resourceClass : classes) {
+        for (Class<?> resourceClass : classes) {
             // 获取类@path注解，取出前缀
             String classPath = "";
-            Path classPathAnnotation = (Path) resourceClass.getAnnotation(Path
+            Path classPathAnnotation = resourceClass.getAnnotation(Path
                     .class);
             if (classPathAnnotation != null) {
                 classPath = classPathAnnotation.value();
@@ -145,10 +161,9 @@ public class FeignClientContentUtil {
                             // Jersey注解
                             content.append("@")
                                     .append(paramAnnotation.annotationType().getSimpleName());
-                            Class paramAnnotationClass = paramAnnotation.annotationType();
+                            Class<?> paramAnnotationClass = paramAnnotation.annotationType();
                             importClasses.add(paramAnnotation.annotationType().getName());
                             try {
-                                @SuppressWarnings("unchecked")
                                 String v = paramAnnotationClass.getMethod("value")
                                         .invoke(paramAnnotation).toString();
                                 content.append("(\"").append(v).append("\")");
@@ -267,7 +282,6 @@ public class FeignClientContentUtil {
      * @param packageName 包名
      * @return 包里的所有类集合
      */
-    @SuppressWarnings("ConstantConditions")
     public static Set<Class<?>> getClasses(String packageName) {
 
         // 第一个class类的集合
@@ -343,52 +357,12 @@ public class FeignClientContentUtil {
 
     private static void addClasses(Set<Class<?>> classes, String name) {
         try {
-            // 添加到classes
             classes.add(Class.forName(name));
         } catch (ClassNotFoundException e) {
             logger.error("添加用户自定义视图类错误 找不到此类的.class文件", e);
         }
     }
 
-    private static String assemblyGenericType(Class<?> clazz, Set<String> set) {
-        System.out.println(clazz.getGenericSuperclass());
-        Type[] types = clazz.getGenericInterfaces();
-        StringBuilder sb = new StringBuilder();
-        if (types != null && types.length > 0) {
-            sb.append(clazz.getSimpleName()).append("<");
-            Arrays.stream(types).forEach(t -> {
-                        set.add(t.getClass().getName());
-                        sb.append(t.getClass().getSimpleName()).append(",");
-                    }
-            );
-            sb.setCharAt(sb.length()-1,'>');
-        } else
-            return clazz.getSimpleName();
-        return sb.toString();
-    }
-
-//    public  static  void main(String args[]){
-//        Class<?> clazz  =FeignClientContentUtil.class;
-//        Method methods[] = clazz.getDeclaredMethods();
-//        for(Method method:methods) {
-//            if(method.getName().equals("maps")) {
-//                Type [] t = method.getGenericParameterTypes();//获取参数泛型
-//                for(Type paramType:t){
-//                    if(paramType instanceof ParameterizedType){
-//                        Type[]genericTypes = ((ParameterizedType)paramType).getActualTypeArguments();
-//                        for(Type genericType:genericTypes){
-//                            System.out.println("泛型类型"+genericType);
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//
-//    public static Map<String,String> maps(Map<String,String> m,Map<String,String> m2){
-//        return null;
-//    }
 }
 
 

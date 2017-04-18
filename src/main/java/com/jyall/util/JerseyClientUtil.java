@@ -1,7 +1,6 @@
 package com.jyall.util;
 
-import com.jyall.exception.ErrorCode;
-import org.glassfish.jersey.client.ClientConfig;
+import java.util.Map;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -10,9 +9,11 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import java.util.Map;
 
-@SuppressWarnings("unused")
+import org.glassfish.jersey.client.ClientConfig;
+
+import com.jyall.exception.ErrorCode;
+
 public class JerseyClientUtil {
 	// 单例
 	private static MyJerseyClient singleton = new MyJerseyClient();

@@ -6,7 +6,9 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 /**
- * applicationContetx的工具类,使用延时生成的注解
+ * applicationContetx的工具类
+ * <P>
+ * 使用延时生成的注解
  * Created by zhao.weiwei
  * create on 2017/3/1 14:36
  * the email is zhao.weiwei@jyall.com.
