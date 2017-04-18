@@ -37,10 +37,13 @@ public class JyctrllerRegister {
     //注入原有的服务注管理器
     @Autowired
     private ApplicationInfoManager applicationInfoManager;
+    //是否注册到C层的标志，默认是不注册
     @Value("${eureka.client.jyctrller.registered:false}")
     private boolean shouldRegCtrller;
+    //C层注册的地址
     @Value("${eureka.client.jyctrller.registryUrls:}")
     private String ctrllerRegistryUrls;
+    //spring的上下文
     @Autowired
     private ApplicationContext applicationContext;
 
