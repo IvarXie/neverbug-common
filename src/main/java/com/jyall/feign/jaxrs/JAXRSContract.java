@@ -20,7 +20,6 @@ import static feign.Util.emptyToNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.ws.rs.Consumes;
@@ -37,8 +36,7 @@ import feign.MethodMetadata;
 
 /**
  * Please refer to the
- * <a href="https://github.com/Netflix/feign/tree/master/jaxrs">Feign JAX-RS
- * README</a>.
+ * <a href="https://github.com/Netflix/feign/tree/master/jaxrs">Feign JAX-RS README</a>.
  */
 public final class JAXRSContract extends Contract.BaseContract {
 
@@ -48,11 +46,10 @@ public final class JAXRSContract extends Contract.BaseContract {
 	// Protected so unittest can call us
 	// XXX: Should parseAndValidateMetadata(Class, Method) be public instead?
 	// The old deprecated parseAndValidateMetadata(Method) was public..
-	// @Override
-	// protected MethodMetadata parseAndValidateMetadata(Class<?> targetType,
-	// Method method) {
-	// return super.parseAndValidateMetadata(targetType, method);
-	// }
+//	@Override
+//	protected MethodMetadata parseAndValidateMetadata(Class<?> targetType, Method method) {
+//		return super.parseAndValidateMetadata(targetType, method);
+//	}
 
 	@Override
 	protected void processAnnotationOnClass(MethodMetadata data, Class<?> clz) {
@@ -60,7 +57,7 @@ public final class JAXRSContract extends Contract.BaseContract {
 		if (path != null) {
 			String pathValue = emptyToNull(path.value());
 			checkState(pathValue != null, "Path.value() was empty on type %s", clz.getName());
-			if (pathValue == null) {
+			if(pathValue == null){
 				return;
 			}
 			if (!pathValue.startsWith("/")) {
@@ -130,6 +127,7 @@ public final class JAXRSContract extends Contract.BaseContract {
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	protected boolean processAnnotationsOnParameter(MethodMetadata data, Annotation[] annotations, int paramIndex) {
 		boolean isHttpParam = false;
 		for (Annotation parameterAnnotation : annotations) {
@@ -162,13 +160,5 @@ public final class JAXRSContract extends Contract.BaseContract {
 			}
 		}
 		return isHttpParam;
-	}
-
-	@Override
-	protected Collection<String> addTemplatedParam(Collection<String> possiblyNull, String name) {
-		if (possiblyNull == null) 
-			possiblyNull = new ArrayList<String>();
-		possiblyNull.add(name);
-		return possiblyNull;
 	}
 }

@@ -91,7 +91,7 @@ publishing {
             artifactId prjArtifactId
             from components.java
             artifacts.clear()
-            artifacts = [commonJar, commonSourcesJar]
+            artifacts = [commonJar]
         }
 
         all {
