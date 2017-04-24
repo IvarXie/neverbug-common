@@ -89,12 +89,9 @@ publishing {
     publications {
         common(MavenPublication) {
             artifactId prjArtifactId
-
             from components.java
             artifacts.clear()
-
-            artifacts = [commonJar]
-            //artifacts = [commonJar, commonSourcesJar]
+            artifacts = [commonJar, commonSourcesJar]
         }
 
         all {
