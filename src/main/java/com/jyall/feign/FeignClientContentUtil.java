@@ -35,6 +35,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.wordnik.swagger.annotations.ApiOperation;
 
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtMethod;
+import javassist.Modifier;
+import javassist.bytecode.CodeAttribute;
+import javassist.bytecode.LocalVariableAttribute;
+import javassist.bytecode.MethodInfo;
+
 @Component
 public class FeignClientContentUtil {
     private static final Logger logger = LoggerFactory.getLogger(FeignClientContentUtil.class);
@@ -56,11 +64,13 @@ public class FeignClientContentUtil {
     };
 
     private static Set<String> importClasses = new HashSet<>();
+    
 
     private FeignClientContentUtil() {
     }
 
-    public static String getFeignClientContent(String serviceId) {
+    public static String getFeignClientContent(String serviceId) throws Exception{
+    	 ClassPool pool = ClassPool.getDefault();
         StringBuilder content = new StringBuilder();
         content.append("@FeignClient(\"" + serviceId + "\")\n");
         content.append("public interface DemoFeignClient {\n");
@@ -71,6 +81,7 @@ public class FeignClientContentUtil {
         importClasses.add(FeignClient.class.getName());
         importClasses.add(ResponseEntity.class.getName());
         for (Class<?> resourceClass : classes) {
+        	CtClass cc = pool.get(resourceClass.getName());
             // 获取类@path注解，取出前缀
             String classPath = "";
             Path classPathAnnotation = resourceClass.getAnnotation(Path
@@ -152,6 +163,12 @@ public class FeignClientContentUtil {
                 content.append(" ")
                         .append(methodName)
                         .append("(");
+                CtMethod cm = cc.getDeclaredMethod(method.getName());
+				MethodInfo methodInfo = cm.getMethodInfo();
+				CodeAttribute codeAttribute = methodInfo.getCodeAttribute();
+				LocalVariableAttribute attr = (LocalVariableAttribute) codeAttribute
+						.getAttribute(LocalVariableAttribute.tag);
+				int i = 0, pos = Modifier.isStatic(cm.getModifiers()) ? 0 : 1;
                 // 获取参数
                 for (Parameter param : method.getParameters()) {
                     // 添加参数注解
@@ -185,7 +202,8 @@ public class FeignClientContentUtil {
                     content.append(param.getType().getSimpleName()).append(" ");
                     importClasses.add(param.getType().getName());
                     // 添加参数名称
-                    content.append(param.getName()).append(", ");
+					content.append(attr.variableName(i + pos)).append(", ");
+					i++;
                 }
                 // 去除多余后缀连接符
                 if (method.getParameterCount() > 0) {

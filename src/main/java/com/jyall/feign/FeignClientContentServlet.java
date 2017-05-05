@@ -1,8 +1,6 @@
 package com.jyall.feign;
 
 
-import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -25,7 +23,7 @@ public class FeignClientContentServlet extends HttpServlet {
         try {
             resp.setCharacterEncoding("UTF-8");
             resp.getWriter().write(FeignClientContentUtil.getFeignClientContent(serviceId));
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("", e);
         }
     }
