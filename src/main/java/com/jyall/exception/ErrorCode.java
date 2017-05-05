@@ -8,7 +8,6 @@ import javax.ws.rs.core.Response;
  * @author guo.guanfei
  *
  */
-@SuppressWarnings("unused")
 public enum ErrorCode {
 
 	OK(Response.Status.OK.getStatusCode(), "成功"),

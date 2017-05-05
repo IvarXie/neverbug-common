@@ -8,7 +8,6 @@ public class SpringUtil {
 	private SpringUtil() {}
 
 	public static void setApplicationContext(ApplicationContext applicationContext) {
-		// TODO Auto-generated method stub
 		ctx = applicationContext;
 	}
 
@@ -21,10 +20,8 @@ public class SpringUtil {
 	 * @return 获取到的Bean对象，类型为Object
 	 */
 	public static Object getBean(String name) {
-		if (null == ctx) {
+		if (null == ctx) 
 			throw new NullPointerException("ApplicationContext is null");
-		}
-
 		return ctx.getBean(name);
 	}
 
@@ -37,9 +34,8 @@ public class SpringUtil {
 	 * @return 获取到的Bean对象
 	 */
 	public static <T> T getBean(Class<T> clazz) {
-		if (null == ctx) {
+		if (null == ctx) 
 			throw new NullPointerException("ApplicationContext is null");
-		}
 		return ctx.getBean(clazz);
 	}
 

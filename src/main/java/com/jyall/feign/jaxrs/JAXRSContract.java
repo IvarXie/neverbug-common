@@ -15,16 +15,24 @@
  */
 package com.jyall.feign.jaxrs;
 
-import feign.Contract;
-import feign.MethodMetadata;
+import static feign.Util.checkState;
+import static feign.Util.emptyToNull;
 
-import javax.ws.rs.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-import static feign.Util.checkState;
-import static feign.Util.emptyToNull;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+
+import feign.Contract;
+import feign.MethodMetadata;
 
 /**
  * Please refer to the
@@ -119,6 +127,7 @@ public final class JAXRSContract extends Contract.BaseContract {
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	protected boolean processAnnotationsOnParameter(MethodMetadata data, Annotation[] annotations, int paramIndex) {
 		boolean isHttpParam = false;
 		for (Annotation parameterAnnotation : annotations) {
