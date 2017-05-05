@@ -1,9 +1,6 @@
 package com.jyall.jyctrller;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Singleton;
@@ -11,18 +8,13 @@ import javax.inject.Singleton;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.netflix.eureka.CloudEurekaClient;
 import org.springframework.cloud.netflix.eureka.EurekaClientConfigBean;
-import org.springframework.cloud.netflix.eureka.EurekaDiscoveryClient.EurekaServiceInstance;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.netflix.appinfo.ApplicationInfoManager;
-import com.netflix.appinfo.InstanceInfo;
-
 
 /**
  * C层注册的bean
@@ -53,11 +45,6 @@ public class JyctrllerRegister {
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	@Autowired
-	private DiscoveryClient discoveryClient;
-
-	private CloudEurekaClient cloudEurekaClient;
-
 	public void register() throws Exception {
 		if (this.shouldRegCtrller) {
 			EurekaClientConfigBean bean = new EurekaClientConfigBean();
@@ -70,31 +57,8 @@ public class JyctrllerRegister {
 			// 设置注册属性
 			bean.setRegisterWithEureka(true);
 			// 设置拉取服务的属性
-			bean.setFetchRegistry(true);
-			cloudEurekaClient = new CloudEurekaClient(this.applicationInfoManager, bean, null, applicationContext);
+			bean.setFetchRegistry(false);
+			new CloudEurekaClient(this.applicationInfoManager, bean, null, applicationContext);
 		}
 	}
-	/**
-	 * 获取服务列表
-	 * @param serviceId
-	 * @return
-	 * @throws Exception
-	 */
-	public List<ServiceInstance> getInstances(String serviceId) throws Exception {
-		List<ServiceInstance> list = discoveryClient.getInstances(serviceId);
-		list.addAll(getSerivice(serviceId));
-		return list;
-	}
-
-	private List<ServiceInstance> getSerivice(String serviceId) throws Exception {
-		List<InstanceInfo> infos = this.cloudEurekaClient.getInstancesByVipAddress(serviceId, false);
-		List<ServiceInstance> instances = new ArrayList<>();
-		for (InstanceInfo info : infos) {
-			Constructor<?> con = EurekaServiceInstance.class.getDeclaredConstructor(InstanceInfo.class);
-			con.setAccessible(true);
-			instances.add(EurekaServiceInstance.class.cast(con.newInstance((info))));
-		}
-		return instances;
-	}
-
 }
