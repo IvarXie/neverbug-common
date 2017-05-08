@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.wordnik.swagger.annotations.ApiOperation;
 
+import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
@@ -64,23 +65,24 @@ public class FeignClientContentUtil {
     };
 
     private static Set<String> importClasses = new HashSet<>();
-    
 
     private FeignClientContentUtil() {
     }
 
     public static String getFeignClientContent(String serviceId) throws Exception{
-    	 ClassPool pool = ClassPool.getDefault();
+    	
         StringBuilder content = new StringBuilder();
         content.append("@FeignClient(\"" + serviceId + "\")\n");
         content.append("public interface DemoFeignClient {\n");
         Set<Class<?>> classes = getJyallClass();
-
+        ClassPool pool = ClassPool.getDefault();
         importClasses.add("java.util.*");
         importClasses.add(Path.class.getName());
         importClasses.add(FeignClient.class.getName());
         importClasses.add(ResponseEntity.class.getName());
         for (Class<?> resourceClass : classes) {
+        	ClassClassPath ccpath = new ClassClassPath(resourceClass);
+        	pool.insertClassPath(ccpath);
         	CtClass cc = pool.get(resourceClass.getName());
             // 获取类@path注解，取出前缀
             String classPath = "";
