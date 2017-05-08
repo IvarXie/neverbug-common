@@ -165,7 +165,16 @@ public class FeignClientContentUtil {
                 content.append(" ")
                         .append(methodName)
                         .append("(");
-                CtMethod cm = cc.getDeclaredMethod(method.getName());
+                
+                Class<?>[] clazzes = method.getParameterTypes();
+                CtClass[]  ctclasses = new CtClass[clazzes.length];
+                for(int i=0;i<clazzes.length;i++){
+                	Class<?> clazz = clazzes[i];
+                	ClassClassPath cpath = new ClassClassPath(resourceClass);
+                	pool.insertClassPath(cpath);
+                	ctclasses[i]=pool.get(clazz.getName());
+                }
+                CtMethod cm = cc.getDeclaredMethod(method.getName(),ctclasses);
 				MethodInfo methodInfo = cm.getMethodInfo();
 				CodeAttribute codeAttribute = methodInfo.getCodeAttribute();
 				LocalVariableAttribute attr = (LocalVariableAttribute) codeAttribute
