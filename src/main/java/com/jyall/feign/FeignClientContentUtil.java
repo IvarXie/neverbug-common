@@ -35,24 +35,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.wordnik.swagger.annotations.ApiOperation;
 
-import javassist.ClassClassPath;
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtMethod;
-import javassist.Modifier;
-import javassist.bytecode.CodeAttribute;
-import javassist.bytecode.LocalVariableAttribute;
-import javassist.bytecode.MethodInfo;
-
 @Component
 public class FeignClientContentUtil {
     private static final Logger logger = LoggerFactory.getLogger(FeignClientContentUtil.class);
     // 前缀
     private static String applicationPath = "/v1";
     private static Set<String> basicType = new HashSet<String>() {
-		private static final long serialVersionUID = -6692338976283596607L;
-
-		{
+        {
             add("int");
             add("boolean");
             add("float");
@@ -64,29 +53,23 @@ public class FeignClientContentUtil {
         }
     };
 
-    private static Set<String> importClasses = new HashSet<>();
-
     private FeignClientContentUtil() {
     }
 
-    public static String getFeignClientContent(String serviceId) throws Exception{
-    	
+    public static String getFeignClientContent(String serviceId) {
         StringBuilder content = new StringBuilder();
         content.append("@FeignClient(\"" + serviceId + "\")\n");
         content.append("public interface DemoFeignClient {\n");
         Set<Class<?>> classes = getJyallClass();
-        ClassPool pool = ClassPool.getDefault();
+        Set<String> importClasses = new HashSet<>();
         importClasses.add("java.util.*");
         importClasses.add(Path.class.getName());
         importClasses.add(FeignClient.class.getName());
         importClasses.add(ResponseEntity.class.getName());
-        for (Class<?> resourceClass : classes) {
-        	ClassClassPath ccpath = new ClassClassPath(resourceClass);
-        	pool.insertClassPath(ccpath);
-        	CtClass cc = pool.get(resourceClass.getName());
+        for (Class resourceClass : classes) {
             // 获取类@path注解，取出前缀
             String classPath = "";
-            Path classPathAnnotation = resourceClass.getAnnotation(Path
+            Path classPathAnnotation = (Path) resourceClass.getAnnotation(Path
                     .class);
             if (classPathAnnotation != null) {
                 classPath = classPathAnnotation.value();
@@ -165,21 +148,6 @@ public class FeignClientContentUtil {
                 content.append(" ")
                         .append(methodName)
                         .append("(");
-                
-                Class<?>[] clazzes = method.getParameterTypes();
-                CtClass[]  ctclasses = new CtClass[clazzes.length];
-                for(int i=0;i<clazzes.length;i++){
-                	Class<?> clazz = clazzes[i];
-                	ClassClassPath cpath = new ClassClassPath(resourceClass);
-                	pool.insertClassPath(cpath);
-                	ctclasses[i]=pool.get(clazz.getName());
-                }
-                CtMethod cm = cc.getDeclaredMethod(method.getName(),ctclasses);
-				MethodInfo methodInfo = cm.getMethodInfo();
-				CodeAttribute codeAttribute = methodInfo.getCodeAttribute();
-				LocalVariableAttribute attr = (LocalVariableAttribute) codeAttribute
-						.getAttribute(LocalVariableAttribute.tag);
-				int i = 0, pos = Modifier.isStatic(cm.getModifiers()) ? 0 : 1;
                 // 获取参数
                 for (Parameter param : method.getParameters()) {
                     // 添加参数注解
@@ -189,9 +157,10 @@ public class FeignClientContentUtil {
                             // Jersey注解
                             content.append("@")
                                     .append(paramAnnotation.annotationType().getSimpleName());
-                            Class<?> paramAnnotationClass = paramAnnotation.annotationType();
+                            Class paramAnnotationClass = paramAnnotation.annotationType();
                             importClasses.add(paramAnnotation.annotationType().getName());
                             try {
+                                @SuppressWarnings("unchecked")
                                 String v = paramAnnotationClass.getMethod("value")
                                         .invoke(paramAnnotation).toString();
                                 content.append("(\"").append(v).append("\")");
@@ -213,8 +182,7 @@ public class FeignClientContentUtil {
                     content.append(param.getType().getSimpleName()).append(" ");
                     importClasses.add(param.getType().getName());
                     // 添加参数名称
-					content.append(attr.variableName(i + pos)).append(", ");
-					i++;
+                    content.append(param.getName()).append(", ");
                 }
                 // 去除多余后缀连接符
                 if (method.getParameterCount() > 0) {
@@ -311,6 +279,7 @@ public class FeignClientContentUtil {
      * @param packageName 包名
      * @return 包里的所有类集合
      */
+    @SuppressWarnings("ConstantConditions")
     public static Set<Class<?>> getClasses(String packageName) {
 
         // 第一个class类的集合
@@ -386,12 +355,10 @@ public class FeignClientContentUtil {
 
     private static void addClasses(Set<Class<?>> classes, String name) {
         try {
+            // 添加到classes
             classes.add(Class.forName(name));
         } catch (ClassNotFoundException e) {
             logger.error("添加用户自定义视图类错误 找不到此类的.class文件", e);
         }
     }
-
 }
-
-
