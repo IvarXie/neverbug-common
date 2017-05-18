@@ -35,6 +35,7 @@ package com.jyall.util;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -81,10 +82,14 @@ public class GsonUtil {
 	 * @param json
 	 * @return
 	 */
-	public static <T> List<T> json2BeanList(String json) {
-		Gson gson = new Gson();
-		return gson.fromJson(json, new TypeToken<List<T>>() {
-		}.getType());
+	public static <T> List<T> json2BeanList(String json, Class<T> clazz) {
+		JsonParser parser = new JsonParser();
+		JsonArray array = parser.parse(json).getAsJsonArray();
+		List<T> list = Lists.newArrayList();
+		for (int i = 0; i < array.size(); i++) {
+			list.add(json2Bean(array.get(i).toString(), clazz));
+		}
+		return list;
 	}
 
 	/**
@@ -162,4 +167,17 @@ public class GsonUtil {
 		JsonElement je = jp.parse(json);
 		return google.toJson(je);
 	}
+
+	/**
+	 * 将map转换为bean
+	 * 
+	 * @param map
+	 * @return
+	 */
+	@SuppressWarnings("rawtypes")
+	public static <T> T map2Bean(Map map, Class<T> clazz) {
+		String json = toJson(map);
+		return json2Bean(json, clazz);
+	}
+
 }
