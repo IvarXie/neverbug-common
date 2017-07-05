@@ -68,8 +68,8 @@ public class GsonUtil {
      * @return
      */
     public static <T> T json2Bean(String json, Class<T> clazz) {
-        Gson gson = new Gson();
-        return gson.fromJson(json, clazz);
+        Gson gsonDate = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss.SSS").create();
+        return gsonDate.fromJson(json, clazz);
     }
 
     /**
