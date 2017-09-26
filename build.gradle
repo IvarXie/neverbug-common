@@ -42,6 +42,13 @@ jar {
 def jdkVersion = 1.8
 sourceCompatibility = jdkVersion
 targetCompatibility = jdkVersion
+compileJava {
+    sourceCompatibility = jdkVersion
+    targetCompatibility = jdkVersion
+    options.compilerArgs = ['-parameters']
+    options.fork = true
+    options.forkOptions.executable = 'javac'
+}
 sonarqube {
     properties {
         property "sonar.sourceEncoding", "UTF-8"
@@ -133,9 +140,6 @@ dependencies {
     compile 'com.netflix.netflix-commons:netflix-commons-util:0.3.0'
     compile 'com.netflix.netflix-commons:netflix-statistics:0.3.0'
     compile 'org.springframework.retry:spring-retry:1.1.5.RELEASE'
-    //使用javassist增强的方法获取
-    compile 'org.javassist:javassist:3.21.0-GA'
-
     // Utilities
     compile "com.alibaba:fastjson:1.2.7"
     //swagger

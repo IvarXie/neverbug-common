@@ -164,6 +164,13 @@ public enum ErrorCode {
 	BIZ_ERROR_PAY_RECORD_CREATE(400006107,"创建支付记录失败"),
 
 
+	THIRDBM_ALREADYBIND_MOBILE_EXISTS(400007001,"第三方已经绑定手机,更换的新手机号已经存在"),
+	THIRDBM_MOBILE_ALREADY_BIND_ANATHER(400007002,"该手机号已经被绑定到其他第三方账号"),
+	THIRDBM_ALREADYBIND_MOBILE_NOT_BELONG_MID(400007003,"第三方已经绑定手机号,改手机号不属于当前会员"),
+	THIRDBM_ALREADYBIND_MOBILE_BELONG_MID_MODIFY_MOBILE_ERROR(400007004,"第三方曾经绑定该手机号，修改手机号出错"),
+	THIRDBM_ERROR(400007005,"第三方绑定手机号出错"),
+
+
 	/***** 
 	 * 系统错误: 500xxxyyy
 	 * 500：  HTTP状态码
