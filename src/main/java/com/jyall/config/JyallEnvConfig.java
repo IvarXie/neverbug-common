@@ -93,4 +93,8 @@ public class JyallEnvConfig {
     public boolean isPerformance() {
         return "performance".equalsIgnoreCase(env);
     }
+
+    public String getEnv() {
+        return this.env;
+    }
 }
