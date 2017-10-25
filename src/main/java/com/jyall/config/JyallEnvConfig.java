@@ -35,6 +35,9 @@ package com.jyall.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 家园网环境配置
  * <p>
@@ -45,6 +48,16 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class JyallEnvConfig {
+
+    private Map<String, String> envMap = new HashMap<String, String>() {
+        {
+            put("dev", "开发环境");
+            put("test", "测试环境");
+            put("preonline", "预发布环境");
+            put("online", "线上环境");
+            put("performance", "性能环境");
+        }
+    };
 
     @Value("${spring.cloud.config.label:dev}")
     private String env;
@@ -96,5 +109,14 @@ public class JyallEnvConfig {
 
     public String getEnv() {
         return this.env;
+    }
+
+    /**
+     * 返回环境的中文描述
+     *
+     * @return
+     */
+    public String getEnvDesc() {
+        return envMap.get(env);
     }
 }
