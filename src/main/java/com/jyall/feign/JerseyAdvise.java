@@ -32,11 +32,13 @@
 */
 package com.jyall.feign;
 
+import com.jyall.annotation.EnableJersey;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
@@ -54,6 +56,7 @@ import java.util.Map;
  * Copyright is 金色家园网络科技有限公司
  */
 @Component
+@ConditionalOnBean(annotation = EnableJersey.class)
 public class JerseyAdvise implements ApplicationContextAware {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private ApplicationContext applicationContext;
