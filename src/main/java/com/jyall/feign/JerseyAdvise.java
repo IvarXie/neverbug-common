@@ -56,8 +56,8 @@ import java.util.Map;
  * Email is zhao.weiwei@jyall.com
  * Copyright is 金色家园网络科技有限公司
  */
-@Configuration
-@ConditionalOnBean(annotation = EnableJersey.class)
+//@Configuration
+//@ConditionalOnBean(annotation = EnableJersey.class)
 public class JerseyAdvise implements ApplicationContextAware {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private ApplicationContext applicationContext;
