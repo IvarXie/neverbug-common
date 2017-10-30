@@ -73,12 +73,9 @@ public class SwaggerConfigurer extends WebMvcConfigurerAdapter {
 
     @Bean("swaggerServlet")
     public ServletRegistrationBean swagger() {
+        if(swaggerProperty.isEnableRoot2swagger()){
+            return new ServletRegistrationBean(new SwaggerServlet(), "/swagger","/");
+        }
         return new ServletRegistrationBean(new SwaggerServlet(), "/swagger");
-    }
-
-    @Bean("rootSwaggerServlet")
-    @ConditionalOnProperty(name = "spring.swagger.enableRoot2swagger", havingValue = "true")
-    public ServletRegistrationBean rootSwagger() {
-        return new ServletRegistrationBean(new SwaggerServlet(), "/");
     }
 }
