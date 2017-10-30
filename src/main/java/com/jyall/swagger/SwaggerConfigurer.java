@@ -81,7 +81,6 @@ public class SwaggerConfigurer extends WebMvcConfigurerAdapter {
     }
 
     @Bean("swaggerServlet")
-    @ConditionalOnProperty
     public ServletRegistrationBean swagger() {
         return new ServletRegistrationBean(new HttpServlet() {
             @Override
