@@ -41,7 +41,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -56,8 +55,8 @@ import java.util.Map;
  * Email is zhao.weiwei@jyall.com
  * Copyright is 金色家园网络科技有限公司
  */
-//@Configuration
-//@ConditionalOnBean(annotation = EnableJersey.class)
+@Component
+@ConditionalOnBean(annotation = EnableJersey.class)
 public class JerseyAdvise implements ApplicationContextAware {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private ApplicationContext applicationContext;
