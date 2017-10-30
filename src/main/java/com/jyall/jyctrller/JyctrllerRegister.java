@@ -27,7 +27,6 @@ import java.util.Map;
  * 使用@Lazy,延时加载 Created by zhao.weiwei create on 2017/2/14 9:45 the email is
  * zhao.weiwei@jyall.com.
  */
-@Lazy
 @Singleton
 @Component
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)

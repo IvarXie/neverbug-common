@@ -41,12 +41,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.netflix.eureka.CloudEurekaClient;
 import org.springframework.cloud.netflix.eureka.EurekaClientConfigBean;
 import org.springframework.cloud.netflix.eureka.EurekaDiscoveryClient.EurekaServiceInstance;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -62,8 +62,8 @@ import java.util.*;
  * @create on 2017年5月5日上午10:26:18
  * @email is zhao.weiwei@jyall.com.
  */
-@Lazy
 @Component
+@ConditionalOnProperty(name = "spring.cloud.multy.eureka.client", havingValue = "true")
 public class MultyCloudEurekaClient {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -82,7 +82,9 @@ public class MultyCloudEurekaClient {
     // S层注册的url
     @Value("${eureka.client.serviceUrl.defaultZone:}")
     private String serviceRegistryUrls;
-    // client 列表
+    /**
+     * client 列表
+     */
     private List<CloudEurekaClient> clientList = Lists.newArrayList();
 
     /**
