@@ -3,6 +3,7 @@ package com.jyall.annotation;
 import java.lang.annotation.*;
 
 /**
+ * jersey的自动加载，不需要配置
  * <p>
  *
  * @author zhao.weiwei

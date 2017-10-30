@@ -3,6 +3,7 @@ package com.jyall.annotation;
 import java.lang.annotation.*;
 
 /**
+ * swagger的自动加载
  * <p>
  *
  * @author zhao.weiwei

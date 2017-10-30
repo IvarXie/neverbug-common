@@ -20,7 +20,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -60,6 +59,9 @@ public class SwaggerConfigurer extends WebMvcConfigurerAdapter {
         super.addResourceHandlers(registry);
     }
 
+    /**
+     * 初始化swagger的配置
+     */
     @PostConstruct
     public void initSwagger() {
         String title = swaggerProperty.getTitle();
@@ -80,6 +82,11 @@ public class SwaggerConfigurer extends WebMvcConfigurerAdapter {
         ClassReaders.setReader(new JerseyApiReader());
     }
 
+    /**
+     * swagger的servlet配置
+     *
+     * @return
+     */
     @Bean("swaggerServlet")
     public ServletRegistrationBean swagger() {
         return new ServletRegistrationBean(new HttpServlet() {
