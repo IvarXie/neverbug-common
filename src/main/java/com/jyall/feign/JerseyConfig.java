@@ -37,8 +37,11 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Configuration;
@@ -62,6 +65,7 @@ import java.util.Map;
 @ApplicationPath("/v1")
 @ConditionalOnClass({ResourceConfig.class})
 @ConditionalOnBean(annotation = EnableJersey.class)
+@AutoConfigureAfter(JerseyAutoConfiguration.class)
 public class JerseyConfig extends ResourceConfig implements ApplicationContextAware {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
