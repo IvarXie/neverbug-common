@@ -32,7 +32,6 @@
 */
 package com.jyall.feign;
 
-import com.jyall.annotation.EnableJersey;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +55,7 @@ import java.util.Map;
  * Copyright is 金色家园网络科技有限公司
  */
 @Component
-@ConditionalOnBean(annotation = EnableJersey.class)
+@ConditionalOnBean(ResourceConfig.class)
 public class JerseyAdvise implements ApplicationContextAware {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private ApplicationContext applicationContext;
