@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.cloud.netflix.eureka.CloudEurekaClient;
 import org.springframework.cloud.netflix.eureka.EurekaClientConfigBean;
 import org.springframework.context.ApplicationContext;
@@ -29,7 +30,7 @@ import java.util.Map;
 @Lazy
 @Singleton
 @Component
-@AutoConfigureAfter(EmbeddedServletContainerAutoConfiguration.class)
+@AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @ConditionalOnProperty(name = "eureka.client.jyctrller.registered", havingValue = "true")
 public class JyctrllerRegister {
 
@@ -39,9 +40,6 @@ public class JyctrllerRegister {
     // 注入原有的服务注管理器
     @Autowired
     private ApplicationInfoManager applicationInfoManager;
-    // 是否注册到C层的标志，默认是不注册
-//    @Value("${eureka.client.jyctrller.registered:false}")
-//    private boolean shouldRegCtrller;
     // C层注册的地址
     @Value("${eureka.client.jyctrller.registryUrls:}")
     private String ctrllerRegistryUrls;
@@ -51,7 +49,6 @@ public class JyctrllerRegister {
 
     @PostConstruct
     public void register() throws Exception {
-//        if (this.shouldRegCtrller) {
         EurekaClientConfigBean bean = new EurekaClientConfigBean();
         // 将原来的服务发现的属性copy到属性
         BeanUtils.copyProperties(this.config, bean);
@@ -64,6 +61,5 @@ public class JyctrllerRegister {
         // 设置拉取服务的属性
         bean.setFetchRegistry(false);
         new CloudEurekaClient(this.applicationInfoManager, bean, applicationContext);
-//        }
     }
 }
