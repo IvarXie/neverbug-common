@@ -8,6 +8,7 @@
  */
 package com.jyall.swagger;
 
+import com.google.common.collect.Lists;
 import com.jyall.annotation.EnableSwagger;
 import com.wordnik.swagger.config.ConfigFactory;
 import com.wordnik.swagger.config.ScannerFactory;
@@ -18,6 +19,7 @@ import com.wordnik.swagger.model.ApiInfo;
 import com.wordnik.swagger.reader.ClassReaders;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -32,6 +34,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * swagger的配置类
@@ -49,6 +52,9 @@ public class SwaggerConfigurer extends WebMvcConfigurerAdapter {
     @Autowired
     private SwaggerProperty swaggerProperty;
 
+    @Value("${spring.application.name:swagger}")
+    private String applicationName;
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/**").addResourceLocations("classpath:/static/", "classpath:/templates/", "classpath:/META-INF/resources/webjars/");
@@ -58,13 +64,12 @@ public class SwaggerConfigurer extends WebMvcConfigurerAdapter {
     @PostConstruct
     public void initSwagger() {
         String title = swaggerProperty.getTitle();
+        title = StringUtils.isNotBlank(title) ? title : applicationName;
         String description = swaggerProperty.getDescription();
         SwaggerConfig config = ConfigFactory.config();
         config.setBasePath("/v1");
         config.setApiVersion("1.0.0");
-        if (StringUtils.isBlank(description)) {
-            description = title;
-        }
+        description = StringUtils.isNotBlank(description) ? description : title;
         config.setApiInfo(new ApiInfo(
                 title,
                 "<a href=\"/api\" target = \"_blank\">" + description + "</a>",
@@ -78,22 +83,15 @@ public class SwaggerConfigurer extends WebMvcConfigurerAdapter {
 
     @Bean("swaggerServlet")
     public ServletRegistrationBean swagger() {
+        List<String> list = Lists.newArrayList("/swagger");
+        if (swaggerProperty.isEnableRoot2swagger()) {
+            list.add("/");
+        }
         return new ServletRegistrationBean(new HttpServlet() {
             @Override
             protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
                 resp.sendRedirect("/swagger/index.html");
             }
-        }, "/swagger");
-    }
-
-
-    @Bean("swaggerRootServlet")
-    public ServletRegistrationBean swaggerRoot() {
-        return new ServletRegistrationBean(new HttpServlet() {
-            @Override
-            protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-                resp.sendRedirect("/swagger/index.html");
-            }
-        }, "/");
+        }, list.toArray(new String[list.size()]));
     }
 }
