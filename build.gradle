@@ -1,7 +1,7 @@
 buildscript {
     ext {
-        springBootVersion = "1.4.5.RELEASE"
-        springCloudVersion = "Camden.SR6"
+        springBootVersion = "1.5.7.RELEASE"
+        springCloudVersion = "Dalston.SR4"
         jyallMvnRepoRrlBase = "http://10.10.10.60:8081/nexus/content"
     }
     repositories {
@@ -12,7 +12,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "io.spring.gradle:dependency-management-plugin:0.6.0.RELEASE"
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE"
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
         classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.0'
     }
@@ -30,7 +30,7 @@ apply plugin: "io.spring.dependency-management"
 apply plugin: 'org.sonarqube'
 
 // 版本信息
-version = "0.0.5-SNAPSHOT"
+version = "0.0.-SNAPSHOT"
 group = "com.jyall"
 // 发布包的文件名前缀
 def prjArtifactId = "jyall-common"

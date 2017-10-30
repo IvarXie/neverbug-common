@@ -78,10 +78,10 @@ public class ErrorMsg implements Serializable {
         try {
             if (e.getCause().getClass() == TimeoutException.class) {
                 return new ErrorMsg(ErrorCode.SYS_ERROR_RPC_CONNECTION, "远程服务调用超时");
-            } else if(err.split("content:").length < 2){
+            } else if (err.indexOf("content:") < 0) {
                 logger.debug("其他错误", e);
                 return new ErrorMsg(ErrorCode.BIZ_ERROR.value(), e.getMessage());
-            } else{
+            } else {
                 return JSON.parseObject(err.split("content:")[1], ErrorMsg.class);
             }
         } catch (Exception e1) {
