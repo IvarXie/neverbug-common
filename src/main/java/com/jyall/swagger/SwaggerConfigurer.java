@@ -8,7 +8,6 @@
  */
 package com.jyall.swagger;
 
-import com.google.common.collect.Lists;
 import com.jyall.annotation.EnableSwagger;
 import com.wordnik.swagger.config.ConfigFactory;
 import com.wordnik.swagger.config.ScannerFactory;
@@ -21,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -34,7 +34,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * swagger的配置类
@@ -82,16 +81,13 @@ public class SwaggerConfigurer extends WebMvcConfigurerAdapter {
     }
 
     @Bean("swaggerServlet")
+    @ConditionalOnProperty
     public ServletRegistrationBean swagger() {
-        List<String> list = Lists.newArrayList("/swagger");
-        if (swaggerProperty.isEnableRoot2swagger()) {
-            list.add("/");
-        }
         return new ServletRegistrationBean(new HttpServlet() {
             @Override
             protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
                 resp.sendRedirect("/swagger/index.html");
             }
-        }, list.toArray(new String[list.size()]));
+        }, "/swagger");
     }
 }
