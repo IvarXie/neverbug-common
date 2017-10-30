@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = "1.4.4.RELEASE"
+        springBootVersion = "1.4.5.RELEASE"
         springCloudVersion = "Camden.SR6"
         jyallMvnRepoRrlBase = "http://10.10.10.60:8081/nexus/content"
     }
@@ -30,7 +30,7 @@ apply plugin: "io.spring.dependency-management"
 apply plugin: 'org.sonarqube'
 
 // 版本信息
-version = "0.0.4-SNAPSHOT"
+version = "0.0.5-SNAPSHOT"
 group = "com.jyall"
 // 发布包的文件名前缀
 def prjArtifactId = "jyall-common"

@@ -107,6 +107,11 @@ public class JyallEnvConfig {
         return "performance".equalsIgnoreCase(env);
     }
 
+    /**
+     * 获取env
+     *
+     * @return
+     */
     public String getEnv() {
         return this.env;
     }
