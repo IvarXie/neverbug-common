@@ -52,7 +52,6 @@ import javax.ws.rs.ApplicationPath;
  */
 @Configuration
 @ApplicationPath("/v1")
-@ConditionalOnMissingBean
 @ConditionalOnClass({ResourceConfig.class})
 @ConditionalOnBean(annotation = EnableJersey.class)
 public class JerseyConfig extends ResourceConfig {

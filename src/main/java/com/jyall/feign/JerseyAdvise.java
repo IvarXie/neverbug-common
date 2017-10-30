@@ -54,7 +54,6 @@ import java.util.Map;
  * Copyright is 金色家园网络科技有限公司
  */
 @Component
-
 public class JerseyAdvise implements ApplicationContextAware {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private ApplicationContext applicationContext;
