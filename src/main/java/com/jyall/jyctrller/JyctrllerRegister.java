@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration;
 import org.springframework.cloud.netflix.eureka.CloudEurekaClient;
 import org.springframework.cloud.netflix.eureka.EurekaClientConfigBean;
 import org.springframework.context.ApplicationContext;
@@ -29,8 +30,8 @@ import java.util.Map;
  */
 @Singleton
 @Component
-@AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @ConditionalOnProperty(name = "eureka.client.jyctrller.registered", havingValue = "true")
+@AutoConfigureAfter(SimpleDiscoveryClientAutoConfiguration.class)
 public class JyctrllerRegister {
 
     // 注入原有的服务注册与发现的配置
