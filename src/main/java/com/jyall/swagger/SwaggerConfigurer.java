@@ -19,7 +19,6 @@ import com.wordnik.swagger.reader.ClassReaders;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -28,9 +27,15 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * swagger的配置类
+ *
  * @author: zhao.weiwei</p>
  * @date: 2017-10-30 9:37 </p>
  * @version: 0.0.1</p>
@@ -73,9 +78,22 @@ public class SwaggerConfigurer extends WebMvcConfigurerAdapter {
 
     @Bean("swaggerServlet")
     public ServletRegistrationBean swagger() {
-        if(swaggerProperty.isEnableRoot2swagger()){
-            return new ServletRegistrationBean(new SwaggerServlet(), "/swagger","/");
-        }
-        return new ServletRegistrationBean(new SwaggerServlet(), "/swagger");
+        return new ServletRegistrationBean(new HttpServlet() {
+            @Override
+            protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+                resp.sendRedirect("/swagger/index.html");
+            }
+        }, "/swagger");
+    }
+
+
+    @Bean("swaggerRootServlet")
+    public ServletRegistrationBean swaggerRoot() {
+        return new ServletRegistrationBean(new HttpServlet() {
+            @Override
+            protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+                resp.sendRedirect("/swagger/index.html");
+            }
+        }, "/");
     }
 }
