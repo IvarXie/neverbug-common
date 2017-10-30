@@ -34,23 +34,12 @@ package com.jyall.feign;
 
 import com.jyall.annotation.EnableJersey;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.aop.support.AopUtils;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.Path;
-import java.util.Map;
 
 /**
  * jersey的自动加载
@@ -63,49 +52,14 @@ import java.util.Map;
  */
 @Configuration
 @ApplicationPath("/v1")
+@ConditionalOnMissingBean
 @ConditionalOnClass({ResourceConfig.class})
 @ConditionalOnBean(annotation = EnableJersey.class)
-@AutoConfigureAfter(JerseyAutoConfiguration.class)
-public class JerseyConfig extends ResourceConfig implements ApplicationContextAware {
-
-    private Logger logger = LoggerFactory.getLogger(getClass());
-    private ApplicationContext applicationContext;
+public class JerseyConfig extends ResourceConfig {
 
     public JerseyConfig() {
         // 注册异常处理类和swagger相关Provider
         packages("com.jyall.exception.handler", "com.wordnik.swagger.jersey.listing");
     }
 
-    @PostConstruct
-    public void initTheJerseyConfig() {
-        long start = System.currentTimeMillis();
-        logger.info("init the jersey resource start");
-        Map<String, Object> beans = applicationContext.getBeansWithAnnotation(Component.class);
-        beans.forEach((k, v) -> {
-            Class<?> clazz = getClassOfBean(v);
-            Path path = clazz.getAnnotation(Path.class);
-            if (path != null) {
-                logger.info("register the jersey resource is {}", clazz.getName());
-                register(clazz);
-            }
-        });
-        logger.info("init the jersey resource success,use {}ms", System.currentTimeMillis() - start);
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
-
-    private Class<?> getClassOfBean(Object bean) {
-        Class<?> clazz = bean.getClass();
-        try {
-            if (AopUtils.isAopProxy(bean)) {
-                clazz = AopUtils.getTargetClass(bean);
-            }
-        } catch (Exception e) {
-            logger.error("getClassOfBean error", e);
-        }
-        return clazz;
-    }
 }
