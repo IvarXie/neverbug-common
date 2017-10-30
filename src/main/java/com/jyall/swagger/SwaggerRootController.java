@@ -32,6 +32,8 @@
 */
 package com.jyall.swagger;
 
+import com.jyall.annotation.EnableSwagger;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,6 +48,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * Copyright is 金色家园网络科技有限公司
  */
 @Controller
+@ConditionalOnBean(annotation = EnableSwagger.class)
 @ConditionalOnProperty(name = "spring.swagger.enableRoot2swagger", havingValue = "true", matchIfMissing = true)
 public class SwaggerRootController {
 
