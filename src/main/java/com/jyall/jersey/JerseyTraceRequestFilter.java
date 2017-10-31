@@ -34,6 +34,8 @@ package com.jyall.jersey;
 
 import com.jyall.annotation.EnableJersey;
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.cloud.sleuth.Tracer;
@@ -45,6 +47,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 
 /**
+ * jerseyRequest的trace添加到currentTag
  * <p>
  *
  * @author zhao.weiwei
@@ -54,8 +57,8 @@ import java.io.IOException;
  */
 @Component
 @ConditionalOnBean(annotation = EnableJersey.class)
-public class JerseyRequestFilter implements ContainerRequestFilter {
-
+public class JerseyTraceRequestFilter implements ContainerRequestFilter {
+    private Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private TraceProperty traceProperty;
 
@@ -64,12 +67,14 @@ public class JerseyRequestFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
+        logger.debug("JerseyTraceRequestFilter add trace tag");
         MultivaluedMap<String, String> map = requestContext.getHeaders();
         map.keySet().stream().filter(traceProperty.getHeaders()::contains).forEach(k -> {
             if (CollectionUtils.isNotEmpty(map.get(k))) {
-                tracer.getCurrentSpan().tag(k,map.get(k).get(0));
+                tracer.getCurrentSpan().tag(k, map.get(k).get(0));
             }
         });
+        logger.debug("JerseyTraceRequestFilter add trace tag success");
     }
 
 }
