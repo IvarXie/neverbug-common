@@ -104,7 +104,8 @@ publishing {
 
         all {
             pom.withXml {
-                asNode().dependencies."*".findAll() {
+                Node depsNode = asNode()
+                depsNode.dependencies."*".findAll() {
                     it.scope.text() == "runtime" && project.configurations.compile.allDependencies.find { dep ->
                         dep.name == it.artifactId.text()
                     }
