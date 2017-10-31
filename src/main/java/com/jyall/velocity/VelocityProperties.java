@@ -35,7 +35,6 @@ package com.jyall.velocity;
 
 import org.springframework.boot.autoconfigure.template.AbstractTemplateViewResolverProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 
 import java.util.HashMap;
