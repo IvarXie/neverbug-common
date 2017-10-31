@@ -25615,12 +25615,13 @@ SwaggerUi.Views.OperationView = Backbone.View.extend({
       param = ref4[p];
       this.addParameter(param, contentTypeModel.consumes);
     }
-    var addParam = {name: "merchantCode",
-        required: false,
-        type: "String",
-        paramType: "header",
-        allowMultiple: false};
-      this.addParameter(param, contentTypeModel.consumes);
+        var addParam = {};
+        addParam.name= "merchantCode";
+        addParam.required: = false;
+        addParam.type="String";
+        addParam.paramType = "header";
+        addParam.allowMultiple: false;
+      this.addParameter(addParam, contentTypeModel.consumes);
     ref5 = this.model.responseMessages;
     for (q = 0, len4 = ref5.length; q < len4; q++) {
       statusCode = ref5[q];
