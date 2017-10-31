@@ -32,62 +32,43 @@
 */
 package com.jyall.jersey;
 
-import com.jyall.annotation.EnableJersey;
-import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.MultivaluedMap;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Set;
-
 /**
- * jerseyRequest的trace添加到currentTag
+ * trace日志追踪的上下文
  * <p>
  *
  * @author zhao.weiwei
- * Created on 2017/10/31 16:43
+ * Created on 2017/10/31 18:23
  * Email is zhao.weiwei@jyall.com
  * Copyright is 金色家园网络科技有限公司
  */
 @Component
-@ConditionalOnBean(annotation = EnableJersey.class)
-public class JerseyTraceRequestFilter implements ContainerRequestFilter {
-    private Logger logger = LoggerFactory.getLogger(getClass());
-    @Autowired
-    private TraceProperty traceProperty;
+public class TracerContext {
+
+    public static final String MERCHANT_CODE = "merchantCode";
 
     @Autowired
     private Tracer tracer;
 
-    @Override
-    public void filter(ContainerRequestContext requestContext) throws IOException {
-        logger.debug("JerseyTraceRequestFilter add trace tag");
-        Set<String> set = traceProperty.getHeaders();
-        MultivaluedMap<String, String> map = requestContext.getHeaders();
-        map.keySet().stream().filter(set::contains).forEach(k -> {
-            if (CollectionUtils.isNotEmpty(map.get(k))) {
-                String value = map.get(k).get(0);
-                logger.debug("add tag {}={}", k, value);
-                tracer.getCurrentSpan().tag(k, value);
-                set.remove(k);
-            }
-        });
-        Collection<String> collection = requestContext.getPropertyNames();
-        collection.stream().filter(set::contains).forEach(k -> {
-            String value = String.valueOf(requestContext.getProperty(k));
-            logger.debug("add tag {}={}", k, value);
-            tracer.getCurrentSpan().tag(k, value);
-            set.remove(k);
-        });
-        logger.debug("JerseyTraceRequestFilter add trace tag success");
+    /**
+     * 获取商户code
+     *
+     * @return
+     */
+    public String getMerchantCode() {
+        return tracer.getCurrentSpan().tags().get(MERCHANT_CODE);
     }
 
+    /**
+     * 获取trace的tag
+     *
+     * @param tagName
+     * @return
+     */
+    public String getTag(String tagName) {
+        return tracer.getCurrentSpan().tags().get(tagName);
+    }
 }

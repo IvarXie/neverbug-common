@@ -67,7 +67,7 @@ public class TraceMvcInterceptor implements HandlerInterceptor {
             throws Exception {
         logger.debug("mvc preHandle add trace span start");
         Set<String> set = traceProperty.getHeaders();
-        Enumeration<String> parameterNames = request.getParameterNames();
+        Enumeration<String> parameterNames = request.getHeaderNames();
         for (int i = 0; i < 2; i++) {
             while (parameterNames.hasMoreElements()) {
                 String name = parameterNames.nextElement();
@@ -76,7 +76,7 @@ public class TraceMvcInterceptor implements HandlerInterceptor {
                     tracer.getCurrentSpan().tag(name, request.getParameter(name));
                 }
             }
-            parameterNames = request.getHeaderNames();
+            parameterNames = request.getParameterNames();
         }
         logger.debug("mvc preHandle add trace span end");
         return true;
