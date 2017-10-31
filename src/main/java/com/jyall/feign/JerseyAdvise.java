@@ -45,6 +45,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.Path;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ContainerResponseFilter;
 import java.util.Map;
 
 /**
@@ -78,6 +80,16 @@ public class JerseyAdvise implements ApplicationContextAware {
             }
         });
         logger.info("init the jersey resource success,use {}ms", System.currentTimeMillis() - start);
+        /**注册jersey的Request的过滤器**/
+        logger.info("init the ContainerRequestFilter start");
+        Map<String, ContainerRequestFilter> mapRequest = applicationContext.getBeansOfType(ContainerRequestFilter.class);
+        mapRequest.values().forEach(v -> resourceConfig.register(getClassOfBean(v)));
+        logger.info("init the ContainerRequestFilter success");
+        /**注册jersey的Response的过滤器**/
+        logger.info("init the ContainerResponseFilter start");
+        Map<String, ContainerResponseFilter> mapResponse = applicationContext.getBeansOfType(ContainerResponseFilter.class);
+        mapResponse.values().forEach(v -> resourceConfig.register(getClassOfBean(v)));
+        logger.info("init the ContainerResponseFilter success");
     }
 
     @Override
