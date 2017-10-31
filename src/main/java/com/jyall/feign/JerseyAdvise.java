@@ -50,6 +50,7 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import java.util.Map;
 
 /**
+ * jersey的增强。自动添加 filter和resource
  * <p>
  *
  * @author zhao.weiwei

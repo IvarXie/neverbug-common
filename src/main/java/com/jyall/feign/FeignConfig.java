@@ -46,8 +46,9 @@ import org.springframework.context.annotation.Scope;
 import java.util.Map;
 
 /**
+ * feign的自定义
  * <p>
- *
+ * 主要是添加 RequestInterceptor
  * @author zhao.weiwei
  * Created on 2017/10/30 16:59
  * Email is zhao.weiwei@jyall.com
