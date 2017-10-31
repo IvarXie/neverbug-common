@@ -47,7 +47,6 @@ import java.util.Map;
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-@Component
 @ConfigurationProperties(prefix = "spring.velocity")
 public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 

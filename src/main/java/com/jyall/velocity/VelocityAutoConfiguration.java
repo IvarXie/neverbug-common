@@ -69,7 +69,6 @@ import java.util.Properties;
  * 4.3
  */
 @Configuration
-@ConditionalOnBean(annotation = EnableVelocity.class)
 @EnableConfigurationProperties(VelocityProperties.class)
 @ConditionalOnClass({VelocityEngine.class, VelocityEngineFactory.class})
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
