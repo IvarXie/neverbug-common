@@ -70,7 +70,6 @@ import java.util.Properties;
 @Configuration
 @ConditionalOnClass({VelocityEngine.class, VelocityEngineFactory.class})
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
-@EnableConfigurationProperties(VelocityProperties.class)
 public class VelocityAutoConfiguration {
 
     private static final Log logger = LogFactory.getLog(VelocityAutoConfiguration.class);
