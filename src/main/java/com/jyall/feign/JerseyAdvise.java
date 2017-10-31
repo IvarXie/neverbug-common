@@ -68,6 +68,7 @@ public class JerseyAdvise implements ApplicationContextAware {
 
     @PostConstruct
     public void initTheJerseyConfig() {
+        /**注册jersey的Resource的过滤器**/
         long start = System.currentTimeMillis();
         logger.info("init the jersey resource start");
         Map<String, Object> beans = applicationContext.getBeansWithAnnotation(Component.class);
