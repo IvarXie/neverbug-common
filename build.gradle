@@ -111,6 +111,13 @@ publishing {
                 }.each {
                     it.scope*.value = "compile"
                 }
+                //排除 velocity 和 javax.servlet-api的jar包
+                depsNode.dependencies."*".each{
+                    if (it.artifactId[0].value()[0]== 'spring-boot-starter-velocity')
+                        it.parent().remove(it)
+                    if (it.artifactId[0].value()[0]== 'javax.servlet-api')
+                        it.parent().remove(it)
+                }
             }
         }
     }
