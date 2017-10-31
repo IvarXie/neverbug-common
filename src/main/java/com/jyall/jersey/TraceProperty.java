@@ -30,53 +30,34 @@
                   别人笑我忒疯癫，我笑自己命太贱；  
                   不见满街漂亮妹，哪个归得程序员？
 */
-package com.jyall.feign;
+package com.jyall.jersey;
 
-import feign.Feign;
-import feign.RequestInterceptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Bean;
+import com.google.common.collect.Sets;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 
-import java.util.Map;
+import java.util.Set;
 
 /**
- * feign的自定义
+ * swagger 的属性配置属性
  * <p>
- * 主要是添加 RequestInterceptor
+ *
  * @author zhao.weiwei
- * Created on 2017/10/30 16:59
+ * Created on 2017/10/30 16:29
  * Email is zhao.weiwei@jyall.com
  * Copyright is 金色家园网络科技有限公司
  */
-//@Configuration
-//@ConditionalOnClass(Feign.class)
-public class FeignConfig implements ApplicationContextAware {
+@Configuration
+@ConfigurationProperties(prefix = "trace")
+public class TraceProperty {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
-    private ApplicationContext applicationContext;
+    private String headers = "merchantCode";
 
-    @Bean
-    @Scope("prototype")
-    public Feign.Builder feignBuilder() {
-        logger.info("get the RequestInterceptor start");
-        Map<String, RequestInterceptor> map = applicationContext.getBeansOfType(RequestInterceptor.class);
-        logger.info("RequestInterceptor size is {}", map.size());
-        if (map.size() > 0) {
-            map.forEach((k, v) -> logger.info("\napplication bean name is {},values is {}", k, v));
-            return Feign.builder().requestInterceptors(map.values());
-        } else {
-            return Feign.builder();
-        }
+    public Set<String> getHeaders() {
+        return Sets.newHashSet(headers.split(","));
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+    public void setHeaders(String headers) {
+        this.headers = headers;
     }
 }

@@ -33,6 +33,7 @@
 package com.jyall.jersey;
 
 import com.jyall.annotation.EnableJersey;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.cloud.sleuth.Tracer;
@@ -40,6 +41,7 @@ import org.springframework.stereotype.Component;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 
 /**
@@ -54,10 +56,20 @@ import java.io.IOException;
 @ConditionalOnBean(annotation = EnableJersey.class)
 public class JerseyRequestFilter implements ContainerRequestFilter {
 
-//    @Autowired
-//    private Tracer tracer;
+    @Autowired
+    private TraceProperty traceProperty;
+
+    @Autowired
+    private Tracer tracer;
+
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-//        tracer.addTag();
+        MultivaluedMap<String, String> map = requestContext.getHeaders();
+        map.keySet().stream().filter(traceProperty.getHeaders()::contains).forEach(k -> {
+            if (CollectionUtils.isNotEmpty(map.get(k))) {
+                tracer.getCurrentSpan().tags().put(k, map.get(k).get(0));
+            }
+        });
     }
+
 }
