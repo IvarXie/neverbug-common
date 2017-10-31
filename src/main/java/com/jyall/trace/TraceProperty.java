@@ -30,45 +30,34 @@
                   别人笑我忒疯癫，我笑自己命太贱；  
                   不见满街漂亮妹，哪个归得程序员？
 */
-package com.jyall.jersey;
+package com.jyall.trace;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.sleuth.Tracer;
-import org.springframework.stereotype.Component;
+import com.google.common.collect.Sets;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.Set;
 
 /**
- * trace日志追踪的上下文
+ * swagger 的属性配置属性
  * <p>
  *
  * @author zhao.weiwei
- * Created on 2017/10/31 18:23
+ * Created on 2017/10/30 16:29
  * Email is zhao.weiwei@jyall.com
  * Copyright is 金色家园网络科技有限公司
  */
-@Component
-public class TracerContext {
+@Configuration
+@ConfigurationProperties(prefix = "trace")
+public class TraceProperty {
 
-    public static final String MERCHANT_CODE = "merchantCode";
+    private String headers = "merchantCode";
 
-    @Autowired
-    private Tracer tracer;
-
-    /**
-     * 获取商户code
-     *
-     * @return
-     */
-    public String getMerchantCode() {
-        return tracer.getCurrentSpan().tags().get(MERCHANT_CODE);
+    public Set<String> getHeaders() {
+        return Sets.newHashSet(headers.split(","));
     }
 
-    /**
-     * 获取trace的tag
-     *
-     * @param tagName
-     * @return
-     */
-    public String getTag(String tagName) {
-        return tracer.getCurrentSpan().tags().get(tagName);
+    public void setHeaders(String headers) {
+        this.headers = headers;
     }
 }

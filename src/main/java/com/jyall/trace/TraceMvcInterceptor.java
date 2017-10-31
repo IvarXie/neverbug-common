@@ -30,7 +30,7 @@
                   别人笑我忒疯癫，我笑自己命太贱；  
                   不见满街漂亮妹，哪个归得程序员？
 */
-package com.jyall.jersey;
+package com.jyall.trace;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +46,7 @@ import java.util.Enumeration;
 import java.util.Set;
 
 /**
+ * trace的拦截器
  * <p>
  *
  * @author zhao.weiwei
@@ -73,7 +74,9 @@ public class TraceMvcInterceptor implements HandlerInterceptor {
                 String name = parameterNames.nextElement();
                 if (set.contains(name)) {
                     set.remove(name);
-                    tracer.getCurrentSpan().tag(name, request.getParameter(name));
+                    String value = i == 1 ? request.getParameter(name) : request.getHeader(name);
+                    logger.debug("add trace tag {}={}", name, value);
+                    tracer.getCurrentSpan().tag(name, value);
                 }
             }
             parameterNames = request.getParameterNames();

@@ -30,34 +30,48 @@
                   别人笑我忒疯癫，我笑自己命太贱；  
                   不见满街漂亮妹，哪个归得程序员？
 */
-package com.jyall.jersey;
+package com.jyall.trace;
 
-import com.google.common.collect.Sets;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-
-import java.util.Set;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.sleuth.Tracer;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 /**
- * swagger 的属性配置属性
+ * trace日志追踪的上下文
  * <p>
+ * 使用lazy，延迟加载
  *
  * @author zhao.weiwei
- * Created on 2017/10/30 16:29
+ * Created on 2017/10/31 18:23
  * Email is zhao.weiwei@jyall.com
  * Copyright is 金色家园网络科技有限公司
  */
-@Configuration
-@ConfigurationProperties(prefix = "trace")
-public class TraceProperty {
+@Lazy
+@Component
+public class TracerContext {
 
-    private String headers = "merchantCode";
+    public static final String MERCHANT_CODE = "merchantCode";
 
-    public Set<String> getHeaders() {
-        return Sets.newHashSet(headers.split(","));
+    @Autowired
+    private Tracer tracer;
+
+    /**
+     * 获取商户code
+     *
+     * @return
+     */
+    public String getMerchantCode() {
+        return tracer.getCurrentSpan().tags().get(MERCHANT_CODE);
     }
 
-    public void setHeaders(String headers) {
-        this.headers = headers;
+    /**
+     * 获取trace的tag
+     *
+     * @param tagName
+     * @return
+     */
+    public String getTag(String tagName) {
+        return tracer.getCurrentSpan().tags().get(tagName);
     }
 }

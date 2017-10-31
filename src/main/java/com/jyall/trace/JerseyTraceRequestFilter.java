@@ -30,7 +30,7 @@
                   别人笑我忒疯癫，我笑自己命太贱；  
                   不见满街漂亮妹，哪个归得程序员？
 */
-package com.jyall.jersey;
+package com.jyall.trace;
 
 import com.jyall.annotation.EnableJersey;
 import org.apache.commons.collections.CollectionUtils;
