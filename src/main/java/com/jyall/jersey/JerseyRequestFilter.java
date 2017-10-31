@@ -67,7 +67,7 @@ public class JerseyRequestFilter implements ContainerRequestFilter {
         MultivaluedMap<String, String> map = requestContext.getHeaders();
         map.keySet().stream().filter(traceProperty.getHeaders()::contains).forEach(k -> {
             if (CollectionUtils.isNotEmpty(map.get(k))) {
-                tracer.getCurrentSpan().tags().put(k, map.get(k).get(0));
+                tracer.getCurrentSpan().tag(k,map.get(k).get(0));
             }
         });
     }
