@@ -33,7 +33,6 @@
 package com.jyall.velocity;
 
 
-import com.jyall.annotation.EnableSwagger;
 import com.jyall.annotation.EnableVelocity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -71,9 +70,9 @@ import java.util.Properties;
  */
 @Configuration
 @ConditionalOnBean(annotation = EnableVelocity.class)
+@EnableConfigurationProperties(VelocityProperties.class)
 @ConditionalOnClass({VelocityEngine.class, VelocityEngineFactory.class})
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
-@EnableConfigurationProperties(VelocityProperties.class)
 public class VelocityAutoConfiguration {
 
     private static final Log logger = LogFactory.getLog(VelocityAutoConfiguration.class);

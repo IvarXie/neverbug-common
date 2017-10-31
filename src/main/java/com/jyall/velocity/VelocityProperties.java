@@ -33,14 +33,12 @@
 package com.jyall.velocity;
 
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.jyall.annotation.EnableVelocity;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.template.AbstractTemplateViewResolverProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * {@link ConfigurationProperties} for configuring Velocity.
@@ -49,7 +47,6 @@ import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.velocity")
-@ConditionalOnBean(annotation = EnableVelocity.class)
 public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 
     public static final String DEFAULT_RESOURCE_LOADER_PATH = "classpath:/templates/";
