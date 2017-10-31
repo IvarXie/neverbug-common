@@ -33,7 +33,6 @@
 package com.jyall.velocity;
 
 
-import com.jyall.annotation.EnableVelocity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.app.VelocityEngine;
