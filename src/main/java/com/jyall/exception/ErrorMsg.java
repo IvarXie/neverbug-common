@@ -74,7 +74,7 @@ public class ErrorMsg implements Serializable {
     }
 
     public static ErrorMsg parse(Exception e) {
-        String err = e.getCause().toString();
+        String err = e.getMessage();
         try {
             if (e.getCause().getClass() == TimeoutException.class) {
                 return new ErrorMsg(ErrorCode.SYS_ERROR_RPC_CONNECTION, "远程服务调用超时");
