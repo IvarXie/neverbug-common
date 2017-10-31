@@ -34,49 +34,34 @@ package com.jyall.feign;
 
 import feign.Feign;
 import feign.RequestInterceptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import feign.RequestTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Bean;
+import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 /**
- * feign的自定义
  * <p>
- * 主要是添加 RequestInterceptor
+ *
  * @author zhao.weiwei
- * Created on 2017/10/30 16:59
+ * Created on 2017/10/31 17:05
  * Email is zhao.weiwei@jyall.com
  * Copyright is 金色家园网络科技有限公司
  */
-//@Configuration
-//@ConditionalOnClass(Feign.class)
-public class FeignConfig implements ApplicationContextAware {
+@Component
+@Configuration
+@ConditionalOnClass(Feign.class)
+public class HeaderRequestInterceptor implements RequestInterceptor {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
-    private ApplicationContext applicationContext;
-
-    @Bean
-    @Scope("prototype")
-    public Feign.Builder feignBuilder() {
-        logger.info("get the RequestInterceptor start");
-        Map<String, RequestInterceptor> map = applicationContext.getBeansOfType(RequestInterceptor.class);
-        logger.info("RequestInterceptor size is {}", map.size());
-        if (map.size() > 0) {
-            map.forEach((k, v) -> logger.info("\napplication bean name is {},values is {}", k, v));
-            return Feign.builder().requestInterceptors(map.values());
-        } else {
-            return Feign.builder();
-        }
-    }
+    @Autowired
+    private Tracer tracer;
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+    public void apply(RequestTemplate template) {
+        Map<String, String> map = tracer.getCurrentSpan().tags();
+        map.forEach((k, v) -> template.header(k, v));
     }
 }

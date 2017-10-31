@@ -1,7 +1,7 @@
 buildscript {
     ext {
-        springBootVersion = "1.5.7.RELEASE"
-        springCloudVersion = "Dalston.SR4"
+        springBootVersion = "1.5.2.RELEASE"
+        springCloudVersion = "Dalston.SR2"
         jyallMvnRepoRrlBase = "http://10.10.10.60:8081/nexus/content"
     }
     repositories {
@@ -113,13 +113,6 @@ publishing {
                 }.each {
                     it.scope*.value = "compile"
                 }
-                //排除 velocity 和 javax.servlet-api的jar包
-//                depsNode.dependencies."*".each{
-//                    if (it.artifactId[0].value()[0]== 'spring-boot-starter-velocity')
-//                        it.parent().remove(it)
-//                    if (it.artifactId[0].value()[0]== 'javax.servlet-api')
-//                        it.parent().remove(it)
-//                }
             }
         }
     }
@@ -149,7 +142,12 @@ dependencies {
     // Utilities
     compile "com.alibaba:fastjson:1.2.7"
     //swagger
-    compile("com.wordnik:swagger-jersey2-jaxrs_2.10:1.3.8")
+    compile "com.wordnik:swagger-jersey2-jaxrs_2.10:1.3.8"
+
+    //链路追踪
+    compile "org.springframework.cloud:spring-cloud-sleuth-zipkin-stream"
+    compile "org.springframework.cloud:spring-cloud-starter-sleuth"
+    compile "org.springframework.cloud:spring-cloud-stream-binder-rabbit"
 }
 
 eclipse {
