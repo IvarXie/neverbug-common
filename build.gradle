@@ -113,12 +113,12 @@ publishing {
                     it.scope*.value = "compile"
                 }
                 //排除 velocity 和 javax.servlet-api的jar包
-                depsNode.dependencies."*".each{
-                    if (it.artifactId[0].value()[0]== 'spring-boot-starter-velocity')
-                        it.parent().remove(it)
-                    if (it.artifactId[0].value()[0]== 'javax.servlet-api')
-                        it.parent().remove(it)
-                }
+//                depsNode.dependencies."*".each{
+//                    if (it.artifactId[0].value()[0]== 'spring-boot-starter-velocity')
+//                        it.parent().remove(it)
+//                    if (it.artifactId[0].value()[0]== 'javax.servlet-api')
+//                        it.parent().remove(it)
+//                }
             }
         }
     }
@@ -141,7 +141,6 @@ dependencyManagement {
 }
 dependencies {
     compile "javax.servlet:javax.servlet-api:3.1.0"
-    compile "org.springframework:spring-context-support"
     compile "org.springframework.boot:spring-boot-starter-jersey"
     compile "org.springframework.cloud:spring-cloud-starter-eureka"
     compile "org.springframework.cloud:spring-cloud-starter-feign"
