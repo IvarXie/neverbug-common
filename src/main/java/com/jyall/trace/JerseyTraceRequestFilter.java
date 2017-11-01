@@ -75,7 +75,7 @@ public class JerseyTraceRequestFilter implements ContainerRequestFilter {
         map.keySet().stream().filter(set::contains).forEach(k -> {
             if (CollectionUtils.isNotEmpty(map.get(k))) {
                 String value = map.get(k).get(0);
-                logger.debug("add tag {}={}", k, value);
+                logger.debug("add tag [{}={}]", k, value);
                 tracer.getCurrentSpan().tag(k, value);
                 set.remove(k);
             }
@@ -83,7 +83,7 @@ public class JerseyTraceRequestFilter implements ContainerRequestFilter {
         Collection<String> collection = requestContext.getPropertyNames();
         collection.stream().filter(set::contains).forEach(k -> {
             String value = String.valueOf(requestContext.getProperty(k));
-            logger.debug("add tag {}={}", k, value);
+            logger.debug("add tag [{}={}]", k, value);
             tracer.getCurrentSpan().tag(k, value);
             set.remove(k);
         });

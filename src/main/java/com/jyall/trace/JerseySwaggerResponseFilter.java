@@ -72,6 +72,8 @@ public class JerseySwaggerResponseFilter implements ContainerResponseFilter {
             throws IOException {
         String url = requestContext.getUriInfo().getPath();
         if (url.contains("api-docs/") && (responseContext.getEntity() instanceof ApiListing)) {
+            logger.info("current url is [{}]", url);
+            logger.info("add the trace header param start", url);
             ApiListing apiListing = (ApiListing) responseContext.getEntity();
             try {
                 int count = apiListing.apis().size();
@@ -88,12 +90,14 @@ public class JerseySwaggerResponseFilter implements ContainerResponseFilter {
                         }
                         int headerIndexStart = list.size();
                         for (String header : headers) {
+                            logger.info("add the header param is {}", header);
                             Option<String> desc = new Some<>(header);
                             Option<String> defaultValue = new Some<>("wolfking");
                             Option<String> paramAccess = new Some<>("");
                             AllowableValues allowableValues = AnyAllowableValues$.MODULE$;
                             Parameter parameter = new Parameter(header, desc, defaultValue, false, false, "string", allowableValues, "header", paramAccess);
                             parameters[headerIndexStart++] = parameter;
+                            logger.info("add the header param {} success", header);
                         }
                         List<Parameter> pList = List.fromArray(parameters);
                         Set<Field> set = ReflectionUtils.getFields(Operation.class, ReflectionUtils.withName("parameters"));
@@ -110,6 +114,7 @@ public class JerseySwaggerResponseFilter implements ContainerResponseFilter {
             } catch (Exception e) {
                 logger.error("assemeble add param error", e);
             }
+            logger.info("add the trace header param start success", url);
         }
     }
 }

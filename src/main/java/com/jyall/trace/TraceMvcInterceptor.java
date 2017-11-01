@@ -75,7 +75,7 @@ public class TraceMvcInterceptor implements HandlerInterceptor {
                 if (set.contains(name)) {
                     set.remove(name);
                     String value = i == 1 ? request.getParameter(name) : request.getHeader(name);
-                    logger.debug("add trace tag {}={}", name, value);
+                    logger.debug("add trace tag [{}={}]", name, value);
                     tracer.getCurrentSpan().tag(name, value);
                 }
             }
