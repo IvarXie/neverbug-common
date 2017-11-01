@@ -33,6 +33,7 @@
 package com.jyall.trace;
 
 import com.google.common.collect.Sets;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -54,7 +55,11 @@ public class TraceProperty {
     private String headers = "merchantCode";
 
     public Set<String> getHeaders() {
-        return Sets.newHashSet(headers.split(","));
+        if (StringUtils.isNotEmpty(headers)) {
+            return Sets.newHashSet(headers.split(","));
+        } else {
+            return Sets.newHashSet();
+        }
     }
 
     public void setHeaders(String headers) {
