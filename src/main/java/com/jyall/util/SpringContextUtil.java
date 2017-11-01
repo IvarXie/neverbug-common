@@ -99,7 +99,7 @@ public class SpringContextUtil implements ApplicationContextAware {
                         .filter(entry -> entry.getValue().getClass().getAnnotation(BeanVersion.class) != null)
                         .forEach(entry -> {
                             BeanVersion beanVersion = entry.getValue().getClass().getAnnotation(BeanVersion.class);
-                            int version = Integer.parseInt(beanVersion.value().replaceAll("\\.", ""));
+                            int version = Integer.parseInt(beanVersion.version().replaceAll("\\.", ""));
                             treeMap.put(version, entry.getValue());
                         });
             }

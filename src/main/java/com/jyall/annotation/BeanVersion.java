@@ -1,7 +1,5 @@
 package com.jyall.annotation;
 
-import org.springframework.core.annotation.AliasFor;
-
 import java.lang.annotation.*;
 
 /**
@@ -18,10 +16,11 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BeanVersion {
-    @AliasFor("version")
-    String value() default "0.0.0";
-
-    @AliasFor("value")
+    /**
+     * 版本号
+     *
+     * @return
+     */
     String version() default "0.0.0";
 
     /**
