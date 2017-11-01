@@ -2,6 +2,8 @@ package com.jyall.util;
 
 import com.google.common.collect.Maps;
 import com.jyall.annotation.BeanVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,8 @@ import java.util.TreeMap;
  */
 @Component("jyallSpringContextUtil")
 public class SpringContextUtil implements ApplicationContextAware {
+
+    private static final Logger logger = LoggerFactory.getLogger(SpringContextUtil.class);
 
     private static Map<Class<?>, TreeMap<Integer, Object>> beanMap = Maps.newHashMap();
 
@@ -76,9 +80,14 @@ public class SpringContextUtil implements ApplicationContextAware {
         TreeMap<Integer, Object> currentBeans = beanMap.get(clazz);
         if (!currentBeans.isEmpty()) {
             if (currentBeans.lastEntry().getKey() <= ver) {
+                logger.debug("find the last verison");
                 return clazz.cast(currentBeans.lastEntry().getValue());
             } else if (currentBeans.containsKey(ver)) {
+                logger.debug("find the acture verison {}", version);
                 return clazz.cast(currentBeans.get(ver));
+            } else {
+                logger.warn("don't find the verison {}.it will retrun the last version", version);
+                return clazz.cast(currentBeans.lastEntry().getValue());
             }
         }
         return null;
