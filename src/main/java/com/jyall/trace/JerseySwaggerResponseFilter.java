@@ -70,8 +70,10 @@ public class JerseySwaggerResponseFilter implements ContainerResponseFilter {
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
             throws IOException {
+        //获取请求的URL，一般是  api-docs/T，T是配置的swagger的PATH
         String url = requestContext.getUriInfo().getPath();
         Set<String> headers = traceProperty.getHeaders();
+        //映射路径api-docs/  和 ApiListing 的 返回实体 ，还有 header的长度大于0
         if (url.contains("api-docs/") && (responseContext.getEntity() instanceof ApiListing) && headers.size() > 0) {
             logger.info("current url is [{}]", url);
             logger.info("add the trace header param start", url);
@@ -82,9 +84,9 @@ public class JerseySwaggerResponseFilter implements ContainerResponseFilter {
                     ApiDescription description = apiListing.apis().apply(i);
                     int operations = description.operations().size();
                     for (int j = 0; j < operations; j++) {
-
                         Operation operation = description.operations().apply(j);
                         List<Parameter> list = operation.parameters();
+                        //构建parameters数组，在原来的长度上加上header的长度
                         Parameter[] parameters = new Parameter[list.size() + headers.size()];
                         for (int t = 0; t < list.size(); t++) {
                             parameters[t] = list.apply(t);
@@ -92,19 +94,25 @@ public class JerseySwaggerResponseFilter implements ContainerResponseFilter {
                         int headerIndexStart = list.size();
                         for (String header : headers) {
                             logger.info("add the header param is {}", header);
+                            //参数的描述
                             Option<String> desc = new Some<>(header);
+                            //参数的默认值
                             Option<String> defaultValue = new Some<>("wolfking");
                             Option<String> paramAccess = new Some<>("");
                             AllowableValues allowableValues = AnyAllowableValues$.MODULE$;
                             Parameter parameter = new Parameter(header, desc, defaultValue, false, false, "string", allowableValues, "header", paramAccess);
+                            //在原有的parameter的基础上添加参数
                             parameters[headerIndexStart++] = parameter;
                             logger.info("add the header param {} success", header);
                         }
+                        //重新构建参数。由于是scala的，List的用法比较怪异
                         List<Parameter> pList = List.fromArray(parameters);
+                        //使用反射获取parameters的Field，此处最好使用ReflectionUtils的，不要使用原生的反射
                         Set<Field> set = ReflectionUtils.getFields(Operation.class, ReflectionUtils.withName("parameters"));
                         set.forEach(field -> {
                             try {
                                 field.setAccessible(true);
+                                //由于没有原声的方法，只能使用反射来替换parameters参数
                                 field.set(operation, pList);
                             } catch (Exception e) {
                                 logger.error("assemeble add param error", e);

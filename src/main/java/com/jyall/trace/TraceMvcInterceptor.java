@@ -46,8 +46,9 @@ import java.util.Enumeration;
 import java.util.Set;
 
 /**
- * trace的拦截器
+ * springMvc的trace的拦截器
  * <p>
+ * 捞取header 和pro 映射
  *
  * @author zhao.weiwei
  * Created on 2017/10/31 17:59
@@ -56,19 +57,23 @@ import java.util.Set;
  */
 @Component
 public class TraceMvcInterceptor implements HandlerInterceptor {
-
     private Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private Tracer tracer;
     @Autowired
     private TraceProperty traceProperty;
 
+    /**
+     * 主要是添加trace的Tag，配置的属性
+     */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         logger.debug("mvc preHandle add trace span start");
         Set<String> set = traceProperty.getHeaders();
+        //先获取header的属性
         Enumeration<String> parameterNames = request.getHeaderNames();
+        //使用等于2的循环，第一次是header，第二是请求参数，避免重复代码
         for (int i = 0; i < 2; i++) {
             while (parameterNames.hasMoreElements()) {
                 String name = parameterNames.nextElement();
@@ -79,6 +84,7 @@ public class TraceMvcInterceptor implements HandlerInterceptor {
                     tracer.getCurrentSpan().tag(name, value);
                 }
             }
+            //在获取请求参数的属性
             parameterNames = request.getParameterNames();
         }
         logger.debug("mvc preHandle add trace span end");
@@ -97,8 +103,6 @@ public class TraceMvcInterceptor implements HandlerInterceptor {
      */
     @Override
     public void afterCompletion(HttpServletRequest request,
-                                HttpServletResponse response, Object handler, Exception ex)
-            throws Exception {
-
+                                HttpServletResponse response, Object handler, Exception ex) throws Exception {
     }
 }
