@@ -97,7 +97,11 @@ public class SpringContextUtil implements ApplicationContextAware {
             if (!map.isEmpty()) {
                 map.entrySet().stream()
                         .filter(entry -> entry.getValue().getClass().getAnnotation(BeanVersion.class) != null)
-                        .forEach(entry -> treeMap.put(Integer.parseInt(entry.getValue().getClass().getAnnotation(BeanVersion.class).value().replaceAll("\\.", "")), entry.getValue()));
+                        .forEach(entry -> {
+                            BeanVersion beanVersion = entry.getValue().getClass().getAnnotation(BeanVersion.class);
+                            int version = Integer.parseInt(beanVersion.value().replaceAll("\\.", ""));
+                            treeMap.put(version, entry.getValue());
+                        });
             }
             beanMap.put(clazz, treeMap);
         }
