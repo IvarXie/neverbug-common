@@ -21,7 +21,7 @@ public @interface BeanVersion {
     @AliasFor("version")
     String value() default "0.0.0";
 
-    @AliasFor("version")
+    @AliasFor("value")
     String version() default "0.0.0";
 
     /**
