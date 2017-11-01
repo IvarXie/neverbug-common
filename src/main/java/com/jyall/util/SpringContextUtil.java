@@ -2,25 +2,21 @@ package com.jyall.util;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 /**
  * applicationContetx的工具类
- * <P>
- * 使用延时生成的注解
+ * <p>
  * Created by zhao.weiwei
  * create on 2017/3/1 14:36
  * the email is zhao.weiwei@jyall.com.
  */
-@Lazy
-@Component
+@Component("jyallSpringContextUtil")
 public class SpringContextUtil implements ApplicationContextAware {
 
     public static ApplicationContext applicationContext;
 
-
-    public ApplicationContext getApplicationContext() {
+    public static ApplicationContext getApplicationContext() {
         return SpringContextUtil.applicationContext;
     }
 
