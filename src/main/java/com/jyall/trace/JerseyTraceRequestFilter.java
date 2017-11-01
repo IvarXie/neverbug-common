@@ -51,7 +51,7 @@ import java.util.Set;
 /**
  * jerseyRequest的trace添加到currentTag
  * <p>
- *
+ * 可以动态配置  trace.heaers属性，多个属性用逗号隔开
  * @author zhao.weiwei
  * Created on 2017/10/31 16:43
  * Email is zhao.weiwei@jyall.com
