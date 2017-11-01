@@ -71,7 +71,8 @@ public class JerseySwaggerResponseFilter implements ContainerResponseFilter {
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
             throws IOException {
         String url = requestContext.getUriInfo().getPath();
-        if (url.contains("api-docs/") && (responseContext.getEntity() instanceof ApiListing)) {
+        Set<String> headers = traceProperty.getHeaders();
+        if (url.contains("api-docs/") && (responseContext.getEntity() instanceof ApiListing) && headers.size() > 0) {
             logger.info("current url is [{}]", url);
             logger.info("add the trace header param start", url);
             ApiListing apiListing = (ApiListing) responseContext.getEntity();
@@ -81,7 +82,7 @@ public class JerseySwaggerResponseFilter implements ContainerResponseFilter {
                     ApiDescription description = apiListing.apis().apply(i);
                     int operations = description.operations().size();
                     for (int j = 0; j < operations; j++) {
-                        Set<String> headers = traceProperty.getHeaders();
+
                         Operation operation = description.operations().apply(j);
                         List<Parameter> list = operation.parameters();
                         Parameter[] parameters = new Parameter[list.size() + headers.size()];
