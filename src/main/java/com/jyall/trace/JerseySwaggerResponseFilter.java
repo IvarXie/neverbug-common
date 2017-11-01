@@ -32,11 +32,13 @@
 */
 package com.jyall.trace;
 
+import com.jyall.annotation.EnableJersey;
 import com.wordnik.swagger.model.*;
 import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 import scala.Option;
 import scala.Some;
@@ -60,6 +62,7 @@ import java.util.Set;
  * Copyright is 金色家园网络科技有限公司
  */
 @Component
+@ConditionalOnBean(annotation = EnableJersey.class)
 public class JerseySwaggerResponseFilter implements ContainerResponseFilter {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
