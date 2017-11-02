@@ -209,8 +209,7 @@ public class FeignClientController implements ApplicationContextAware {
         Map<String, Object> map = applicationContext.getBeansWithAnnotation(ApplicationPath.class);
         if (!map.isEmpty()) {
             Class<?> clazz = Lists.newArrayList(map.values()).get(0).getClass();
-            ApplicationPath applicationPathAnnotation = clazz.getAnnotation
-                    (javax.ws.rs.ApplicationPath.class);
+            ApplicationPath applicationPathAnnotation = clazz.getAnnotation(ApplicationPath.class);
             if (applicationPathAnnotation != null) {
                 this.applicationPath = applicationPathAnnotation.value();
             }
