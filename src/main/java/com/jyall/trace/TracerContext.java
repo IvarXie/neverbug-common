@@ -52,7 +52,7 @@ import org.springframework.stereotype.Component;
 public class TracerContext {
 
     public static final String MERCHANT_CODE = "merchantCode";
-    public static final String VERSION = "merchantCode";
+    public static final String VERSION = "version";
     public static final String APP_ID = "appid";
     public static final String TOKEN_ID = "tokenId";
 
