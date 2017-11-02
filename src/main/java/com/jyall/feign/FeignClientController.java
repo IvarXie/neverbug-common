@@ -88,9 +88,7 @@ public class FeignClientController {
                 classPath = classPathAnnotation.value();
             }
             for (Method method : ReflectionUtils.getAllMethods(resourceClass)) {
-                if (!method.isAccessible()) {
-                    continue;
-                } else if (method.getAnnotation(GET.class) != null) {
+                if (method.getAnnotation(GET.class) != null) {
                     importClasses.add(GET.class);
                     content.append("\t@GET\n");
                 } else if (method.getAnnotation(POST.class) != null) {
