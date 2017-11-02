@@ -198,7 +198,13 @@ public class FeignClientController implements ApplicationContextAware {
     private Set<Class<?>> getJyallClass() {
         Set<Class<?>> set = Sets.newHashSet();
         Map<String, Object> map = applicationContext.getBeansWithAnnotation(Path.class);
-        map.values().forEach(o -> set.add(AopUtils.isAopProxy(o) ? AopUtils.getTargetClass(o) : o.getClass()));
+        map.values().forEach(o -> {
+            Class<?> clazz = AopUtils.isAopProxy(o) ? AopUtils.getTargetClass(o) : o.getClass();
+            try {
+                set.add(Thread.currentThread().getContextClassLoader().loadClass(clazz.getName()));
+            } catch (Exception e) {
+            }
+        });
         return set;
     }
 
