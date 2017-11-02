@@ -45,23 +45,27 @@ public class FeignClientController {
 
     @PostConstruct
     public void assemblyApplicationPath() throws BeansException {
-        Map<String, Object> map = applicationContext.getBeansWithAnnotation(ApplicationPath.class);
-        if (!map.isEmpty()) {
-            Optional<Object> optional = map.values().stream().filter(value -> {
-                try {
-                    ApplicationPath app = Thread.currentThread().getContextClassLoader().loadClass(value.getClass().getName()).getAnnotation(ApplicationPath.class);
-                    return app != null && StringUtils.isNotEmpty(app.value());
-                } catch (Exception e) {
-                    return false;
-                }
-            }).findFirst();
-            if (optional.isPresent()) {
-                try {
-                    ApplicationPath applicationPathAnnotation = Thread.currentThread().getContextClassLoader().loadClass(optional.get().getClass().getName()).getAnnotation(ApplicationPath.class);
-                    this.applicationPath = applicationPathAnnotation.value();
-                } catch (Exception e) {
+        try {
+            Map<String, Object> map = applicationContext.getBeansWithAnnotation(ApplicationPath.class);
+            if (!map.isEmpty()) {
+                Optional<Object> optional = map.values().stream().filter(value -> {
+                    try {
+                        ApplicationPath app = Thread.currentThread().getContextClassLoader().loadClass(value.getClass().getName()).getAnnotation(ApplicationPath.class);
+                        return app != null && StringUtils.isNotEmpty(app.value());
+                    } catch (Exception e) {
+                        return false;
+                    }
+                }).findFirst();
+                if (optional.isPresent()) {
+                    try {
+                        ApplicationPath applicationPathAnnotation = Thread.currentThread().getContextClassLoader().loadClass(optional.get().getClass().getName()).getAnnotation(ApplicationPath.class);
+                        this.applicationPath = applicationPathAnnotation.value();
+                    } catch (Exception e) {
+                    }
                 }
             }
+        } catch (Exception e) {
+
         }
     }
 
