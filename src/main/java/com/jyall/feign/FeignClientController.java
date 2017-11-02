@@ -20,8 +20,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import java.lang.annotation.Annotation;
@@ -54,10 +54,9 @@ public class FeignClientController implements ApplicationContextAware {
     };
 
 
-    @ResponseBody
     @RequestMapping(path = "/api", method = RequestMethod.GET)
-    public String api() {
-        return getFeignClientString();
+    public void api(HttpServletResponse httpServletResponse) throws Exception {
+        httpServletResponse.getWriter().write(getFeignClientString());
     }
 
 
