@@ -52,6 +52,9 @@ import org.springframework.stereotype.Component;
 public class TracerContext {
 
     public static final String MERCHANT_CODE = "merchantCode";
+    public static final String VERSION = "merchantCode";
+    public static final String APP_ID = "appid";
+    public static final String TOKEN_ID = "tokenId";
 
     @Autowired
     private Tracer tracer;
@@ -63,6 +66,33 @@ public class TracerContext {
      */
     public String getMerchantCode() {
         return tracer.getCurrentSpan().tags().get(MERCHANT_CODE);
+    }
+
+    /**
+     * 获取版本号
+     *
+     * @return
+     */
+    public String getVersion() {
+        return tracer.getCurrentSpan().tags().get(VERSION);
+    }
+
+    /**
+     * 获取appid
+     *
+     * @return
+     */
+    public String getAppid() {
+        return tracer.getCurrentSpan().tags().get(APP_ID);
+    }
+
+    /**
+     * 获取tokenID
+     *
+     * @return
+     */
+    public String getTokenId() {
+        return tracer.getCurrentSpan().tags().get(TOKEN_ID);
     }
 
     /**

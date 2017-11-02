@@ -52,7 +52,7 @@ import java.util.Set;
 @ConfigurationProperties(prefix = "trace")
 public class TraceProperty {
 
-    private String headers = "merchantCode";
+    private String headers = "merchantCode,version,appid,tokenId";
 
     public Set<String> getHeaders() {
         if (StringUtils.isNotEmpty(headers)) {
