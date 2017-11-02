@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.cloud.netflix.feign.FeignClient;
@@ -38,6 +39,7 @@ public class FeignClientController {
     private static final Logger logger = LoggerFactory.getLogger(FeignClientController.class);
     @Value("${spring.application.name:}")
     private String serviceId;
+    @Autowired
     private ApplicationContext applicationContext;
     private String applicationPath = "/v1";
 
