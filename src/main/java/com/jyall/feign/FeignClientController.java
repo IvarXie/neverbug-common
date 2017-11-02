@@ -87,10 +87,10 @@ public class FeignClientController {
             if (classPathAnnotation != null) {
                 classPath = classPathAnnotation.value();
             }
-            for (Method method :
-                    ReflectionUtils.getAllMethods(resourceClass, ReflectionUtils.withAnnotations(GET.class, POST.class, PUT.class, DELETE.class))) {
-                // 获取HTTP方法注解
-                if (method.getAnnotation(GET.class) != null) {
+            for (Method method : ReflectionUtils.getAllMethods(resourceClass)) {
+                if (!method.isAccessible()) {
+                    continue;
+                } else if (method.getAnnotation(GET.class) != null) {
                     importClasses.add(GET.class);
                     content.append("\t@GET\n");
                 } else if (method.getAnnotation(POST.class) != null) {
@@ -102,6 +102,8 @@ public class FeignClientController {
                 } else if (method.getAnnotation(DELETE.class) != null) {
                     importClasses.add(DELETE.class);
                     content.append("\t@DELETE\n");
+                } else {
+                    continue;
                 }
                 // 获取方法@Path注解
                 Path methodPathAnnotation = method.getAnnotation(Path.class);
