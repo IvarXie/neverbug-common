@@ -1,7 +1,6 @@
 package com.jyall.feign;
 
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.jyall.annotation.EnableJersey;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -30,6 +29,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 @Controller
@@ -213,12 +213,22 @@ public class FeignClientController implements ApplicationContextAware {
         this.applicationContext = applicationContext;
         Map<String, Object> map = applicationContext.getBeansWithAnnotation(ApplicationPath.class);
         if (!map.isEmpty()) {
-            Class<?> clazz = Lists.newArrayList(map.values()).get(0).getClass();
-            ApplicationPath applicationPathAnnotation = clazz.getAnnotation(ApplicationPath.class);
-            if (applicationPathAnnotation != null) {
-                this.applicationPath = applicationPathAnnotation.value();
+            Optional<Object> optional = map.values().stream().filter(value -> {
+                try {
+                    ApplicationPath app = Thread.currentThread().getContextClassLoader().loadClass(value.getClass().getName()).getAnnotation(ApplicationPath.class);
+                    return app != null && StringUtils.isNotEmpty(app.value());
+                } catch (Exception e) {
+                    return false;
+                }
+            }).findFirst();
+            if (optional.isPresent()) {
+                try {
+                    ApplicationPath applicationPathAnnotation = Thread.currentThread().getContextClassLoader().loadClass(optional.get().getClass().getName()).getAnnotation(ApplicationPath.class);
+                    this.applicationPath = applicationPathAnnotation.value();
+                } catch (Exception e) {
+
+                }
             }
         }
     }
-
 }
