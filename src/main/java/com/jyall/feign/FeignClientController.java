@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.cloud.netflix.feign.FeignClient;
@@ -39,13 +38,11 @@ public class FeignClientController {
     private static final Logger logger = LoggerFactory.getLogger(FeignClientController.class);
     @Value("${spring.application.name:}")
     private String serviceId;
-    @Autowired
     private ApplicationContext applicationContext;
     private String applicationPath = "/v1";
 
     @PostConstruct
-    public void assemblyApplicationPath(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+    public void assemblyApplicationPath() throws BeansException {
         Map<String, Object> map = applicationContext.getBeansWithAnnotation(ApplicationPath.class);
         if (!map.isEmpty()) {
             Optional<Object> optional = map.values().stream().filter(value -> {
@@ -89,7 +86,7 @@ public class FeignClientController {
                 classPath = classPathAnnotation.value();
             }
             for (Method method :
-                    ReflectionUtils.getAllMethods(resourceClass,ReflectionUtils.withAnnotations(GET.class,POST.class,PUT.class,DELETE.class))) {
+                    ReflectionUtils.getAllMethods(resourceClass, ReflectionUtils.withAnnotations(GET.class, POST.class, PUT.class, DELETE.class))) {
                 // 获取HTTP方法注解
                 if (method.getAnnotation(GET.class) != null) {
                     importClasses.add(GET.class);
