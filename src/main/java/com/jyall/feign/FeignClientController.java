@@ -75,7 +75,7 @@ public class FeignClientController {
         StringBuilder content = new StringBuilder();
         content.append("@FeignClient(\"" + serviceId + "\")\n");
         content.append("public interface DemoFeignClient {\n");
-        Set<Class<?>> classes = getJyallClass();
+        Set<Class<?>> classes = getJerseyResourceClass();
         Set<Class<?>> importClasses = Sets.newHashSet();
         importClasses.add(Path.class);
         importClasses.add(FeignClient.class);
@@ -202,7 +202,12 @@ public class FeignClientController {
         return sb.toString() + content.toString();
     }
 
-    private Set<Class<?>> getJyallClass() {
+    /**
+     * 获取所有的带jersey注解的Path的类
+     *
+     * @return
+     */
+    private Set<Class<?>> getJerseyResourceClass() {
         Set<Class<?>> set = Sets.newHashSet();
         Map<String, Object> map = applicationContext.getBeansWithAnnotation(Path.class);
         map.values().forEach(o -> {
