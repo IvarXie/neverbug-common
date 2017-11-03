@@ -217,7 +217,9 @@ public class FeignClientController {
         map.values().forEach(o -> {
             Class<?> clazz = AopUtils.isAopProxy(o) ? AopUtils.getTargetClass(o) : o.getClass();
             try {
-                set.add(Thread.currentThread().getContextClassLoader().loadClass(clazz.getName()));
+                if (!clazz.isInterface()) {
+                    set.add(Thread.currentThread().getContextClassLoader().loadClass(clazz.getName()));
+                }
             } catch (Exception e) {
             }
         });
