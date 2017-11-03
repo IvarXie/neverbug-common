@@ -33,6 +33,16 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * 自动生成jersey的feignClient
+ * <p>
+ * 在主类上加上EnableJersey注解才会生效
+ *
+ * @author zhao.weiwei
+ * Created on 2017/10/30 18:46
+ * Email is zhao.weiwei@jyall.com
+ * Copyright is 金色家园网络科技有限公司
+ */
 @Controller
 @ConditionalOnBean(annotation = EnableJersey.class)
 public class FeignClientController {
@@ -214,7 +224,7 @@ public class FeignClientController {
     private Set<Class<?>> getJerseyResourceClass() {
         Set<Class<?>> set = Sets.newHashSet();
         Map<String, Object> map = applicationContext.getBeansWithAnnotation(Path.class);
-        map.values().forEach(o -> {
+        map.values().stream().filter(v -> !AopUtils.isJdkDynamicProxy(v)).forEach(o -> {
             Class<?> clazz = AopUtils.isAopProxy(o) ? AopUtils.getTargetClass(o) : o.getClass();
             try {
                 if (!clazz.isInterface()) {

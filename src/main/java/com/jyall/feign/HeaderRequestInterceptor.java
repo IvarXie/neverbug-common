@@ -35,6 +35,8 @@ package com.jyall.feign;
 import feign.Feign;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.cloud.sleuth.Tracer;
@@ -44,7 +46,9 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
+ * feign远程调用的时候添加header属性
  * <p>
+ * header属性来自zipkin的trace
  *
  * @author zhao.weiwei
  * Created on 2017/10/31 17:05
@@ -56,12 +60,17 @@ import java.util.Map;
 @ConditionalOnClass(Feign.class)
 public class HeaderRequestInterceptor implements RequestInterceptor {
 
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
     @Autowired
     private Tracer tracer;
 
     @Override
     public void apply(RequestTemplate template) {
         Map<String, String> map = tracer.getCurrentSpan().tags();
-        map.forEach((k, v) -> template.header(k, v));
+        map.forEach((k, v) -> {
+            logger.trace("header key is {},value is {}", k, v);
+            template.header(k, v);
+        });
     }
 }

@@ -32,6 +32,7 @@
 */
 package com.jyall.feign;
 
+import com.google.common.collect.Lists;
 import com.jyall.annotation.EnableJersey;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -47,11 +48,13 @@ import javax.annotation.PostConstruct;
 import javax.ws.rs.Path;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseFilter;
+import java.util.List;
 import java.util.Map;
 
 /**
  * jersey的增强。自动添加 filter和resource
  * <p>
+ * 扫描 Component和Path的注解
  *
  * @author zhao.weiwei
  * Created on 2017/10/30 18:46
@@ -63,7 +66,6 @@ import java.util.Map;
 public class JerseyAdvise implements ApplicationContextAware {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private ApplicationContext applicationContext;
-
     @Autowired
     private ResourceConfig resourceConfig;
 
@@ -72,25 +74,38 @@ public class JerseyAdvise implements ApplicationContextAware {
         /**注册jersey的Resource的过滤器**/
         long start = System.currentTimeMillis();
         logger.info("init the jersey resource start");
+        logger.info("get all the Component annation beans");
         Map<String, Object> beans = applicationContext.getBeansWithAnnotation(Component.class);
-        beans.forEach((k, v) -> {
-            Class<?> clazz = getClassOfBean(v);
-            Path path = clazz.getAnnotation(Path.class);
-            if (path != null) {
-                logger.info("register the jersey resource is {}", clazz.getName());
-                resourceConfig.register(clazz);
-            }
+        List<Class<?>> classes = Lists.newArrayList();
+        beans.values().stream()
+                .filter(k -> !AopUtils.isJdkDynamicProxy(k))
+                .filter(k -> getClassOfBean(k).getAnnotation(Path.class) != null)
+                .forEach(v -> classes.add(getClassOfBean(v)));
+        logger.info("the register jersey resource size is {}", classes.size());
+        classes.forEach(clazz -> {
+            logger.info("register the jersey resource is {}", clazz.getName());
+            resourceConfig.register(clazz);
         });
         logger.info("init the jersey resource success,use {}ms", System.currentTimeMillis() - start);
         /**注册jersey的Request的过滤器**/
         logger.info("init the ContainerRequestFilter start");
         Map<String, ContainerRequestFilter> mapRequest = applicationContext.getBeansOfType(ContainerRequestFilter.class);
-        mapRequest.values().forEach(v -> resourceConfig.register(getClassOfBean(v)));
+        logger.info("the register jersey ContainerRequestFilter size is {}", classes.size());
+        mapRequest.values().forEach(v -> {
+            Class<?> clazz = getClassOfBean(v);
+            logger.info("regitster the ContainerRequestFilter is {}", clazz);
+            resourceConfig.register(clazz);
+        });
         logger.info("init the ContainerRequestFilter success");
         /**注册jersey的Response的过滤器**/
         logger.info("init the ContainerResponseFilter start");
         Map<String, ContainerResponseFilter> mapResponse = applicationContext.getBeansOfType(ContainerResponseFilter.class);
-        mapResponse.values().forEach(v -> resourceConfig.register(getClassOfBean(v)));
+        logger.info("the register jersey ContainerResponseFilter size is {}", classes.size());
+        mapResponse.values().forEach(v -> {
+            Class<?> clazz = getClassOfBean(v);
+            logger.info("regitster the ContainerResponseFilter is {}", clazz);
+            resourceConfig.register(clazz);
+        });
         logger.info("init the ContainerResponseFilter success");
     }
 
