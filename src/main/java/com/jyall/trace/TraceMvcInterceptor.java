@@ -70,22 +70,26 @@ public class TraceMvcInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         logger.debug("mvc preHandle add trace span start");
-        Set<String> set = traceProperty.getHeaders();
-        //先获取header的属性
-        Enumeration<String> parameterNames = request.getHeaderNames();
-        //使用等于2的循环，第一次是header，第二是请求参数，避免重复代码
-        for (int i = 0; i < 2; i++) {
-            while (parameterNames.hasMoreElements()) {
-                String name = parameterNames.nextElement();
-                if (set.contains(name)) {
-                    set.remove(name);
-                    String value = i == 1 ? request.getParameter(name) : request.getHeader(name);
-                    logger.debug("add trace tag [{}={}]", name, value);
-                    tracer.getCurrentSpan().tag(name, value);
+        try {
+            Set<String> set = traceProperty.getHeaders();
+            //先获取header的属性
+            Enumeration<String> parameterNames = request.getHeaderNames();
+            //使用等于2的循环，第一次是header，第二是请求参数，避免重复代码
+            for (int i = 0; i < 2; i++) {
+                while (parameterNames.hasMoreElements()) {
+                    String name = parameterNames.nextElement();
+                    if (set.contains(name)) {
+                        set.remove(name);
+                        String value = i == 1 ? request.getParameter(name) : request.getHeader(name);
+                        logger.debug("add trace tag [{}={}]", name, value);
+                        tracer.getCurrentSpan().tag(name, value);
+                    }
                 }
+                //在获取请求参数的属性
+                parameterNames = request.getParameterNames();
             }
-            //在获取请求参数的属性
-            parameterNames = request.getParameterNames();
+        } catch (Exception e) {
+            logger.error("header error", e);
         }
         logger.debug("mvc preHandle add trace span end");
         return true;
