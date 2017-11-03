@@ -39,11 +39,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 /**
  * feign远程调用的时候添加header属性
@@ -67,10 +66,16 @@ public class HeaderRequestInterceptor implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate template) {
-        Map<String, String> map = tracer.getCurrentSpan().tags();
-        map.forEach((k, v) -> {
-            logger.trace("header key is {},value is {}", k, v);
-            template.header(k, v);
-        });
+        try {
+            Span span = tracer.getCurrentSpan();
+            if (span != null && span.tags() != null) {
+                span.tags().forEach((k, v) -> {
+                    logger.trace("header key is {},value is {}", k, v);
+                    template.header(k, v);
+                });
+            }
+        } catch (Exception e) {
+
+        }
     }
 }
