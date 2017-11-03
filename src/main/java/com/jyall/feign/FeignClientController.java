@@ -172,11 +172,13 @@ public class FeignClientController {
                 content.append(" ").append(methodName).append("(");
                 // 获取参数
                 for (Parameter param : method.getParameters()) {
+                    if (param.getAnnotation(Context.class) != null) {
+                        continue;
+                    }
                     // 添加参数注解
                     for (Annotation paramAnnotation : param.getAnnotations()) {
                         //@Context注解属于jersey的上下文。生成feign的时候需要排除掉
-                        if (!paramAnnotation.annotationType().equals(Context.class)
-                                && paramAnnotation.annotationType().getPackage().getName().startsWith("javax.ws.rs")) {
+                        if (paramAnnotation.annotationType().getPackage().getName().startsWith("javax.ws.rs")) {
                             // Jersey注解
                             content.append("@").append(paramAnnotation.annotationType().getSimpleName());
                             Class<?> paramAnnotationClass = paramAnnotation.annotationType();
