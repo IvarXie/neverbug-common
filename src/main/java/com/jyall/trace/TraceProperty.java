@@ -40,6 +40,8 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * swagger 的属性配置属性
