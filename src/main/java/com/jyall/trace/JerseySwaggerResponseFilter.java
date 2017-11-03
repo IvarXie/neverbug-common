@@ -49,6 +49,7 @@ import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -81,6 +82,7 @@ public class JerseySwaggerResponseFilter implements ContainerResponseFilter {
             logger.info("current url is [{}]", url);
             logger.info("add the trace header param start", url);
             ApiListing apiListing = (ApiListing) responseContext.getEntity();
+            Map<String, String> headerMap = traceProperty.getHeaderMap();
             try {
                 int count = apiListing.apis().size();
                 for (int i = 0; i < count; i++) {
@@ -100,7 +102,7 @@ public class JerseySwaggerResponseFilter implements ContainerResponseFilter {
                             //参数的描述
                             Option<String> desc = new Some<>(header);
                             //参数的默认值
-                            Option<String> defaultValue = new Some<>("wolfking");
+                            Option<String> defaultValue = new Some<>(headerMap.getOrDefault(header, ""));
                             Option<String> paramAccess = new Some<>("");
                             AllowableValues allowableValues = AnyAllowableValues$.MODULE$;
                             Parameter parameter = new Parameter(header, desc, defaultValue, false, false, "string", allowableValues, "header", paramAccess);

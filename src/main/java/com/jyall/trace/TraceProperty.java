@@ -32,11 +32,13 @@
 */
 package com.jyall.trace;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -54,6 +56,8 @@ public class TraceProperty {
 
     private String headers = "merchantCode,version,appid,tokenId";
 
+    private String defaults = ",0.0.1,,";
+
     public Set<String> getHeaders() {
         if (StringUtils.isNotEmpty(headers)) {
             return Sets.newHashSet(headers.split(","));
@@ -62,7 +66,27 @@ public class TraceProperty {
         }
     }
 
+    /**
+     * 获取header 和 默认
+     *
+     * @return
+     */
+    public Map<String, String> getHeaderMap() {
+        Map<String, String> map = Maps.newHashMap();
+        String[] headerArray = headers.split(",");
+        String[] defautValueArray = defaults.split(",");
+        for (int i = 0; i < headers.length(); i++) {
+            String value = defautValueArray.length > i ? defautValueArray[i] : "";
+            map.put(headerArray[i], value);
+        }
+        return map;
+    }
+
     public void setHeaders(String headers) {
         this.headers = headers;
+    }
+
+    public void setDefaults(String defaults) {
+        this.defaults = defaults;
     }
 }
