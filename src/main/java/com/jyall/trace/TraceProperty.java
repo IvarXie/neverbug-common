@@ -75,7 +75,7 @@ public class TraceProperty {
         Map<String, String> map = Maps.newHashMap();
         String[] headerArray = headers.split(",");
         String[] defautValueArray = defaults.split(",");
-        for (int i = 0; i < headers.length(); i++) {
+        for (int i = 0; i < headerArray.length; i++) {
             String value = defautValueArray.length > i ? defautValueArray[i] : "";
             map.put(headerArray[i], value);
         }
