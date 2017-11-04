@@ -43,6 +43,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Path;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -72,8 +73,7 @@ public class JerseyConfig extends ResourceConfig {
         // 注册异常处理类和swagger相关Provider
         packages("com.wordnik.swagger.jersey.listing");
         System.out.println(applicationContext);
-        initTheJerseyConfig(applicationContext);
-
+//        initTheJerseyConfig(applicationContext);
     }
 
     /**
@@ -81,6 +81,7 @@ public class JerseyConfig extends ResourceConfig {
      *
      * @param applicationContext
      */
+    @PostConstruct
     public void initTheJerseyConfig(ApplicationContext applicationContext) {
         /**注册jersey的Resource的过滤器**/
         long start = System.currentTimeMillis();
