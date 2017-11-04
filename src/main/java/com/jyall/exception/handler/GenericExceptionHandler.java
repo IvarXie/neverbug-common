@@ -11,7 +11,7 @@ import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -22,8 +22,7 @@ import java.lang.reflect.UndeclaredThrowableException;
  *
  * @author guo.guanfei
  */
-//@Provider
-@Configuration
+@Component
 @ConditionalOnBean(annotation = EnableJersey.class)
 public class GenericExceptionHandler extends BaseExceptionHandler<Throwable> {
 

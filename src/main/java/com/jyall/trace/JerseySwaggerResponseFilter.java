@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import scala.Option;
 import scala.Some;
 import scala.collection.immutable.List;
@@ -62,7 +62,7 @@ import java.util.Set;
  * Email is zhao.weiwei@jyall.com
  * Copyright is 金色家园网络科技有限公司
  */
-@Configuration
+@Component
 @ConditionalOnBean(annotation = EnableJersey.class)
 public class JerseySwaggerResponseFilter implements ContainerResponseFilter {
 

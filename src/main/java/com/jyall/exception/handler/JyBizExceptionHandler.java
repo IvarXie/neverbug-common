@@ -6,7 +6,7 @@ import com.jyall.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import javax.ws.rs.core.Response;
 
@@ -15,8 +15,7 @@ import javax.ws.rs.core.Response;
  *
  * @author guo.guanfei
  */
-//@Provider
-@Configuration
+@Component
 @ConditionalOnBean(annotation = EnableJersey.class)
 public class JyBizExceptionHandler extends BaseExceptionHandler<JyBizException> {
 
