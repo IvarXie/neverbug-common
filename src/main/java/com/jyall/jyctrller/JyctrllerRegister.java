@@ -56,7 +56,7 @@ public class JyctrllerRegister {
         // 设置注册属性
         bean.setRegisterWithEureka(true);
         // 设置拉取服务的属性
-        bean.setFetchRegistry(false);
+        bean.setFetchRegistry(true);
         new CloudEurekaClient(this.applicationInfoManager, bean, applicationContext);
     }
 }
