@@ -1,18 +1,16 @@
 package com.jyall.exception.handler;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
+import javax.ws.rs.ext.ExceptionMapper;
+
 /**
  * Unchecked Exception Handler
- * 
- * @author guo.guanfei
  *
+ * @author guo.guanfei
  */
-public class BaseExceptionHandler {
-	protected String getErrorStackTrace(Throwable ex) {
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(ex).append("\r\n");
-		for(StackTraceElement element : ex.getStackTrace()){
-			stringBuilder.append("\tat ").append(element).append("\r\n");
-		}
-		return stringBuilder.toString();
-	}
+public abstract class BaseExceptionHandler<E extends Throwable> implements ExceptionMapper<E> {
+    protected String getErrorStackTrace(Throwable ex) {
+        return ExceptionUtils.getStackTrace(ex);
+    }
 }

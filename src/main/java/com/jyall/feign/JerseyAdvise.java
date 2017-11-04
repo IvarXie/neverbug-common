@@ -48,6 +48,9 @@ import javax.annotation.PostConstruct;
 import javax.ws.rs.Path;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.ReaderInterceptor;
+import javax.ws.rs.ext.WriterInterceptor;
 import java.util.List;
 import java.util.Map;
 
@@ -107,6 +110,34 @@ public class JerseyAdvise implements ApplicationContextAware {
             resourceConfig.register(clazz);
         });
         logger.info("init the ContainerResponseFilter success");
+        /**注册异常处理**/
+        logger.info("init the ExceptionMapper start");
+        Map<String, ExceptionMapper> exceptionMapperMap = applicationContext.getBeansOfType(ExceptionMapper.class);
+        exceptionMapperMap.values().forEach(v -> {
+            Class<?> clazz = getClassOfBean(v);
+            logger.info("regitster the ExceptionMapper is {}", clazz);
+            resourceConfig.register(clazz);
+        });
+        logger.info("init the ExceptionMapper success");
+
+        /**注册ReaderInterceptor**/
+        logger.info("init the ReaderInterceptor start");
+        Map<String, ReaderInterceptor> readerInterceptorMap = applicationContext.getBeansOfType(ReaderInterceptor.class);
+        readerInterceptorMap.values().forEach(v -> {
+            Class<?> clazz = getClassOfBean(v);
+            logger.info("regitster the ReaderInterceptor is {}", clazz);
+            resourceConfig.register(clazz);
+        });
+        logger.info("init the ReaderInterceptor success");
+        /**注册WriterInterceptor**/
+        logger.info("init the ReaderInterceptor start");
+        Map<String, WriterInterceptor> writerInterceptorMap = applicationContext.getBeansOfType(WriterInterceptor.class);
+        writerInterceptorMap.values().forEach(v -> {
+            Class<?> clazz = getClassOfBean(v);
+            logger.info("regitster the WriterInterceptor is {}", clazz);
+            resourceConfig.register(clazz);
+        });
+        logger.info("init the ReaderInterceptor success");
     }
 
     @Override

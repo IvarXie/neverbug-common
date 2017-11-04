@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.cloud.sleuth.Tracer;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -52,12 +52,13 @@ import java.util.Set;
  * jerseyRequest的trace添加到currentTag
  * <p>
  * 可以动态配置  trace.heaers属性，多个属性用逗号隔开
+ *
  * @author zhao.weiwei
  * Created on 2017/10/31 16:43
  * Email is zhao.weiwei@jyall.com
  * Copyright is 金色家园网络科技有限公司
  */
-@Component
+@Configuration
 @ConditionalOnBean(annotation = EnableJersey.class)
 public class JerseyTraceRequestFilter implements ContainerRequestFilter {
     private Logger logger = LoggerFactory.getLogger(getClass());

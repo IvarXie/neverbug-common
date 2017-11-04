@@ -35,8 +35,6 @@ package com.jyall.feign;
 import com.jyall.annotation.EnableJersey;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.ws.rs.ApplicationPath;
@@ -56,6 +54,6 @@ import javax.ws.rs.ApplicationPath;
 public class JerseyConfig extends ResourceConfig {
     public JerseyConfig() {
         // 注册异常处理类和swagger相关Provider
-        packages("com.jyall.exception.handler", "com.wordnik.swagger.jersey.listing");
+        packages("com.wordnik.swagger.jersey.listing");
     }
 }
