@@ -79,15 +79,16 @@ public class JerseyAdvise implements ApplicationContextAware {
         logger.info("init the jersey resource start");
         logger.info("get all the Component annation beans");
         Map<String, Object> beans = applicationContext.getBeansWithAnnotation(Component.class);
-        List<Class<?>> classes = Lists.newArrayList();
+        List<Object> classes = Lists.newArrayList();
         beans.values().stream()
                 .filter(k -> !AopUtils.isJdkDynamicProxy(k))
                 .filter(k -> getClassOfBean(k).getAnnotation(Path.class) != null)
-                .forEach(v -> classes.add(getClassOfBean(v)));
+                .forEach(classes::add);
         logger.info("the register jersey resource size is {}", classes.size());
-        classes.forEach(clazz -> {
+        classes.forEach(v -> {
+            Class<?> clazz = getClassOfBean(v);
             logger.info("register the jersey resource is {}", clazz.getName());
-            resourceConfig.register(clazz);
+            resourceConfig.register(v);
         });
         logger.info("init the jersey resource success,use {}ms", System.currentTimeMillis() - start);
         /**注册jersey的Request的过滤器**/
@@ -97,7 +98,7 @@ public class JerseyAdvise implements ApplicationContextAware {
         mapRequest.values().forEach(v -> {
             Class<?> clazz = getClassOfBean(v);
             logger.info("regitster the ContainerRequestFilter is {}", clazz);
-            resourceConfig.register(clazz);
+            resourceConfig.register(v);
         });
         logger.info("init the ContainerRequestFilter success");
         /**注册jersey的Response的过滤器**/
@@ -107,7 +108,7 @@ public class JerseyAdvise implements ApplicationContextAware {
         mapResponse.values().forEach(v -> {
             Class<?> clazz = getClassOfBean(v);
             logger.info("regitster the ContainerResponseFilter is {}", clazz);
-            resourceConfig.register(clazz);
+            resourceConfig.register(v);
         });
         logger.info("init the ContainerResponseFilter success");
         /**注册异常处理**/
@@ -116,7 +117,7 @@ public class JerseyAdvise implements ApplicationContextAware {
         exceptionMapperMap.values().forEach(v -> {
             Class<?> clazz = getClassOfBean(v);
             logger.info("regitster the ExceptionMapper is {}", clazz);
-            resourceConfig.register(clazz);
+            resourceConfig.register(v);
         });
         logger.info("init the ExceptionMapper success");
 
@@ -126,7 +127,7 @@ public class JerseyAdvise implements ApplicationContextAware {
         readerInterceptorMap.values().forEach(v -> {
             Class<?> clazz = getClassOfBean(v);
             logger.info("regitster the ReaderInterceptor is {}", clazz);
-            resourceConfig.register(clazz);
+            resourceConfig.register(v);
         });
         logger.info("init the ReaderInterceptor success");
         /**注册WriterInterceptor**/
@@ -135,7 +136,7 @@ public class JerseyAdvise implements ApplicationContextAware {
         writerInterceptorMap.values().forEach(v -> {
             Class<?> clazz = getClassOfBean(v);
             logger.info("regitster the WriterInterceptor is {}", clazz);
-            resourceConfig.register(clazz);
+            resourceConfig.register(v);
         });
         logger.info("init the ReaderInterceptor success");
     }
