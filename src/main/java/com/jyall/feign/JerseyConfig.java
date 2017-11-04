@@ -32,13 +32,26 @@
 */
 package com.jyall.feign;
 
+import com.google.common.collect.Lists;
 import com.jyall.annotation.EnableJersey;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.Path;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.ReaderInterceptor;
+import javax.ws.rs.ext.WriterInterceptor;
+import java.util.List;
+import java.util.Map;
 
 /**
  * jersey的自动加载
@@ -52,10 +65,99 @@ import javax.ws.rs.ApplicationPath;
 @Configuration
 @ApplicationPath("/v1")
 @ConditionalOnBean(annotation = EnableJersey.class)
-public class JerseyConfig extends ResourceConfig{
+public class JerseyConfig extends ResourceConfig {
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
     public JerseyConfig(ApplicationContext applicationContext) {
         // 注册异常处理类和swagger相关Provider
         packages("com.wordnik.swagger.jersey.listing");
         System.out.println(applicationContext);
+        initTheJerseyConfig(applicationContext);
+
+    }
+
+    /**
+     * 自动装载jersey
+     *
+     * @param applicationContext
+     */
+    public void initTheJerseyConfig(ApplicationContext applicationContext) {
+        /**注册jersey的Resource的过滤器**/
+        long start = System.currentTimeMillis();
+        logger.info("init the jersey resource start");
+        logger.info("get all the Component annation beans");
+        Map<String, Object> beans = applicationContext.getBeansWithAnnotation(Component.class);
+        List<Object> classes = Lists.newArrayList();
+        beans.values().stream()
+                .filter(k -> !AopUtils.isJdkDynamicProxy(k))
+                .filter(k -> getClassOfBean(k).getAnnotation(Path.class) != null)
+                .forEach(classes::add);
+        logger.info("the register jersey resource size is {}", classes.size());
+        classes.forEach(v -> {
+            Class<?> clazz = getClassOfBean(v);
+            logger.info("register the jersey resource is {}", clazz.getName());
+            register(v);
+        });
+        logger.info("init the jersey resource success,use {}ms", System.currentTimeMillis() - start);
+        /**注册jersey的Request的过滤器**/
+        logger.info("init the ContainerRequestFilter start");
+        Map<String, ContainerRequestFilter> mapRequest = applicationContext.getBeansOfType(ContainerRequestFilter.class);
+        logger.info("the register jersey ContainerRequestFilter size is {}", classes.size());
+        mapRequest.values().forEach(v -> {
+            Class<?> clazz = getClassOfBean(v);
+            logger.info("regitster the ContainerRequestFilter is {}", clazz);
+            register(v);
+        });
+        logger.info("init the ContainerRequestFilter success");
+        /**注册jersey的Response的过滤器**/
+        logger.info("init the ContainerResponseFilter start");
+        Map<String, ContainerResponseFilter> mapResponse = applicationContext.getBeansOfType(ContainerResponseFilter.class);
+        logger.info("the register jersey ContainerResponseFilter size is {}", classes.size());
+        mapResponse.values().forEach(v -> {
+            Class<?> clazz = getClassOfBean(v);
+            logger.info("regitster the ContainerResponseFilter is {}", clazz);
+            register(v);
+        });
+        logger.info("init the ContainerResponseFilter success");
+        /**注册异常处理**/
+        logger.info("init the ExceptionMapper start");
+        Map<String, ExceptionMapper> exceptionMapperMap = applicationContext.getBeansOfType(ExceptionMapper.class);
+        exceptionMapperMap.values().forEach(v -> {
+            Class<?> clazz = getClassOfBean(v);
+            logger.info("regitster the ExceptionMapper is {}", clazz);
+            register(v);
+        });
+        logger.info("init the ExceptionMapper success");
+
+        /**注册ReaderInterceptor**/
+        logger.info("init the ReaderInterceptor start");
+        Map<String, ReaderInterceptor> readerInterceptorMap = applicationContext.getBeansOfType(ReaderInterceptor.class);
+        readerInterceptorMap.values().forEach(v -> {
+            Class<?> clazz = getClassOfBean(v);
+            logger.info("regitster the ReaderInterceptor is {}", clazz);
+            register(v);
+        });
+        logger.info("init the ReaderInterceptor success");
+        /**注册WriterInterceptor**/
+        logger.info("init the ReaderInterceptor start");
+        Map<String, WriterInterceptor> writerInterceptorMap = applicationContext.getBeansOfType(WriterInterceptor.class);
+        writerInterceptorMap.values().forEach(v -> {
+            Class<?> clazz = getClassOfBean(v);
+            logger.info("regitster the WriterInterceptor is {}", clazz);
+            register(v);
+        });
+        logger.info("init the ReaderInterceptor success");
+    }
+
+    private Class<?> getClassOfBean(Object bean) {
+        Class<?> clazz = bean.getClass();
+        try {
+            if (AopUtils.isAopProxy(bean)) {
+                clazz = AopUtils.getTargetClass(bean);
+            }
+        } catch (Exception e) {
+            logger.error("getClassOfBean error", e);
+        }
+        return clazz;
     }
 }
