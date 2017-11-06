@@ -46,6 +46,8 @@ import org.springframework.cloud.netflix.eureka.CloudEurekaClient;
 import org.springframework.cloud.netflix.eureka.EurekaClientConfigBean;
 import org.springframework.cloud.netflix.eureka.EurekaDiscoveryClient.EurekaServiceInstance;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Constructor;
@@ -59,7 +61,8 @@ import java.util.*;
  * @create on 2017年5月5日上午10:26:18
  * @email is zhao.weiwei@jyall.com.
  */
-@Component
+@Lazy
+@Configuration
 @ConditionalOnProperty(name = "spring.cloud.multy.eureka.client", havingValue = "true")
 public class MultyCloudEurekaClient {
 
