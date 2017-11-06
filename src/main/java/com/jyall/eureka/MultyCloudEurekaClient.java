@@ -39,6 +39,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -64,7 +65,7 @@ import java.util.*;
  */
 @Component
 @ConditionalOnProperty(name = "spring.cloud.multy.eureka.client", havingValue = "true")
-public class MultyCloudEurekaClient {
+public class MultyCloudEurekaClient implements InitializingBean{
 
     private Logger logger = LoggerFactory.getLogger(getClass());
     // 注入原有的服务注册与发现的配置
@@ -104,7 +105,6 @@ public class MultyCloudEurekaClient {
      * @param registerUrls
      */
     public void init(String[] registerUrls) {
-        shutdown();
         Arrays.stream(registerUrls).filter(StringUtils::isNotBlank).forEach(url -> {
             logger.info("init the {} cloudEurekaClient start", url);
             EurekaClientConfigBean bean = new EurekaClientConfigBean();
@@ -158,11 +158,16 @@ public class MultyCloudEurekaClient {
      * <p>
      * destory的前调用该方法
      */
-    @PreDestroy
     public void shutdown() {
         logger.info("destory the inited cloudEurekaClient,size is {}", clientList.size());
         clientList.forEach(CloudEurekaClient::shutdown);
         clientList.clear();
         logger.info("destory the inited cloudEurekaClient success");
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        String[] urls = new String[]{serviceRegistryUrls, ctrllerRegistryUrls};
+        init(urls);
     }
 }
