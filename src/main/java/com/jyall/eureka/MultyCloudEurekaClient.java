@@ -39,9 +39,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.netflix.eureka.CloudEurekaClient;
@@ -50,8 +48,6 @@ import org.springframework.cloud.netflix.eureka.EurekaDiscoveryClient.EurekaServ
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
@@ -65,7 +61,7 @@ import java.util.*;
  */
 @Component
 @ConditionalOnProperty(name = "spring.cloud.multy.eureka.client", havingValue = "true")
-public class MultyCloudEurekaClient implements InitializingBean{
+public class MultyCloudEurekaClient {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
     // 注入原有的服务注册与发现的配置
@@ -77,27 +73,10 @@ public class MultyCloudEurekaClient implements InitializingBean{
     // applicationContext 实例
     @Autowired
     private ApplicationContext applicationContext;
-    // C层注册的url
-    @Value("${eureka.client.jyctrller.registryUrls:}")
-    private String ctrllerRegistryUrls;
-    // S层注册的url
-    @Value("${eureka.client.serviceUrl.defaultZone:}")
-    private String serviceRegistryUrls;
     /**
      * client 列表
      */
     private List<CloudEurekaClient> clientList = Lists.newArrayList();
-
-    /**
-     * 使用@PostConstruct注解，
-     * <p>
-     * 属性设置后，类构建完成后，调用该方法
-     */
-    @PostConstruct
-    public void init() {
-        String[] urls = new String[]{serviceRegistryUrls, ctrllerRegistryUrls};
-        init(urls);
-    }
 
     /**
      * 代码里面显式初始化的方法
@@ -154,7 +133,6 @@ public class MultyCloudEurekaClient implements InitializingBean{
     }
 
     /**
-     * 使用@PreDestroy注解，
      * <p>
      * destory的前调用该方法
      */
@@ -163,11 +141,5 @@ public class MultyCloudEurekaClient implements InitializingBean{
         clientList.forEach(CloudEurekaClient::shutdown);
         clientList.clear();
         logger.info("destory the inited cloudEurekaClient success");
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        String[] urls = new String[]{serviceRegistryUrls, ctrllerRegistryUrls};
-        init(urls);
     }
 }
