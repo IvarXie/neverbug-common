@@ -38,7 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.container.ContainerRequestContext;
@@ -62,11 +61,16 @@ import java.util.Set;
 @ConditionalOnBean(annotation = EnableJersey.class)
 public class JerseyTraceRequestFilter implements ContainerRequestFilter {
     private Logger logger = LoggerFactory.getLogger(getClass());
+    /**
+     * 日志header的属性添加
+     */
     @Autowired
     private TraceProperty traceProperty;
-
+    /**
+     * trace日志的上下文
+     */
     @Autowired
-    private Tracer tracer;
+    private TracerContext tracerContext;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
@@ -83,7 +87,7 @@ public class JerseyTraceRequestFilter implements ContainerRequestFilter {
             if (CollectionUtils.isNotEmpty(map.get(k))) {
                 String value = map.get(k).get(0);
                 logger.debug("add tag [{}={}]", k, value);
-                tracer.getCurrentSpan().tag(k, value);
+                tracerContext.addTag(k, value);
                 set.remove(k);
             }
         });
@@ -91,9 +95,12 @@ public class JerseyTraceRequestFilter implements ContainerRequestFilter {
         collection.stream().filter(set::contains).forEach(k -> {
             String value = String.valueOf(requestContext.getProperty(k));
             logger.debug("add tag [{}={}]", k, value);
-            tracer.getCurrentSpan().tag(k, value);
+            tracerContext.addTag(k, value);
             set.remove(k);
         });
         logger.debug("JerseyTraceRequestFilter add trace tag success");
+        Set<String> logSet = traceProperty.getHeaders();
+        logSet.forEach(k -> logger.info("trace header [{}={}]", k, tracerContext.getTag(k)));
+
     }
 }

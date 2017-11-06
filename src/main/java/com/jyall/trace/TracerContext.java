@@ -33,8 +33,8 @@
 package com.jyall.trace;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 /**
@@ -47,13 +47,24 @@ import org.springframework.stereotype.Component;
  * Email is zhao.weiwei@jyall.com
  * Copyright is 金色家园网络科技有限公司
  */
-@Lazy
 @Component
 public class TracerContext {
 
+    /**
+     * 商户code的静态常量
+     **/
     public static final String MERCHANT_CODE = "merchantCode";
+    /**
+     * 版本号的静态常量
+     **/
     public static final String VERSION = "version";
+    /**
+     * appid的静态常量
+     **/
     public static final String APP_ID = "appid";
+    /**
+     * tokenid的静态常量
+     **/
     public static final String TOKEN_ID = "tokenId";
 
     @Autowired
@@ -65,7 +76,7 @@ public class TracerContext {
      * @return
      */
     public String getMerchantCode() {
-        return tracer.getCurrentSpan().tags().get(MERCHANT_CODE);
+        return getTag(MERCHANT_CODE);
     }
 
     /**
@@ -74,7 +85,7 @@ public class TracerContext {
      * @return
      */
     public String getVersion() {
-        return tracer.getCurrentSpan().tags().get(VERSION);
+        return getTag(VERSION);
     }
 
     /**
@@ -83,7 +94,7 @@ public class TracerContext {
      * @return
      */
     public String getAppid() {
-        return tracer.getCurrentSpan().tags().get(APP_ID);
+        return getTag(APP_ID);
     }
 
     /**
@@ -92,7 +103,7 @@ public class TracerContext {
      * @return
      */
     public String getTokenId() {
-        return tracer.getCurrentSpan().tags().get(TOKEN_ID);
+        return getTag(TOKEN_ID);
     }
 
     /**
@@ -102,6 +113,20 @@ public class TracerContext {
      * @return
      */
     public String getTag(String tagName) {
-        return tracer.getCurrentSpan().tags().get(tagName);
+        Span span = tracer.getCurrentSpan();
+        if (span != null && span.tags() != null) {
+            return span.tags().get(tagName);
+        }
+        return "";
+    }
+
+    /**
+     * 添加trace的tag
+     *
+     * @param key
+     * @param value
+     */
+    public void addTag(String key, String value) {
+        tracer.getCurrentSpan().tag(key, value);
     }
 }

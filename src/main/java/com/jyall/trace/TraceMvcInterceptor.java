@@ -35,7 +35,6 @@ package com.jyall.trace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -58,10 +57,16 @@ import java.util.Set;
 @Component
 public class TraceMvcInterceptor implements HandlerInterceptor {
     private Logger logger = LoggerFactory.getLogger(getClass());
-    @Autowired
-    private Tracer tracer;
+    /**
+     * 日志header的属性添加
+     */
     @Autowired
     private TraceProperty traceProperty;
+    /**
+     * trace日志的上下文
+     */
+    @Autowired
+    private TracerContext tracerContext;
 
     /**
      * 主要是添加trace的Tag，配置的属性
@@ -82,7 +87,7 @@ public class TraceMvcInterceptor implements HandlerInterceptor {
                         set.remove(name);
                         String value = i == 1 ? request.getParameter(name) : request.getHeader(name);
                         logger.debug("add trace tag [{}={}]", name, value);
-                        tracer.getCurrentSpan().tag(name, value);
+                        tracerContext.addTag(name, value);
                     }
                 }
                 //在获取请求参数的属性
@@ -92,6 +97,8 @@ public class TraceMvcInterceptor implements HandlerInterceptor {
             logger.error("header error", e);
         }
         logger.debug("mvc preHandle add trace span end");
+        Set<String> setlog = traceProperty.getHeaders();
+        setlog.forEach(k -> logger.info("trace header [{}={}]", k, tracerContext.getTag(k)));
         return true;
     }
 

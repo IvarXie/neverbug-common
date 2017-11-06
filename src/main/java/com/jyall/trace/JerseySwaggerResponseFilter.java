@@ -104,7 +104,9 @@ public class JerseySwaggerResponseFilter implements ContainerResponseFilter {
                             //参数的默认值
                             Option<String> defaultValue = new Some<>(headerMap.getOrDefault(header, ""));
                             Option<String> paramAccess = new Some<>("");
+                            //swagger的选值范围
                             AllowableValues allowableValues = AnyAllowableValues$.MODULE$;
+                            //添加的参数
                             Parameter parameter = new Parameter(header, desc, defaultValue, false, false, "string", allowableValues, "header", paramAccess);
                             //在原有的parameter的基础上添加参数
                             parameters[headerIndexStart++] = parameter;
