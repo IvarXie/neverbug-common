@@ -47,7 +47,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class SwaggerProperty {
 
     /**
-     * 是否 / 跳转swagger的主页
+     * 是否根路径跳转swagger的主页
      */
     private boolean enableRoot2swagger = true;
     /**
