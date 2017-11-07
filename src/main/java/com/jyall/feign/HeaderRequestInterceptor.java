@@ -75,7 +75,7 @@ public class HeaderRequestInterceptor implements RequestInterceptor {
                 });
             }
         } catch (Exception e) {
-
+            logger.debug("apply trace header exception", e);
         }
     }
 }
