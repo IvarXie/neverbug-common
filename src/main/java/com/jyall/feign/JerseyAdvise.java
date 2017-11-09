@@ -37,6 +37,8 @@ import com.jyall.annotation.EnableJersey;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.framework.AdvisedSupport;
+import org.springframework.aop.framework.AopProxy;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -50,6 +52,7 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.WriterInterceptor;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -88,7 +91,7 @@ public class JerseyAdvise {
         classes.forEach(v -> {
             Class<?> clazz = getClassOfBean(v);
             logger.info("register the jersey resource is {}", clazz.getName());
-            resourceConfig.register(v);
+            resourceConfig.register(getCurentBean(v));
         });
         logger.info("init the jersey resource success,use {}ms", System.currentTimeMillis() - start);
         /**注册jersey的Request的过滤器**/
@@ -98,7 +101,7 @@ public class JerseyAdvise {
         mapRequest.values().forEach(v -> {
             Class<?> clazz = getClassOfBean(v);
             logger.info("regitster the ContainerRequestFilter is {}", clazz);
-            resourceConfig.register(v);
+            resourceConfig.register(getCurentBean(v));
         });
         logger.info("init the ContainerRequestFilter success");
         /**注册jersey的Response的过滤器**/
@@ -108,7 +111,7 @@ public class JerseyAdvise {
         mapResponse.values().forEach(v -> {
             Class<?> clazz = getClassOfBean(v);
             logger.info("regitster the ContainerResponseFilter is {}", clazz);
-            resourceConfig.register(v);
+            resourceConfig.register(getCurentBean(v));
         });
         logger.info("init the ContainerResponseFilter success");
         /**注册异常处理**/
@@ -117,7 +120,7 @@ public class JerseyAdvise {
         exceptionMapperMap.values().forEach(v -> {
             Class<?> clazz = getClassOfBean(v);
             logger.info("regitster the ExceptionMapper is {}", clazz);
-            resourceConfig.register(v);
+            resourceConfig.register(getCurentBean(v));
         });
         logger.info("init the ExceptionMapper success");
 
@@ -127,7 +130,7 @@ public class JerseyAdvise {
         readerInterceptorMap.values().forEach(v -> {
             Class<?> clazz = getClassOfBean(v);
             logger.info("regitster the ReaderInterceptor is {}", clazz);
-            resourceConfig.register(v);
+            resourceConfig.register(getCurentBean(v));
         });
         logger.info("init the ReaderInterceptor success");
         /**注册WriterInterceptor**/
@@ -136,7 +139,7 @@ public class JerseyAdvise {
         writerInterceptorMap.values().forEach(v -> {
             Class<?> clazz = getClassOfBean(v);
             logger.info("regitster the WriterInterceptor is {}", clazz);
-            resourceConfig.register(v);
+            resourceConfig.register(getCurentBean(v));
         });
         logger.info("init the ReaderInterceptor success");
     }
@@ -151,5 +154,39 @@ public class JerseyAdvise {
             logger.error("getClassOfBean error", e);
         }
         return clazz;
+    }
+
+    private Object getCurentBean(Object bean) {
+        Object current = bean;
+        try {
+            if (AopUtils.isCglibProxy(bean)) {
+                current = getCglibProxyTargetObject(bean);
+            } else if (AopUtils.isJdkDynamicProxy(bean)) {
+                current = getJdkDynamicProxyTargetObject(bean);
+            }
+        } catch (Exception e) {
+            current = bean;
+        }
+        return current;
+    }
+
+    private Object getCglibProxyTargetObject(Object proxy) throws Exception {
+        Field h = proxy.getClass().getDeclaredField("CGLIB$CALLBACK_0");
+        h.setAccessible(true);
+        Object dynamicAdvisedInterceptor = h.get(proxy);
+        Field advised = dynamicAdvisedInterceptor.getClass().getDeclaredField("advised");
+        advised.setAccessible(true);
+        Object target = ((AdvisedSupport) advised.get(dynamicAdvisedInterceptor)).getTargetSource().getTarget();
+        return target;
+    }
+
+    private Object getJdkDynamicProxyTargetObject(Object proxy) throws Exception {
+        Field h = proxy.getClass().getSuperclass().getDeclaredField("h");
+        h.setAccessible(true);
+        AopProxy aopProxy = (AopProxy) h.get(proxy);
+        Field advised = aopProxy.getClass().getDeclaredField("advised");
+        advised.setAccessible(true);
+        Object target = ((AdvisedSupport) advised.get(aopProxy)).getTargetSource().getTarget();
+        return target;
     }
 }
