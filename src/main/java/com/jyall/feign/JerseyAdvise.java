@@ -91,7 +91,7 @@ public class JerseyAdvise {
         classes.forEach(v -> {
             Class<?> clazz = getClassOfBean(v);
             logger.info("register the jersey resource is {}", clazz.getName());
-            resourceConfig.register(getCurentBean(v));
+            resourceConfig.register(clazz);
         });
         logger.info("init the jersey resource success,use {}ms", System.currentTimeMillis() - start);
         /**注册jersey的Request的过滤器**/
@@ -101,7 +101,7 @@ public class JerseyAdvise {
         mapRequest.values().forEach(v -> {
             Class<?> clazz = getClassOfBean(v);
             logger.info("regitster the ContainerRequestFilter is {}", clazz);
-            resourceConfig.register(getCurentBean(v));
+            resourceConfig.register(clazz);
         });
         logger.info("init the ContainerRequestFilter success");
         /**注册jersey的Response的过滤器**/
@@ -111,7 +111,7 @@ public class JerseyAdvise {
         mapResponse.values().forEach(v -> {
             Class<?> clazz = getClassOfBean(v);
             logger.info("regitster the ContainerResponseFilter is {}", clazz);
-            resourceConfig.register(getCurentBean(v));
+            resourceConfig.register(clazz);
         });
         logger.info("init the ContainerResponseFilter success");
         /**注册异常处理**/
@@ -120,7 +120,7 @@ public class JerseyAdvise {
         exceptionMapperMap.values().forEach(v -> {
             Class<?> clazz = getClassOfBean(v);
             logger.info("regitster the ExceptionMapper is {}", clazz);
-            resourceConfig.register(getCurentBean(v));
+            resourceConfig.register(clazz);
         });
         logger.info("init the ExceptionMapper success");
 
@@ -130,7 +130,7 @@ public class JerseyAdvise {
         readerInterceptorMap.values().forEach(v -> {
             Class<?> clazz = getClassOfBean(v);
             logger.info("regitster the ReaderInterceptor is {}", clazz);
-            resourceConfig.register(getCurentBean(v));
+            resourceConfig.register(clazz);
         });
         logger.info("init the ReaderInterceptor success");
         /**注册WriterInterceptor**/
@@ -139,7 +139,7 @@ public class JerseyAdvise {
         writerInterceptorMap.values().forEach(v -> {
             Class<?> clazz = getClassOfBean(v);
             logger.info("regitster the WriterInterceptor is {}", clazz);
-            resourceConfig.register(getCurentBean(v));
+            resourceConfig.register(clazz);
         });
         logger.info("init the ReaderInterceptor success");
     }
