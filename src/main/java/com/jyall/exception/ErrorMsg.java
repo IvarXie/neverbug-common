@@ -16,11 +16,18 @@ public class ErrorMsg implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(ErrorMsg.class);
     private static final long serialVersionUID = 2640926329092743174L;
 
-    // 统一错误码
+    private static String errorIndex = "content:";
+    /**
+     * 统一错误码
+     **/
     private int code;
-    // 错误信息摘要
+    /**
+     * 错误信息摘要
+     **/
     private String message;
-    // 错误信息详情（主要用于调试）
+    /**
+     * 错误信息详情（主要用于调试）
+     **/
     private String detail = "";
 
     public ErrorMsg() {
@@ -76,9 +83,11 @@ public class ErrorMsg implements Serializable {
     public static ErrorMsg parse(Exception e) {
         String err = e.getMessage();
         try {
-            if (e.getCause().getClass() == TimeoutException.class) {
+            if (e.getCause() != null && e.getCause().getClass() == TimeoutException.class) {
                 return new ErrorMsg(ErrorCode.SYS_ERROR_RPC_CONNECTION, "远程服务调用超时");
-            } else if (err.indexOf("content:") < 0) {
+            } else if (e instanceof TimeoutException) {
+                return new ErrorMsg(ErrorCode.SYS_ERROR_RPC_CONNECTION, "远程服务调用超时");
+            } else if (err.indexOf(errorIndex) < 0) {
                 logger.debug("其他错误", e);
                 return new ErrorMsg(ErrorCode.BIZ_ERROR.value(), e.getMessage());
             } else {
