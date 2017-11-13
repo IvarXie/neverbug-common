@@ -45,7 +45,7 @@ public enum ErrorCode {
     BIZ_ERROR_COMMON_SIGN(400000022, "签名校验不通过"),
     /****ticket的异常****/
     BIZ_ERROR_COMMON_TICKET_PARAMETER(400000023, "ticket无效的请求参数"),
-    BIZ_ERROR_COMMON_TICKET_AUTH(400000023, "ticket校验异常"),
+    BIZ_ERROR_COMMON_TICKET_AUTH(400000024, "ticket校验异常"),
 
     /***** 用户 *****/
     BIZ_ERROR_USER_UNKNOWN(400001000, "未知用户错误"),
