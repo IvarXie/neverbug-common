@@ -62,8 +62,9 @@ public class GenericExceptionHandler extends BaseExceptionHandler<Throwable> {
             } catch (Exception feignEx) {
                 logger.error("解析FeignClient异常中的ErrorMsg信息出错", feignEx);
             }
-        }else if(ex instanceof FeignException){
+        } else if (ex instanceof FeignException) {
             errMsg = ErrorMsg.parse(ex);
+            status = FeignException.class.cast(ex).status();
         }
         return ResponseUtil.getResponse(status, errMsg);
     }
