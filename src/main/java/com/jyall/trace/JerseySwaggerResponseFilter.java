@@ -91,7 +91,14 @@ public class JerseySwaggerResponseFilter implements ContainerResponseFilter {
                     for (int j = 0; j < operations; j++) {
                         Operation operation = description.operations().apply(j);
                         List<Parameter> list = operation.parameters();
-                        //构建parameters数组，在原来的长度上加上header的长度
+                        /**删除已有的header**/
+                        for (int t = 0; t < list.size(); t++) {
+                            Parameter parameter = list.apply(t);
+                            if (headerMap.containsKey(parameter.name()) && "header".equals(parameter.paramType())) {
+                                headerMap.remove(parameter.name());
+                            }
+                        }
+                        /** 构建parameters数组，在原来的长度上加上header的长度 **/
                         Parameter[] parameters = new Parameter[list.size() + headers.size()];
                         for (int t = 0; t < list.size(); t++) {
                             parameters[t] = list.apply(t);
@@ -99,27 +106,27 @@ public class JerseySwaggerResponseFilter implements ContainerResponseFilter {
                         int headerIndexStart = list.size();
                         for (String header : headers) {
                             logger.info("add the header param is {}", header);
-                            //参数的描述
+                            /** 参数的描述 **/
                             Option<String> desc = new Some<>(header);
-                            //参数的默认值
+                            /**参数的默认值 **/
                             Option<String> defaultValue = new Some<>(headerMap.getOrDefault(header, ""));
                             Option<String> paramAccess = new Some<>("");
-                            //swagger的选值范围
+                            /**swagger的选值范围 **/
                             AllowableValues allowableValues = AnyAllowableValues$.MODULE$;
-                            //添加的参数
+                            /**添加的参数 **/
                             Parameter parameter = new Parameter(header, desc, defaultValue, false, false, "string", allowableValues, "header", paramAccess);
-                            //在原有的parameter的基础上添加参数
+                            /**在原有的parameter的基础上添加参数 **/
                             parameters[headerIndexStart++] = parameter;
                             logger.info("add the header param {} success", header);
                         }
-                        //重新构建参数。由于是scala的，List的用法比较怪异
+                        /**重新构建参数。由于是scala的，List的用法比较怪异**/
                         List<Parameter> pList = List.fromArray(parameters);
-                        //使用反射获取parameters的Field，此处最好使用ReflectionUtils的，不要使用原生的反射
+                        /**使用反射获取parameters的Field，此处最好使用ReflectionUtils的，不要使用原生的反射**/
                         Set<Field> set = ReflectionUtils.getFields(Operation.class, ReflectionUtils.withName("parameters"));
                         set.forEach(field -> {
                             try {
                                 field.setAccessible(true);
-                                //由于没有原声的方法，只能使用反射来替换parameters参数
+                                /** 由于没有原声的方法，只能使用反射来替换parameters参数 **/
                                 field.set(operation, pList);
                             } catch (Exception e) {
                                 logger.error("assemeble add param error", e);
