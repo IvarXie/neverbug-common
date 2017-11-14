@@ -94,8 +94,8 @@ public class JerseySwaggerResponseFilter implements ContainerResponseFilter {
                         /**删除已有的header**/
                         for (int t = 0; t < list.size(); t++) {
                             Parameter parameter = list.apply(t);
-                            if (headerMap.containsKey(parameter.name()) && "header".equals(parameter.paramType())) {
-                                headerMap.remove(parameter.name());
+                            if (headers.contains(parameter.name()) && "header".equals(parameter.paramType())) {
+                                headers.remove(parameter.name());
                             }
                         }
                         /** 构建parameters数组，在原来的长度上加上header的长度 **/
