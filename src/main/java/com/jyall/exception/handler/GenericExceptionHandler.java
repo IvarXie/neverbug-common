@@ -54,7 +54,7 @@ public class GenericExceptionHandler extends BaseExceptionHandler<Throwable> {
                 // 未定义异常不是JyBizException
                 logger.debug("非JyBizException的未定义异常", e);
             }
-        } else if (ex instanceof HystrixRuntimeException) {
+        } else if (ex instanceof HystrixRuntimeException || ex instanceof FeignException) {
             // 处理Controller使用FeignClient调用Service时收到的异常
             try {
                 status = ((FeignException) ex.getCause()).status();
