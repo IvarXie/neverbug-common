@@ -80,7 +80,7 @@ public class ErrorMsg implements Serializable {
         this.detail = detail;
     }
 
-    public static ErrorMsg parse(Exception e) {
+    public static ErrorMsg parse(Throwable e) {
         String err = e.getMessage();
         try {
             if (e.getCause() != null && e.getCause().getClass() == TimeoutException.class) {

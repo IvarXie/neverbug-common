@@ -31,7 +31,6 @@ public class GenericExceptionHandler extends BaseExceptionHandler<Throwable> {
     @Override
     public Response toResponse(Throwable ex) {
         logger.error(ex.getMessage(), ex);
-
         ErrorMsg errMsg = new ErrorMsg(ErrorCode.GENERIC_ERROR.value(), ex.getMessage());
         // 被截获异常无有效信息时，使用通用错误的描述信息
         if (null == errMsg.getMessage()) {
@@ -54,7 +53,7 @@ public class GenericExceptionHandler extends BaseExceptionHandler<Throwable> {
                 // 未定义异常不是JyBizException
                 logger.debug("非JyBizException的未定义异常", e);
             }
-        } else if (ex instanceof HystrixRuntimeException || ex instanceof FeignException) {
+        } else if (ex instanceof HystrixRuntimeException) {
             // 处理Controller使用FeignClient调用Service时收到的异常
             try {
                 status = ((FeignException) ex.getCause()).status();
@@ -63,6 +62,8 @@ public class GenericExceptionHandler extends BaseExceptionHandler<Throwable> {
             } catch (Exception feignEx) {
                 logger.error("解析FeignClient异常中的ErrorMsg信息出错", feignEx);
             }
+        }else if(ex instanceof FeignException){
+            errMsg = ErrorMsg.parse(ex);
         }
         return ResponseUtil.getResponse(status, errMsg);
     }
