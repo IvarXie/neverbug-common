@@ -23,7 +23,9 @@ public class ResponseUtil {
      * @return
      */
     public static Response getResponse(int status, Object obj) {
-        return Response.status(status).entity(obj).type(MediaType.APPLICATION_JSON).build();
+        return Response.status(status).entity(obj)
+                .header("Access-Control-Allow-Origin","*")
+                .type(MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -33,7 +35,9 @@ public class ResponseUtil {
      * @return
      */
     public static Response getResponse(ResponseEntity<?> entity) {
-        return Response.status(entity.getStatusCode().value()).entity(entity.getBody()).type(MediaType.APPLICATION_JSON)
+        return Response.status(entity.getStatusCode().value()).entity(entity.getBody())
+                .type(MediaType.APPLICATION_JSON)
+                .header("Access-Control-Allow-Origin","*")
                 .build();
     }
 
@@ -44,7 +48,9 @@ public class ResponseUtil {
      * @return
      */
     public static Response getOkResponse(Object obj) {
-        return Response.ok(obj).type(MediaType.APPLICATION_JSON).build();
+        return Response.ok(obj)
+                .header("Access-Control-Allow-Origin","*")
+                .type(MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -165,7 +171,7 @@ public class ResponseUtil {
     private static Response makeResponse(ErrorCode errorCode, Object entity) {
         return Response
                 .status(errorCode.value())
-//				.header("Access-Control-Allow-Origin","*")
+				.header("Access-Control-Allow-Origin","*")
                 .entity(entity)
                 .type(MediaType.APPLICATION_JSON)
                 .build();
