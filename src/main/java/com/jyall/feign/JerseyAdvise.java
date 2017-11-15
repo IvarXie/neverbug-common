@@ -37,19 +37,14 @@ import com.jyall.annotation.EnableJersey;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.aop.framework.AdvisedSupport;
-import org.springframework.aop.framework.AopProxy;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
@@ -60,7 +55,6 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.WriterInterceptor;
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -79,15 +73,15 @@ import java.util.Map;
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @ConditionalOnBean(annotation = EnableJersey.class)
 @AutoConfigureAfter(DispatcherServletAutoConfiguration.class)
-public class JerseyAdvise implements ApplicationListener<ContextRefreshedEvent> {
+public class JerseyAdvise {
     private Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private ApplicationContext applicationContext;
     @Autowired
     private ResourceConfig resourceConfig;
 
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
+    @PostConstruct
+    public void register() {
         /**注册jersey的Resource的过滤器**/
         long start = System.currentTimeMillis();
         logger.info("init the jersey resource start");

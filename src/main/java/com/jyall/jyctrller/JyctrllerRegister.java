@@ -1,16 +1,22 @@
 package com.jyall.jyctrller;
 
 import com.google.common.collect.Maps;
+import com.jyall.annotation.EnableJersey;
 import com.netflix.appinfo.ApplicationInfoManager;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration;
 import org.springframework.cloud.netflix.eureka.CloudEurekaClient;
 import org.springframework.cloud.netflix.eureka.EurekaClientConfigBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -26,9 +32,11 @@ import java.util.Map;
  * zhao.weiwei@jyall.com.
  */
 @Singleton
-@Component
+@Configuration
+@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
+@ConditionalOnBean(annotation = EnableJersey.class)
+@AutoConfigureAfter(DispatcherServletAutoConfiguration.class)
 @ConditionalOnProperty(name = "eureka.client.jyctrller.registered", havingValue = "true")
-@AutoConfigureAfter(SimpleDiscoveryClientAutoConfiguration.class)
 public class JyctrllerRegister {
 
     // 注入原有的服务注册与发现的配置
