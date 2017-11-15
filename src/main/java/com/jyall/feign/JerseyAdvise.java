@@ -43,6 +43,8 @@ import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -68,15 +70,15 @@ import java.util.Map;
  */
 @Component
 @ConditionalOnBean(annotation = EnableJersey.class)
-public class JerseyAdvise {
+public class JerseyAdvise implements ApplicationListener<ContextRefreshedEvent> {
     private Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private ApplicationContext applicationContext;
     @Autowired
     private ResourceConfig resourceConfig;
 
-    @PostConstruct
-    public void initTheJerseyConfig() {
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
         /**注册jersey的Resource的过滤器**/
         long start = System.currentTimeMillis();
         logger.info("init the jersey resource start");
