@@ -69,10 +69,8 @@ import java.util.Map;
  * Copyright is 金色家园网络科技有限公司
  */
 
-@Configuration
-@AutoConfigureOrder
+@Component
 @ConditionalOnBean(annotation = EnableJersey.class)
-@AutoConfigureAfter(DispatcherServletAutoConfiguration.class)
 public class JerseyAdvise {
     private Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired

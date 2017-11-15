@@ -15,6 +15,7 @@ import org.springframework.cloud.netflix.eureka.CloudEurekaClient;
 import org.springframework.cloud.netflix.eureka.EurekaClientConfigBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
@@ -29,10 +30,8 @@ import java.util.Map;
  * zhao.weiwei@jyall.com.
  */
 @Singleton
-@Configuration
-@AutoConfigureOrder
+@Component
 @ConditionalOnBean(annotation = EnableJersey.class)
-@AutoConfigureAfter(DispatcherServletAutoConfiguration.class)
 @ConditionalOnProperty(name = "eureka.client.jyctrller.registered", havingValue = "true")
 public class JyctrllerRegister {
 
