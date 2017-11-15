@@ -70,7 +70,7 @@ import java.util.Map;
  */
 
 @Configuration
-@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
+@AutoConfigureOrder
 @ConditionalOnBean(annotation = EnableJersey.class)
 @AutoConfigureAfter(DispatcherServletAutoConfiguration.class)
 public class JerseyAdvise {
