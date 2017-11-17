@@ -29,6 +29,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -226,15 +227,25 @@ public class FeignClientController {
     private Set<Class<?>> getJerseyResourceClass() {
         Set<Class<?>> set = Sets.newHashSet();
         Map<String, Object> map = applicationContext.getBeansWithAnnotation(Path.class);
-        map.values().stream().filter(v -> v.getClass().getAnnotation(FeignClient.class) == null).forEach(o -> {
-            Class<?> clazz = AopUtils.isAopProxy(o) ? AopUtils.getTargetClass(o) : o.getClass();
-            try {
-                if (!clazz.isInterface()) {
-                    set.add(Thread.currentThread().getContextClassLoader().loadClass(clazz.getName()));
-                }
-            } catch (Exception e) {
-            }
-        });
+        map.values().stream()
+                .filter(v -> !AopUtils.isJdkDynamicProxy(v) && v.getClass().getAnnotation(FeignClient.class) == null)
+                .forEach(o -> {
+                    Class<?> clazz = AopUtils.isAopProxy(o) ? AopUtils.getTargetClass(o) : o.getClass();
+                    try {
+                        if (!clazz.isInterface()) {
+                            Class<?>[] interfaces = clazz.getInterfaces();
+                            if (interfaces == null || interfaces.length == 0) {
+                                set.add(Thread.currentThread().getContextClassLoader().loadClass(clazz.getName()));
+                            } else {
+                                Optional<?> optional = Arrays.stream(interfaces).filter(in -> in.getAnnotation(FeignClient.class) != null).findFirst();
+                                if (!optional.isPresent()) {
+                                    set.add(Thread.currentThread().getContextClassLoader().loadClass(clazz.getName()));
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                    }
+                });
         return set;
     }
 }
