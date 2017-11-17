@@ -4,7 +4,6 @@ import java.lang.annotation.*;
 
 /**
  * swagger的自动加载
- * <p>
  *
  * @author zhao.weiwei
  * Created on 2017/10/30 16:21
