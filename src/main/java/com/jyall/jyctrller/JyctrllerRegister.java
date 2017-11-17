@@ -6,15 +6,11 @@ import com.netflix.appinfo.ApplicationInfoManager;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.cloud.netflix.eureka.CloudEurekaClient;
 import org.springframework.cloud.netflix.eureka.EurekaClientConfigBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -23,11 +19,11 @@ import java.util.Map;
 
 /**
  * C层注册的bean
- * <p>
  * 使用@Singleton单态注解
- * <p>
- * 使用@Lazy,延时加载 Created by zhao.weiwei create on 2017/2/14 9:45 the email is
- * zhao.weiwei@jyall.com.
+ * 在 eureka.client.jyctrller.registered 为true的时候才会加载这个类
+ * Created by zhao.weiwei
+ * create on 2017/2/14 9:45
+ * the email is zhao.weiwei@jyall.com.
  */
 @Singleton
 @Component
