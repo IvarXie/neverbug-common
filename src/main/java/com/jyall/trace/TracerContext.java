@@ -53,7 +53,7 @@ public class TracerContext {
     /**
      * 商户code的静态常量
      **/
-    public static final String MERCHANT_CODE = "merchantCode";
+    public static final String MERCHANT_CODE = "merchantcode";
     /**
      * 版本号的静态常量
      **/
@@ -65,7 +65,7 @@ public class TracerContext {
     /**
      * tokenid的静态常量
      **/
-    public static final String TOKEN_ID = "tokenId";
+    public static final String TOKEN_ID = "tokenid";
 
     @Autowired
     private Tracer tracer;

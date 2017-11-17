@@ -56,7 +56,7 @@ import java.util.regex.Pattern;
 @ConfigurationProperties(prefix = "trace")
 public class TraceProperty {
 
-    private String headers = "merchantCode,version,appid,tokenId";
+    private String headers = "merchantcode,version,appid,tokenid";
 
     private String defaults = ",0.0.1,,";
 
