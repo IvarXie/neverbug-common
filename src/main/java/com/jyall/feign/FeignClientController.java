@@ -226,7 +226,7 @@ public class FeignClientController {
     private Set<Class<?>> getJerseyResourceClass() {
         Set<Class<?>> set = Sets.newHashSet();
         Map<String, Object> map = applicationContext.getBeansWithAnnotation(Path.class);
-        map.values().stream().filter(v -> !AopUtils.isJdkDynamicProxy(v)).forEach(o -> {
+        map.values().stream().filter(v -> v.getClass().getAnnotation(FeignClient.class) == null).forEach(o -> {
             Class<?> clazz = AopUtils.isAopProxy(o) ? AopUtils.getTargetClass(o) : o.getClass();
             try {
                 if (!clazz.isInterface()) {
