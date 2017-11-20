@@ -137,14 +137,14 @@ public class JerseyAdvise {
         });
         logger.info("init the ReaderInterceptor success");
         /**注册WriterInterceptor**/
-        logger.info("init the ReaderInterceptor start");
+        logger.info("init the WriterInterceptor start");
         Map<String, WriterInterceptor> writerInterceptorMap = applicationContext.getBeansOfType(WriterInterceptor.class);
         writerInterceptorMap.values().forEach(v -> {
             Class<?> clazz = getClassOfBean(v);
             logger.info("regitster the WriterInterceptor is {}", clazz);
             resourceConfig.register(clazz);
         });
-        logger.info("init the ReaderInterceptor success");
+        logger.info("init the WriterInterceptor success");
     }
 
     private Class<?> getClassOfBean(Object bean) {
