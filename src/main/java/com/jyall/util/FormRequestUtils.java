@@ -74,7 +74,7 @@ public class FormRequestUtils {
      *
      * @param request
      * @param bytes
-     * @return
+     * @return 字段名为key，字段值为value的map
      * @throws Exception
      */
     public static Map<String, String> assemblyRequestForm(HttpServletRequest request, byte[] bytes) throws Exception {
@@ -89,7 +89,7 @@ public class FormRequestUtils {
      *
      * @param request
      * @param bytes
-     * @return
+     * @return 文件名作为key，byte[] 作为文件的二进制
      * @throws Exception
      */
     public static Map<String, byte[]> assemblyRequestFile(HttpServletRequest request, byte[] bytes) throws Exception {
