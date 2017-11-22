@@ -104,8 +104,8 @@ public class JerseySwaggerResponseFilter implements ContainerResponseFilter {
                             parameters[t] = list.apply(t);
                         }
                         int headerIndexStart = list.size();
+                        logger.info("the method {} add the header is {}", operation.method(), headers);
                         for (String header : headers) {
-                            logger.info("add the header param is {}", header);
                             /** 参数的描述 **/
                             Option<String> desc = new Some<>(header);
                             /**参数的默认值 **/
@@ -117,7 +117,6 @@ public class JerseySwaggerResponseFilter implements ContainerResponseFilter {
                             Parameter parameter = new Parameter(header, desc, defaultValue, false, false, "string", allowableValues, "header", paramAccess);
                             /**在原有的parameter的基础上添加参数 **/
                             parameters[headerIndexStart++] = parameter;
-                            logger.info("add the header param {} success", header);
                         }
                         /**重新构建参数。由于是scala的，List的用法比较怪异**/
                         List<Parameter> pList = List.fromArray(parameters);
