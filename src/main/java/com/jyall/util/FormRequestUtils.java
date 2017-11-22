@@ -75,8 +75,8 @@ public class FormRequestUtils {
     /**
      * 获取单个文件
      *
-     * @param request
-     * @param bytes
+     * @param request http请求的request，主要是获取content-type
+     * @param bytes   POST请求的body转换的的二进制数组
      * @return
      * @throws Exception
      */
@@ -92,8 +92,8 @@ public class FormRequestUtils {
     /**
      * 构建form的请求的参数
      *
-     * @param request
-     * @param bytes
+     * @param request http请求的request，主要是获取content-type
+     * @param bytes   POST请求的body转换的的二进制数组
      * @return 字段名为key，字段值为value的map
      * @throws Exception
      */
@@ -105,11 +105,26 @@ public class FormRequestUtils {
     }
 
     /**
+     * 构建请求的参数转换实体对象
+     * 调用gson的转换
+     *
+     * @param request http请求的request，主要是获取content-type
+     * @param bytes   POST请求的body转换的的二进制数组
+     * @param clazz   clazz规约
+     * @param <T>     提供无参数的构造方法
+     * @return
+     * @throws Exception
+     */
+    public static <T> T assemblyRequestForm(HttpServletRequest request, byte[] bytes, Class<T> clazz) throws Exception {
+        return GsonUtil.map2Bean(assemblyRequestForm(request, bytes), clazz);
+    }
+
+    /**
      * 构建文件的请求参数
      *
-     * @param request
-     * @param bytes
-     * @return 文件名作为key，byte[] 作为文件的二进制
+     * @param request http请求的request，主要是获取content-type
+     * @param bytes   POST请求的body转换的的二进制数组
+     * @return 文件名作为key，文件的二进制数组作为value
      * @throws Exception
      */
     public static Map<String, byte[]> assemblyRequestFile(HttpServletRequest request, byte[] bytes) throws Exception {
@@ -137,6 +152,7 @@ public class FormRequestUtils {
         String fieldname = "";
         /**表单域的值**/
         String fieldvalue;
+        String fileFormName = "";
         /**上传文件的真实名字**/
         String fileRealName;
         /** 分界符字符串 **/
@@ -191,12 +207,19 @@ public class FormRequestUtils {
                         // 如果是文件数据的头，先存储这一行，用于在字节数组中定位
                         String temp = line;
                         // 先解析出文件名
+                        pos = line.indexOf("name=");
+                        // 1表示后面的"的占位
+                        pos += "name=".length() + 1;
                         pos2 = line.indexOf("filename=");
+                        // 3表示";加上一个空格
+                        String s1 = line.substring(pos, pos2 - 3);
+                        fileFormName = s1;
                         // 1表示后面的"的占位
                         pos2 += "filename=".length() + 1;
                         line = line.substring(pos2);
                         int l = line.length();
                         line = line.substring(0, l - 1);
+                        // 对于IE浏览器的设置
                         pos2 = line.lastIndexOf("\\");
                         line = line.substring(pos2 + 1);
                         fileRealName = line;
@@ -211,6 +234,7 @@ public class FormRequestUtils {
                             b = subBytes(b, pos + temp.getBytes().length + 2, b.length);
                             // 再读一行信息，是这一部分数据的Content-type
                             line = reqbuf.readLine();
+                            // 设置文件输入流，准备写文件
                             // 字节数组再往下一行，4表示两回车换行占4个字节，本行的回车换行2个字节，Content-type的下
                             // 一行是回车换行表示的空行，占2个字节
                             // 得到文件数据的起始位置
@@ -219,6 +243,7 @@ public class FormRequestUtils {
                             pos = byteIndexOf(b, boundary, 0);
                             // 取得文件数据
                             b = subBytes(b, 0, pos - 1);
+                            values.put(fileFormName, fileRealName);
                             values.put(fileRealName, b);
                             state = FILEDATA;
                         }
