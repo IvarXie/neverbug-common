@@ -56,8 +56,10 @@ import com.google.common.collect.Maps;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * 解析Http请求的Form数据
@@ -69,6 +71,16 @@ import java.util.Map;
  * Copyright is 金色家园网络科技有限公司
  */
 public class FormRequestUtils {
+
+    public static Map.Entry<String, byte[]> assemblyOneFile(HttpServletRequest request, byte[] bytes) throws Exception {
+        TreeMap<String, byte[]> treeMap = new TreeMap<>(assemblyRequestFile(request, bytes));
+        if (treeMap.size() > 0) {
+            return treeMap.firstEntry();
+        } else {
+            throw new IOException("没有上传的文件");
+        }
+    }
+
     /**
      * 构建form的请求的参数
      *
