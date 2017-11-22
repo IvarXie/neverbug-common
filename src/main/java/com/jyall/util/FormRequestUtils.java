@@ -72,6 +72,14 @@ import java.util.TreeMap;
  */
 public class FormRequestUtils {
 
+    /**
+     * 获取单个文件
+     *
+     * @param request
+     * @param bytes
+     * @return
+     * @throws Exception
+     */
     public static Map.Entry<String, byte[]> assemblyOneFile(HttpServletRequest request, byte[] bytes) throws Exception {
         TreeMap<String, byte[]> treeMap = new TreeMap<>(assemblyRequestFile(request, bytes));
         if (treeMap.size() > 0) {
