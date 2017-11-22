@@ -134,7 +134,7 @@ public class FormRequestUtils {
         return params;
     }
 
-    private static Map<String, Object> assemblyRequest(HttpServletRequest request, byte[] dataOrigin) throws Exception {
+    public static Map<String, Object> assemblyRequest(HttpServletRequest request, byte[] dataOrigin) throws Exception {
         Map<String, Object> values = Maps.newHashMap();
         /**状态码，表示没有特殊操作 **/
         final int NONE = 0;
