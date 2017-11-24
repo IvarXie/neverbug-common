@@ -229,30 +229,6 @@ public class FeignClientController {
      */
     private Set<Class<?>> getJerseyResourceClass() {
         Set<Class<?>> set = Sets.newHashSet();
-//        Map<String, Object> map = applicationContext.getBeansWithAnnotation(Path.class);
-//        map.values().stream()
-//                /**jdk动态代理的不要**/
-//                .filter(v -> !AopUtils.isJdkDynamicProxy(v))
-//                .forEach(o -> {
-//                    Class<?> clazz = AopUtils.isAopProxy(o) ? AopUtils.getTargetClass(o) : o.getClass();
-//                    try {
-//                        if (!clazz.isInterface()) {
-//                            /**获取实体类的接口**/
-//                            Class<?>[] interfaces = clazz.getInterfaces();
-//                            /**如果接口列表为空，则添加class**/
-//                            if (interfaces == null || interfaces.length == 0) {
-//                                set.add(Thread.currentThread().getContextClassLoader().loadClass(clazz.getName()));
-//                            } else {
-//                                /**获取有FeignClient的接口**/
-//                                Optional<?> optional = Arrays.stream(interfaces).filter(in -> in.getAnnotation(FeignClient.class) != null).findFirst();
-//                                if (!optional.isPresent()) {
-//                                    set.add(Thread.currentThread().getContextClassLoader().loadClass(clazz.getName()));
-//                                }
-//                            }
-//                        }
-//                    } catch (Exception e) {
-//                    }
-//                });
         Map<String, Object> beans = applicationContext.getBeansWithAnnotation(Component.class);
         List<Object> classes = Lists.newArrayList();
         beans.values().stream()
@@ -262,10 +238,10 @@ public class FeignClientController {
         logger.info("the register jersey resource size is {}", classes.size());
         classes.forEach(v -> {
             Class<?> clazz = getClassOfBean(v);
-            logger.info("register the jersey resource is {}", clazz.getName());
             try {
                 set.add(Thread.currentThread().getContextClassLoader().loadClass(clazz.getName()));
             } catch (Exception e) {
+                set.add(clazz);
             }
             set.add(clazz);
         });
