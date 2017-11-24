@@ -16,6 +16,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +30,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -226,31 +226,54 @@ public class FeignClientController {
      * @return
      */
     private Set<Class<?>> getJerseyResourceClass() {
-        Set<Class<?>> set = Sets.newHashSet();
-        Map<String, Object> map = applicationContext.getBeansWithAnnotation(Path.class);
-        map.values().stream()
-                /**jdk动态代理的不要**/
-                .filter(v -> !AopUtils.isJdkDynamicProxy(v))
-                .forEach(o -> {
-                    Class<?> clazz = AopUtils.isAopProxy(o) ? AopUtils.getTargetClass(o) : o.getClass();
-                    try {
-                        if (!clazz.isInterface()) {
-                            /**获取实体类的接口**/
-                            Class<?>[] interfaces = clazz.getInterfaces();
-                            /**如果接口列表为空，则添加class**/
-                            if (interfaces == null || interfaces.length == 0) {
-                                set.add(Thread.currentThread().getContextClassLoader().loadClass(clazz.getName()));
-                            } else {
-                                /**获取有FeignClient的接口**/
-                                Optional<?> optional = Arrays.stream(interfaces).filter(in -> in.getAnnotation(FeignClient.class) != null).findFirst();
-                                if (!optional.isPresent()) {
-                                    set.add(Thread.currentThread().getContextClassLoader().loadClass(clazz.getName()));
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                    }
-                });
-        return set;
+//        Set<Class<?>> set = Sets.newHashSet();
+//        Map<String, Object> map = applicationContext.getBeansWithAnnotation(Path.class);
+//        map.values().stream()
+//                /**jdk动态代理的不要**/
+//                .filter(v -> !AopUtils.isJdkDynamicProxy(v))
+//                .forEach(o -> {
+//                    Class<?> clazz = AopUtils.isAopProxy(o) ? AopUtils.getTargetClass(o) : o.getClass();
+//                    try {
+//                        if (!clazz.isInterface()) {
+//                            /**获取实体类的接口**/
+//                            Class<?>[] interfaces = clazz.getInterfaces();
+//                            /**如果接口列表为空，则添加class**/
+//                            if (interfaces == null || interfaces.length == 0) {
+//                                set.add(Thread.currentThread().getContextClassLoader().loadClass(clazz.getName()));
+//                            } else {
+//                                /**获取有FeignClient的接口**/
+//                                Optional<?> optional = Arrays.stream(interfaces).filter(in -> in.getAnnotation(FeignClient.class) != null).findFirst();
+//                                if (!optional.isPresent()) {
+//                                    set.add(Thread.currentThread().getContextClassLoader().loadClass(clazz.getName()));
+//                                }
+//                            }
+//                        }
+//                    } catch (Exception e) {
+//                    }
+//                });
+
+        Map<String, Object> beans = applicationContext.getBeansWithAnnotation(Component.class);
+        Set<Class<?>> classes = Sets.newHashSet();
+        beans.values().stream()
+                .filter(k -> !AopUtils.isJdkDynamicProxy(k))
+                .filter(k -> getClassOfBean(k).getAnnotation(Path.class) != null)
+                .forEach(this::getClassOfBean);
+        return classes;
+    }
+
+    private Class<?> getClassOfBean(Object bean) {
+        Class<?> clazz = bean.getClass();
+        try {
+            if (AopUtils.isAopProxy(bean)) {
+                clazz = AopUtils.getTargetClass(bean);
+            }
+        } catch (Exception e) {
+            logger.error("getClassOfBean error", e);
+        }
+        try {
+            return Thread.currentThread().getContextClassLoader().loadClass(clazz.getName());
+        } catch (Exception e) {
+            return clazz;
+        }
     }
 }
