@@ -96,6 +96,7 @@ public class FeignClientController {
         importClasses.add(FeignClient.class);
         importClasses.add(ResponseEntity.class);
         for (Class resourceClass : classes) {
+            logger.info("class is {}", resourceClass);
             // 获取类@path注解，取出前缀
             String classPath = "";
             Path classPathAnnotation = (Path) resourceClass.getAnnotation(Path.class);
