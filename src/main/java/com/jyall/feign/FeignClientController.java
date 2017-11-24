@@ -1,6 +1,7 @@
 package com.jyall.feign;
 
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.jyall.annotation.EnableJersey;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -30,6 +31,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -226,7 +228,7 @@ public class FeignClientController {
      * @return
      */
     private Set<Class<?>> getJerseyResourceClass() {
-//        Set<Class<?>> set = Sets.newHashSet();
+        Set<Class<?>> set = Sets.newHashSet();
 //        Map<String, Object> map = applicationContext.getBeansWithAnnotation(Path.class);
 //        map.values().stream()
 //                /**jdk动态代理的不要**/
@@ -251,14 +253,23 @@ public class FeignClientController {
 //                    } catch (Exception e) {
 //                    }
 //                });
-
         Map<String, Object> beans = applicationContext.getBeansWithAnnotation(Component.class);
-        Set<Class<?>> classes = Sets.newHashSet();
+        List<Object> classes = Lists.newArrayList();
         beans.values().stream()
                 .filter(k -> !AopUtils.isJdkDynamicProxy(k))
                 .filter(k -> getClassOfBean(k).getAnnotation(Path.class) != null)
-                .forEach(this::getClassOfBean);
-        return classes;
+                .forEach(classes::add);
+        logger.info("the register jersey resource size is {}", classes.size());
+        classes.forEach(v -> {
+            Class<?> clazz = getClassOfBean(v);
+            logger.info("register the jersey resource is {}", clazz.getName());
+            try {
+                set.add(Thread.currentThread().getContextClassLoader().loadClass(clazz.getName()));
+            } catch (Exception e) {
+            }
+            set.add(clazz);
+        });
+        return set;
     }
 
     private Class<?> getClassOfBean(Object bean) {
@@ -270,10 +281,6 @@ public class FeignClientController {
         } catch (Exception e) {
             logger.error("getClassOfBean error", e);
         }
-        try {
-            return Thread.currentThread().getContextClassLoader().loadClass(clazz.getName());
-        } catch (Exception e) {
-            return clazz;
-        }
+        return clazz;
     }
 }
