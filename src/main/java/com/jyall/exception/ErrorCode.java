@@ -176,6 +176,14 @@ public enum ErrorCode {
     THIRDBM_ALREADYBIND_MOBILE_BELONG_MID_MODIFY_MOBILE_ERROR(400007004, "第三方曾经绑定过该手机号，修改手机号出错"),
     THIRDBM_ERROR(400007005, "第三方绑定手机号出错"),
 
+    /**
+     * 微信小程序和公众号的推送
+     **/
+    BIZ_ERROR_WX_PUSH_APP_UNAUTH(400008000, "小程序或者公众号未授权"),
+    BIZ_ERROR_WX_PUSH_PLATE_TEMPLATE_NOT_FOUND(400008001, "平台模板不存在"),
+    BIZ_ERROR_WX_PUSH_APP_TEMPLATE_NOT_FOUND(400008002, "商户模板不存在"),
+    BIZ_ERROR_WX_PUSH_TEMPLATE_PARAM_ERROR(400008003, "模板参数匹配异常"),
+
 
     /*****
      * 系统错误: 500xxxyyy
