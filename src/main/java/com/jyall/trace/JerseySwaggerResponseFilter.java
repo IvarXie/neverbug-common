@@ -89,6 +89,7 @@ public class JerseySwaggerResponseFilter implements ContainerResponseFilter {
                     ApiDescription description = apiListing.apis().apply(i);
                     int operations = description.operations().size();
                     for (int j = 0; j < operations; j++) {
+                        headers = traceProperty.getHeaders();
                         Operation operation = description.operations().apply(j);
                         List<Parameter> list = operation.parameters();
                         /**删除已有的header**/
