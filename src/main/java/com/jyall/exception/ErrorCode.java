@@ -22,7 +22,6 @@ public enum ErrorCode {
      * yyy: 模块内错误编号
      ******/
     BIZ_ERROR(Response.Status.BAD_REQUEST.getStatusCode(), "业务错误"),
-//	BIZ_ERROR(203, "业务错误"),
 
     /***** 参数相关错误 *****/
     BIZ_ERROR_PARAMETER(400000000, "参数错误"),
@@ -233,8 +232,9 @@ public enum ErrorCode {
 
     public static ErrorCode valueOf(int value) {
         Optional<ErrorCode> optional = Arrays.stream(values()).filter(instance -> instance.value == value).limit(1).findFirst();
-        if (optional.isPresent())
+        if (optional.isPresent()) {
             return optional.get();
+        }
         throw new IllegalArgumentException("No matching constant for [" + value + "]");
     }
 }

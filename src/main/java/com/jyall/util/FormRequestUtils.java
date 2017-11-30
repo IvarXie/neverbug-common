@@ -74,6 +74,7 @@ public class FormRequestUtils {
 
     /**
      * 获取单个文件
+     * 使用treeMap 获取第一个数据
      *
      * @param request http请求的request，主要是获取content-type
      * @param bytes   POST请求的body转换的的二进制数组
@@ -136,28 +137,28 @@ public class FormRequestUtils {
 
     public static Map<String, Object> assemblyRequest(HttpServletRequest request, byte[] dataOrigin) throws Exception {
         Map<String, Object> values = Maps.newHashMap();
-        /**状态码，表示没有特殊操作 **/
+        /*状态码，表示没有特殊操作 **/
         final int NONE = 0;
-        /**表示下一行要读到报头信息**/
+        /*表示下一行要读到报头信息**/
         final int DATAHEADER = 1;
-        /**表示下面要读的是上传文件和二进制数据**/
+        /*表示下面要读的是上传文件和二进制数据**/
         final int FILEDATA = 2;
-        /**表示下面要读到表单域的文本值**/
+        /*表示下面要读到表单域的文本值**/
         final int FIELDDATA = 3;
-        /** 对于post多个文件的表单，b作为原始数据的副本提供提取文件数据的操作 **/
+        /* 对于post多个文件的表单，b作为原始数据的副本提供提取文件数据的操作 **/
         byte[] b;
-        /** 请求消息类型 **/
+        /* 请求消息类型 **/
         String contentType = request.getContentType();
-        /**表单域的名称**/
+        /*表单域的名称**/
         String fieldname = "";
-        /**表单域的值**/
+        /*表单域的值**/
         String fieldvalue;
         String fileFormName = "";
-        /**上传文件的真实名字**/
+        /*上传文件的真实名字**/
         String fileRealName;
-        /** 分界符字符串 **/
+        /* 分界符字符串 **/
         String boundary = "";
-        /** 结束分界符字符串 **/
+        /* 结束分界符字符串 **/
         String lastboundary = "";
         // 在消息头类型中找到分界符的定义
         int pos = contentType.indexOf("boundary=");

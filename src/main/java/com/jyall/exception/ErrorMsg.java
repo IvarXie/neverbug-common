@@ -1,6 +1,8 @@
 package com.jyall.exception;
 
 import com.alibaba.fastjson.JSON;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,15 +89,19 @@ public class ErrorMsg implements Serializable {
                 return new ErrorMsg(ErrorCode.SYS_ERROR_RPC_CONNECTION, "远程服务调用超时");
             } else if (e instanceof TimeoutException) {
                 return new ErrorMsg(ErrorCode.SYS_ERROR_RPC_CONNECTION, "远程服务调用超时");
-            } else if (err.indexOf(errorIndex) < 0) {
-                logger.debug("其他错误", e);
-                return new ErrorMsg(ErrorCode.BIZ_ERROR.value(), e.getMessage());
+            } else if (StringUtils.isNotEmpty(err)) {
+                if (!err.contains(errorIndex)) {
+                    logger.error("其他错误", e);
+                    return new ErrorMsg(ErrorCode.BIZ_ERROR.value(), e.getMessage());
+                } else {
+                    return JSON.parseObject(err.split("content:")[1], ErrorMsg.class);
+                }
             } else {
-                return JSON.parseObject(err.split("content:")[1], ErrorMsg.class);
+                return new ErrorMsg(ErrorCode.GENERIC_ERROR.value(), e.getClass().getName(), ExceptionUtils.getFullStackTrace(e));
             }
         } catch (Exception e1) {
             logger.error("从异常信息中解析ErrorMsg失败", e1);
-            return new ErrorMsg(ErrorCode.SYS_ERROR, err);
+            return new ErrorMsg(ErrorCode.SYS_ERROR, StringUtils.isNotEmpty(err) ? err : ExceptionUtils.getFullStackTrace(e));
         }
     }
 }
