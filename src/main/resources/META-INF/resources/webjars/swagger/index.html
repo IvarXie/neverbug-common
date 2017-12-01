@@ -46,16 +46,19 @@
                         $.getJSON(url, function (data, status) {
                             if (status = 'success') {
                                 document.title = data.info.title;
-                                $('.logo__title').html(data);
+
                             }
                         });
+                    }else{
+                        document.title = data;
+                        $('.logo__title').html(data);
                     }
-                    document.title = data;
                 },
                 error: function () {
                     $.getJSON(url, function (data, status) {
                         if (status = 'success') {
                             document.title = data.info.title;
+                            $('.logo__title').html(data.info.title);
                         }
                     });
                 }
