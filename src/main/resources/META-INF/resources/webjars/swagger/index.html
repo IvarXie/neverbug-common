@@ -43,15 +43,15 @@
                 type: 'GET',
                 success: function (data) {
                     if (data.length > 0) {
+                        document.title = data;
+                        $('.logo__title').html(data);
+                    } else {
                         $.getJSON(url, function (data, status) {
                             if (status = 'success') {
                                 document.title = data.info.title;
-
+                                $('.logo__title').html(data.info.title);
                             }
                         });
-                    }else{
-                        document.title = data;
-                        $('.logo__title').html(data);
                     }
                 },
                 error: function () {
