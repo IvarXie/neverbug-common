@@ -46,6 +46,7 @@
                         $.getJSON(url, function (data, status) {
                             if (status = 'success') {
                                 document.title = data.info.title;
+                                $('.logo__title').html(data);
                             }
                         });
                     }
