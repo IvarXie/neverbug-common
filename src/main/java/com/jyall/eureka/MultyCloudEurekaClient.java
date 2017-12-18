@@ -135,17 +135,17 @@ public class MultyCloudEurekaClient {
      * @return
      * @throws Exception
      */
-    public List<ServiceInstance> getInstances(String serviceId){
-        return clientList.stream().map(cloudEurekaClient->getSerivice(serviceId, cloudEurekaClient))
+    public List<ServiceInstance> getInstances(String serviceId) {
+        return clientList.stream().map(cloudEurekaClient -> getSerivice(serviceId, cloudEurekaClient))
                 .flatMap(List::stream).collect(Collectors.toList());
     }
 
     private List<ServiceInstance> getSerivice(String serviceId, CloudEurekaClient cloudEurekaClient) {
         return cloudEurekaClient.getInstancesByVipAddress(serviceId, false)
-                .stream().map(MultyCloudEurekaClient::assemblyEurekaServiceInstance).collect(Collectors.toList());
+                .stream().map(this::assemblyEurekaServiceInstance).collect(Collectors.toList());
     }
 
-    private static ServiceInstance assemblyEurekaServiceInstance(InstanceInfo instanceInfo) {
+    private ServiceInstance assemblyEurekaServiceInstance(InstanceInfo instanceInfo) {
         try {
             /* 获取私用的构造方法 */
             Constructor<EurekaServiceInstance> con = EurekaServiceInstance.class.getDeclaredConstructor(InstanceInfo.class);
