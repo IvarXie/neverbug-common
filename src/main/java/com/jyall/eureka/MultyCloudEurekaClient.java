@@ -136,14 +136,8 @@ public class MultyCloudEurekaClient {
      * @throws Exception
      */
     public List<ServiceInstance> getInstances(String serviceId){
-//        for (CloudEurekaClient cloudEurekaClient : clientList) {
-//            List<ServiceInstance> serviceInstances = getSerivice(serviceId, cloudEurekaClient);
-//            if (serviceInstances.size() > 0) {
-//                return serviceInstances;
-//            }
-//        }
-        return clientList.stream().map(cloudEurekaClient->getSerivice(serviceId, cloudEurekaClient)).flatMap(List::stream).collect(Collectors.toList());
-//        return Lists.newArrayList();
+        return clientList.stream().map(cloudEurekaClient->getSerivice(serviceId, cloudEurekaClient))
+                .flatMap(List::stream).collect(Collectors.toList());
     }
 
     private List<ServiceInstance> getSerivice(String serviceId, CloudEurekaClient cloudEurekaClient) {
