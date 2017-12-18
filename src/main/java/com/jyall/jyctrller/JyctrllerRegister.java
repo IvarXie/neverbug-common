@@ -31,31 +31,39 @@ import java.util.Map;
 @ConditionalOnProperty(name = "eureka.client.jyctrller.registered", havingValue = "true")
 public class JyctrllerRegister {
 
-    // 注入原有的服务注册与发现的配置
+    /**
+     * 注入原有的服务注册与发现的配置
+     **/
     @Autowired
     private EurekaClientConfigBean config;
-    // 注入原有的服务注管理器
+    /**
+     * 注入原有的服务注管理器
+     **/
     @Autowired
     private ApplicationInfoManager applicationInfoManager;
-    // C层注册的地址
+    /**
+     * C层注册的地址
+     **/
     @Value("${eureka.client.jyctrller.registryUrls:}")
     private String ctrllerRegistryUrls;
-    // spring的上下文
+    /**
+     * spring的上下文
+     **/
     @Autowired
     private ApplicationContext applicationContext;
 
     @PostConstruct
     public void register() throws Exception {
         EurekaClientConfigBean bean = new EurekaClientConfigBean();
-        // 将原来的服务发现的属性copy到属性
+        /* 将原来的服务发现的属性copy到属性 */
         BeanUtils.copyProperties(this.config, bean);
         Map<String, String> serviceUrl = Maps.newHashMap();
-        // 将defaultZone的属性换成C层注册的URL
+        /* 将defaultZone的属性换成C层注册的URL */
         serviceUrl.put("defaultZone", this.ctrllerRegistryUrls);
         bean.setServiceUrl(serviceUrl);
-        // 设置注册属性
+        /* 设置注册属性 */
         bean.setRegisterWithEureka(true);
-        // 设置拉取服务的属性
+        /* 设置拉取服务的属性 */
         bean.setFetchRegistry(false);
         new CloudEurekaClient(this.applicationInfoManager, bean, applicationContext);
     }
