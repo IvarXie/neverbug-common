@@ -58,7 +58,7 @@ public class TraceProperty {
 
     private String headers = "merchantcode,version,appid,tokenid";
 
-    private String defaults = ",0.0.1,,";
+    private String defaults = ",0.0.1,,skip";
 
     public Set<String> getHeaders() {
         if (StringUtils.isNotEmpty(headers)) {
