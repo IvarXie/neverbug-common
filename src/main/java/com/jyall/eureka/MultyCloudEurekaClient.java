@@ -52,7 +52,11 @@ import org.springframework.context.annotation.Lazy;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 多注册中心获取服务的实例
@@ -140,16 +144,17 @@ public class MultyCloudEurekaClient {
 
     private List<ServiceInstance> getSerivice(String serviceId, CloudEurekaClient cloudEurekaClient) throws Exception {
         List<InstanceInfo> infos = cloudEurekaClient.getInstancesByVipAddress(serviceId, false);
-        List<ServiceInstance> instances = new ArrayList<>();
-        for (InstanceInfo info : infos) {
-            // 获取私用的构造方法
-            Constructor<EurekaServiceInstance> con = EurekaServiceInstance.class
-                    .getDeclaredConstructor(InstanceInfo.class);
-            // 设置构造方法可用
-            con.setAccessible(true);
-            //反射构建对象
-            instances.add(con.newInstance((info)));
-        }
+        List<ServiceInstance> instances = infos.stream().map(info -> {
+            try {
+                /* 获取私用的构造方法 */
+                Constructor<EurekaServiceInstance> con = EurekaServiceInstance.class.getDeclaredConstructor(InstanceInfo.class);
+                /* 设置构造方法可用 */
+                con.setAccessible(true);
+                return con.newInstance((info));
+            } catch (Exception ee) {
+                return null;
+            }
+        }).collect(Collectors.toList());
         return instances;
     }
 
