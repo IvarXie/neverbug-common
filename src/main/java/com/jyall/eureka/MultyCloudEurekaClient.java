@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.netflix.eureka.CloudEurekaClient;
@@ -48,8 +49,8 @@ import org.springframework.cloud.netflix.eureka.EurekaDiscoveryClient.EurekaServ
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
@@ -67,13 +68,19 @@ import java.util.*;
 public class MultyCloudEurekaClient {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
-    // 注入原有的服务注册与发现的配置
+    /**
+     * 注入原有的服务注册与发现的配置
+     **/
     @Autowired
     private EurekaClientConfigBean config;
-    // 注入原有的服务注管理器
+    /**
+     * 注入原有的服务注管理器
+     **/
     @Autowired
     private ApplicationInfoManager applicationInfoManager;
-    // applicationContext 实例
+    /**
+     * applicationContext 实例
+     **/
     @Autowired
     private ApplicationContext applicationContext;
     /**
@@ -81,12 +88,23 @@ public class MultyCloudEurekaClient {
      */
     private List<CloudEurekaClient> clientList = Lists.newArrayList();
 
+    @Value("${eureka.client.jyctrller.registryUrls:}")
+    private String controllerUrl;
+    @Value("${eureka.client.serviceUrl.defaultZone:}")
+    private String serviceUrl;
+
+    @PostConstruct
+    public void init() {
+        init(new String[]{serviceUrl, controllerUrl});
+    }
+
     /**
      * 代码里面显式初始化的方法
      *
      * @param registerUrls
      */
     public void init(String[] registerUrls) {
+        shutdown();
         Arrays.stream(registerUrls).filter(StringUtils::isNotBlank).forEach(url -> {
             logger.info("init the {} cloudEurekaClient start", url);
             EurekaClientConfigBean bean = new EurekaClientConfigBean();
