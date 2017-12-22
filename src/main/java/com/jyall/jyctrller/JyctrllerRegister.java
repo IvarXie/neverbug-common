@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.eureka.CloudEurekaClient;
 import org.springframework.cloud.netflix.eureka.EurekaClientConfigBean;
 import org.springframework.context.ApplicationContext;
@@ -27,7 +28,7 @@ import java.util.Map;
  */
 @Singleton
 @Component
-@ConditionalOnBean(annotation = EnableJersey.class)
+@ConditionalOnBean(annotation = EnableDiscoveryClient.class)
 @ConditionalOnProperty(name = "eureka.client.jyctrller.registered", havingValue = "true")
 public class JyctrllerRegister {
 
