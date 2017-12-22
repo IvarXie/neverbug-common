@@ -34,8 +34,8 @@ public class JyctrllerRegister {
     /**
      * 注入原有的服务注册与发现的配置
      **/
-    @Autowired
-    private EurekaClientConfigBean config;
+//    @Autowired
+//    private EurekaClientConfigBean config;
     /**
      * 注入原有的服务注管理器
      **/
@@ -56,7 +56,7 @@ public class JyctrllerRegister {
     public void register() throws Exception {
         EurekaClientConfigBean bean = new EurekaClientConfigBean();
         /* 将原来的服务发现的属性copy到属性 */
-        BeanUtils.copyProperties(this.config, bean);
+//        BeanUtils.copyProperties(this.config, bean);
         Map<String, String> serviceUrl = Maps.newHashMap();
         /* 将defaultZone的属性换成C层注册的URL */
         serviceUrl.put("defaultZone", this.ctrllerRegistryUrls);
