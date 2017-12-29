@@ -190,8 +190,12 @@ public enum ErrorCode {
     BIZ_ERROR_WX_PUSH_APP_TEMPLATE_NOT_FOUND(400008002, "商户模板不存在"),
     BIZ_ERROR_WX_PUSH_TEMPLATE_PARAM_ERROR(400008003, "模板参数匹配异常"),
     BIZ_ERROR_WX_PUSH_ERROR(400008004, "小程序或者公众号推送失败"),
-    BIZ_ERROR_WX_SERVICE_UNOPEN(400008005,"服务未开通"),
+    BIZ_ERROR_WX_SERVICE_UNOPEN(400008005, "服务未开通"),
 
+    /**
+     * app强制升级
+     */
+    BIZ_ERROR_APP_FORCE_PUSH(400009000, "app强制升级"),
 
     /*****
      * 系统错误: 500xxxyyy
