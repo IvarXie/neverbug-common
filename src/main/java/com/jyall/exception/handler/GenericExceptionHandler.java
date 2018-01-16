@@ -65,6 +65,9 @@ public class GenericExceptionHandler extends BaseExceptionHandler<Throwable> {
         } else if (ex instanceof FeignException) {
             errMsg = ErrorMsg.parse(ex);
             status = FeignException.class.cast(ex).status();
+        }else{
+            status = 400;
+            errMsg = ErrorMsg.parse(ex);
         }
         return ResponseUtil.getResponse(status, errMsg);
     }

@@ -92,7 +92,7 @@ public class ErrorMsg implements Serializable {
             } else if (StringUtils.isNotEmpty(err)) {
                 if (!err.contains(errorIndex)) {
                     logger.error("其他错误", e);
-                    return new ErrorMsg(ErrorCode.BIZ_ERROR.value(), e.getMessage());
+                    return new ErrorMsg(ErrorCode.BIZ_ERROR.value(), e.getMessage(), ExceptionUtils.getFullStackTrace(e));
                 } else {
                     return JSON.parseObject(err.split("content:")[1], ErrorMsg.class);
                 }
