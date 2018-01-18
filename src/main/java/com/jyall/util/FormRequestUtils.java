@@ -53,10 +53,12 @@
 package com.jyall.util;
 
 import com.google.common.collect.Maps;
+import org.springframework.util.StreamUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.Map;
 import java.util.TreeMap;
@@ -91,6 +93,18 @@ public class FormRequestUtils {
     }
 
     /**
+     * 获取单个文件
+     * 使用treeMap 获取第一个数据
+     *
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    public static Map.Entry<String, byte[]> assemblyOneFile(HttpServletRequest request) throws Exception {
+        return assemblyOneFile(request, getBytes(request));
+    }
+
+    /**
      * 构建form的请求的参数
      *
      * @param request http请求的request，主要是获取content-type
@@ -103,6 +117,17 @@ public class FormRequestUtils {
         Map<String, Object> values = assemblyRequest(request, bytes);
         values.entrySet().stream().filter(entry -> entry.getValue() instanceof String).forEach(entry -> params.put(entry.getKey(), String.valueOf(entry.getValue())));
         return params;
+    }
+
+    /**
+     * 构建form的请求的参数
+     *
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    public static Map<String, String> assemblyRequestForm(HttpServletRequest request) throws Exception {
+        return assemblyRequestForm(request, getBytes(request));
     }
 
     /**
@@ -121,6 +146,20 @@ public class FormRequestUtils {
     }
 
     /**
+     * 构建请求的参数转换实体对象
+     * 调用gson的转换
+     *
+     * @param request
+     * @param clazz
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+    public static <T> T assemblyRequestForm(HttpServletRequest request, Class<T> clazz) throws Exception {
+        return assemblyRequestForm(request, getBytes(request), clazz);
+    }
+
+    /**
      * 构建文件的请求参数
      *
      * @param request http请求的request，主要是获取content-type
@@ -133,6 +172,17 @@ public class FormRequestUtils {
         Map<String, Object> values = assemblyRequest(request, bytes);
         values.entrySet().stream().filter(entry -> entry.getValue() instanceof byte[]).forEach(entry -> params.put(entry.getKey(), (byte[]) entry.getValue()));
         return params;
+    }
+
+    /**
+     * 构建文件的请求参数
+     *
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    public static Map<String, byte[]> assemblyRequestFile(HttpServletRequest request) throws Exception {
+        return assemblyRequestFile(request, getBytes(request));
     }
 
     public static Map<String, Object> assemblyRequest(HttpServletRequest request, byte[] dataOrigin) throws Exception {
@@ -318,5 +368,12 @@ public class FormRequestUtils {
             }
         }
         return -1;
+    }
+
+    private static byte[] getBytes(HttpServletRequest request) throws Exception {
+        InputStream in = request.getInputStream();
+        byte[] bytes = StreamUtils.copyToByteArray(in);
+        in.close();
+        return bytes;
     }
 }
