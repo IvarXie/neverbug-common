@@ -41,7 +41,7 @@ public class GenericExceptionHandler extends BaseExceptionHandler<Throwable> {
             errMsg.setDetail(getErrorStackTrace(ex));
         }
 
-        int status = ErrorCode.SYS_ERROR.value();
+        int status = 400;
         if (ex instanceof WebApplicationException) {
             status = ((WebApplicationException) ex).getResponse().getStatus();
         } else if (ex instanceof UndeclaredThrowableException) {
