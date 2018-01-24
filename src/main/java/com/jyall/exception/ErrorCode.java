@@ -182,6 +182,7 @@ public enum ErrorCode {
     THIRDBM_ALREADYBIND_MOBILE_BELONG_MID_MODIFY_MOBILE_ERROR(400007004, "第三方曾经绑定过该手机号，修改手机号出错"),
     THIRDBM_ERROR(400007005, "第三方绑定手机号出错"),
 
+
     /**
      * 微信小程序和公众号的推送
      **/
@@ -196,6 +197,13 @@ public enum ErrorCode {
      * app强制升级
      */
     BIZ_ERROR_APP_FORCE_PUSH(400009000, "app强制升级"),
+
+
+    /***** 微信支付错误 *****/
+    BIZ_ERROR_WXPAY_COMMON(400010000, "支付失败，请稍后再试"),
+    BIZ_ERROR_WXPAY_SIGN(400010001, "商户微信支付秘钥错误"),
+    BIZ_ERROR_WXPAY_MCHID(400010002, "支付商户号错误"),
+    BIZ_ERROR_WXPAY_MCH_NOEXIST(400010003, "商户支付信息未录入"),
 
     /*****
      * 系统错误: 500xxxyyy
