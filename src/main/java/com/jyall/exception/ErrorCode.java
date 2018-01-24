@@ -202,7 +202,7 @@ public enum ErrorCode {
     /***** 微信支付错误 *****/
     BIZ_ERROR_WXPAY_COMMON(400010000, "支付失败，请稍后再试"),
     BIZ_ERROR_WXPAY_SIGN(400010001, "商户微信支付秘钥错误"),
-    BIZ_ERROR_WXPAY_MCHID(400010002, "支付商户号错误"),
+    BIZ_ERROR_WXPAY_MCHID(400010002, "商户支付商户号错误或未绑定"),
     BIZ_ERROR_WXPAY_MCH_NOEXIST(400010003, "商户支付信息未录入"),
 
     /*****
