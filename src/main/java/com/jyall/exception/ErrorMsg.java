@@ -1,6 +1,7 @@
 package com.jyall.exception;
 
 import com.alibaba.fastjson.JSON;
+import feign.FeignException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -10,26 +11,26 @@ import java.io.Serializable;
 import java.util.concurrent.TimeoutException;
 
 /**
- * RESTful服务返回的错误信息
- *
- * @author guo.guanfei
- */
+ *  * RESTful服务返回的错误信息
+ *   *
+ *    * @author guo.guanfei
+ *     */
 public class ErrorMsg implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(ErrorMsg.class);
     private static final long serialVersionUID = 2640926329092743174L;
 
     private static String errorIndex = "content:";
     /**
-     * 统一错误码
-     **/
+     *      * 统一错误码
+     *           **/
     private int code;
     /**
-     * 错误信息摘要
-     **/
+     *      * 错误信息摘要
+     *           **/
     private String message;
     /**
-     * 错误信息详情（主要用于调试）
-     **/
+     *      * 错误信息详情（主要用于调试）
+     *           **/
     private String detail = "";
 
     public ErrorMsg() {
@@ -85,11 +86,14 @@ public class ErrorMsg implements Serializable {
     public static ErrorMsg parse(Throwable e) {
         String err = e.getMessage();
         try {
-            if (e.getCause() != null && e.getCause().getClass() == TimeoutException.class) {
+            if (e instanceof TimeoutException) {
                 return new ErrorMsg(ErrorCode.SYS_ERROR_RPC_CONNECTION, "远程服务调用超时");
-            } else if (e instanceof TimeoutException) {
+            } else if (e.getCause() != null && e.getCause().getClass() == TimeoutException.class) {
                 return new ErrorMsg(ErrorCode.SYS_ERROR_RPC_CONNECTION, "远程服务调用超时");
-            } else if (StringUtils.isNotEmpty(err)) {
+            } else if (e.getCause() != null && e.getCause().getClass() == FeignException.class) {
+                err = e.getCause().getMessage();
+            }
+            if (StringUtils.isNotEmpty(err)) {
                 if (!err.contains(errorIndex)) {
                     logger.error("其他错误", e);
                     return new ErrorMsg(ErrorCode.BIZ_ERROR.value(), e.getMessage(), ExceptionUtils.getFullStackTrace(e));
@@ -105,3 +109,4 @@ public class ErrorMsg implements Serializable {
         }
     }
 }
+
