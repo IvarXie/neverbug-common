@@ -11,26 +11,26 @@ import java.io.Serializable;
 import java.util.concurrent.TimeoutException;
 
 /**
- *  * RESTful服务返回的错误信息
- *   *
- *    * @author guo.guanfei
- *     */
+ * * RESTful服务返回的错误信息
+ * *
+ * * @author guo.guanfei
+ */
 public class ErrorMsg implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(ErrorMsg.class);
     private static final long serialVersionUID = 2640926329092743174L;
 
     private static String errorIndex = "content:";
     /**
-     *      * 统一错误码
-     *           **/
+     * * 统一错误码
+     **/
     private int code;
     /**
-     *      * 错误信息摘要
-     *           **/
+     * * 错误信息摘要
+     **/
     private String message;
     /**
-     *      * 错误信息详情（主要用于调试）
-     *           **/
+     * * 错误信息详情（主要用于调试）
+     **/
     private String detail = "";
 
     public ErrorMsg() {
@@ -84,19 +84,34 @@ public class ErrorMsg implements Serializable {
     }
 
     public static ErrorMsg parse(Throwable e) {
+        if (e instanceof TimeoutException) {
+            return new ErrorMsg(ErrorCode.SYS_ERROR_RPC_CONNECTION, "远程服务调用超时");
+        } else if (e.getCause() != null && e.getCause().getClass() == TimeoutException.class) {
+            return new ErrorMsg(ErrorCode.SYS_ERROR_RPC_CONNECTION, "远程服务调用超时");
+        }
         String err = e.getMessage();
         try {
-            if (e instanceof TimeoutException) {
-                return new ErrorMsg(ErrorCode.SYS_ERROR_RPC_CONNECTION, "远程服务调用超时");
-            } else if (e.getCause() != null && e.getCause().getClass() == TimeoutException.class) {
-                return new ErrorMsg(ErrorCode.SYS_ERROR_RPC_CONNECTION, "远程服务调用超时");
+            if (e instanceof FeignException) {
+                err = e.getMessage();
             } else if (e.getCause() != null && e.getCause().getClass() == FeignException.class) {
                 err = e.getCause().getMessage();
             }
             if (StringUtils.isNotEmpty(err)) {
                 if (!err.contains(errorIndex)) {
-                    logger.error("其他错误", e);
-                    return new ErrorMsg(ErrorCode.BIZ_ERROR.value(), e.getMessage(), ExceptionUtils.getFullStackTrace(e));
+                    err = ExceptionUtils.getFullStackTrace(e);
+                    if (!err.contains(errorIndex)) {
+                        logger.error("其他错误", e);
+                        return new ErrorMsg(ErrorCode.BIZ_ERROR.value(), e.getMessage(), ExceptionUtils.getFullStackTrace(e));
+                    } else {
+                        err = err.split("content:")[1];
+                        if (err.contains("{") && err.contains("}")) {
+                            err = err.substring(err.indexOf("{"), err.indexOf("}") + 1);
+                            return JSON.parseObject(err, ErrorMsg.class);
+                        } else {
+                            logger.error("其他错误", e);
+                            return new ErrorMsg(ErrorCode.BIZ_ERROR.value(), e.getMessage(), ExceptionUtils.getFullStackTrace(e));
+                        }
+                    }
                 } else {
                     return JSON.parseObject(err.split("content:")[1], ErrorMsg.class);
                 }
