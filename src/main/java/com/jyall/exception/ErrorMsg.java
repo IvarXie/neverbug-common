@@ -123,5 +123,9 @@ public class ErrorMsg implements Serializable {
             return new ErrorMsg(ErrorCode.SYS_ERROR, StringUtils.isNotEmpty(err) ? err : ExceptionUtils.getFullStackTrace(e));
         }
     }
+
+    public static ErrorMsg parse(Exception e){
+        return parse((Throwable) e);
+    }
 }
 
