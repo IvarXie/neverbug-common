@@ -103,7 +103,7 @@ public class ErrorMsg implements Serializable {
                         logger.error("其他错误", e);
                         return new ErrorMsg(ErrorCode.BIZ_ERROR.value(), e.getMessage(), ExceptionUtils.getFullStackTrace(e));
                     } else {
-                        err = err.split("content:")[1];
+                        err = err.split(errorIndex)[1];
                         if (err.contains("{") && err.contains("}")) {
                             err = err.substring(err.indexOf("{"), err.indexOf("}") + 1);
                             return JSON.parseObject(err, ErrorMsg.class);
@@ -113,7 +113,7 @@ public class ErrorMsg implements Serializable {
                         }
                     }
                 } else {
-                    return JSON.parseObject(err.split("content:")[1], ErrorMsg.class);
+                    return JSON.parseObject(err.split(errorIndex)[1], ErrorMsg.class);
                 }
             } else {
                 return new ErrorMsg(ErrorCode.GENERIC_ERROR.value(), e.getClass().getName(), ExceptionUtils.getFullStackTrace(e));
@@ -122,10 +122,6 @@ public class ErrorMsg implements Serializable {
             logger.error("从异常信息中解析ErrorMsg失败", e1);
             return new ErrorMsg(ErrorCode.SYS_ERROR, StringUtils.isNotEmpty(err) ? err : ExceptionUtils.getFullStackTrace(e));
         }
-    }
-
-    public static ErrorMsg parse(Exception e){
-        return parse((Throwable) e);
     }
 }
 
