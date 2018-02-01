@@ -1,13 +1,12 @@
 package com.jyall.jyctrller;
 
 import com.google.common.collect.Maps;
-import com.jyall.annotation.EnableJersey;
 import com.netflix.appinfo.ApplicationInfoManager;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.eureka.CloudEurekaClient;
 import org.springframework.cloud.netflix.eureka.EurekaClientConfigBean;
@@ -29,7 +28,8 @@ import java.util.Map;
 @Singleton
 @Component
 @ConditionalOnBean(annotation = EnableDiscoveryClient.class)
-@ConditionalOnProperty(name = "eureka.client.jyctrller.registered", havingValue = "true")
+//@ConditionalOnProperty(name = "eureka.client.jyctrller.registered", havingValue = "true")
+@ConditionalOnExpression("'${os.name}'=='Linux' && '${eureka.client.jyctrller.registered}'=='true'")
 public class JyctrllerRegister {
 
     /**
