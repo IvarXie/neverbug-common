@@ -21,6 +21,7 @@ import java.util.Map;
  * C层注册的bean
  * 使用@Singleton单态注解
  * 在 eureka.client.jyctrller.registered 为true的时候才会加载这个类
+ * 并且只在 Linux上注册
  * Created by zhao.weiwei
  * create on 2017/2/14 9:45
  * the email is zhao.weiwei@jyall.com.
