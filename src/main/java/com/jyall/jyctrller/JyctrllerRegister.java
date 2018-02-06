@@ -29,7 +29,6 @@ import java.util.Map;
 @Singleton
 @Component
 @ConditionalOnBean(annotation = EnableDiscoveryClient.class)
-//@ConditionalOnProperty(name = "eureka.client.jyctrller.registered", havingValue = "true")
 @ConditionalOnExpression("'${os.name}'=='Linux' && '${eureka.client.jyctrller.registered}'=='true'")
 public class JyctrllerRegister implements InitializingBean {
 
