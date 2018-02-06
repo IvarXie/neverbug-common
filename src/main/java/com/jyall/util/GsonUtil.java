@@ -33,8 +33,8 @@
 package com.jyall.util;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.List;
 import java.util.Map;
@@ -84,10 +84,12 @@ public class GsonUtil {
         JsonElement element = parser.parse(json);
         if (element.isJsonArray()) {
             JsonArray array = element.getAsJsonArray();
-            for (int i = 0; i < array.size(); i++)
+            for (int i = 0; i < array.size(); i++) {
                 list.add(json2Bean(array.get(i).toString(), clazz));
-        } else if (element.isJsonObject())
+            }
+        } else if (element.isJsonObject()) {
             list.add(json2Bean(element.getAsJsonObject().toString(), clazz));
+        }
         return list;
     }
 
@@ -98,17 +100,7 @@ public class GsonUtil {
      * @return
      */
     public static Map<String, String> json2Map(String json) {
-        Gson gson = new Gson();
-        Map map = gson.fromJson(json, Map.class);
-        Map<String, String> returnMap = Maps.newHashMap();
-        map.forEach((k, v) -> {
-            try {
-                returnMap.put(k.toString(), v.toString());
-            } catch (Exception e) {
-                System.out.println(k + ":" + v);
-            }
-        });
-        return returnMap;
+        return new Gson().fromJson(json, new TypeToken<Map<String, String>>() {}.getType());
     }
 
     /**
@@ -120,9 +112,9 @@ public class GsonUtil {
     public static JsonArray getAsJsonArray(String json) {
         JsonParser jsonParser = new JsonParser();
         JsonElement element = jsonParser.parse(json);
-        if (element.isJsonArray())
+        if (element.isJsonArray()) {
             return element.getAsJsonArray();
-        else if (element.isJsonObject()) {
+        }else if (element.isJsonObject()) {
             JsonArray array = new JsonArray();
             array.add(element.getAsJsonObject());
             return array;
@@ -139,10 +131,11 @@ public class GsonUtil {
     public static JsonObject getAsJsonObject(String json) {
         JsonParser jsonParser = new JsonParser();
         JsonElement element = jsonParser.parse(json);
-        if (element.isJsonObject())
+        if (element.isJsonObject()) {
             return element.getAsJsonObject();
-        else
+        } else {
             return null;
+        }
     }
 
     /**
@@ -153,7 +146,7 @@ public class GsonUtil {
      */
     public static boolean isJson(String str) {
         try {
-            new JsonParser().parse(str).getAsJsonObject();
+            new JsonParser().parse(str);
             return true;
         } catch (Exception e) {
             return false;
@@ -174,6 +167,13 @@ public class GsonUtil {
         return google.toJson(je);
     }
 
+    /**
+     * 格式化json
+     *
+     * @param json
+     * @return
+     * @throws Exception
+     */
     public static String formatJson(String json) throws Exception {
         Gson google = new GsonBuilder().setPrettyPrinting().create();
         JsonParser jp = new JsonParser();
