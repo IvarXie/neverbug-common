@@ -100,7 +100,8 @@ public class GsonUtil {
      * @return
      */
     public static Map<String, String> json2Map(String json) {
-        return new Gson().fromJson(json, new TypeToken<Map<String, String>>() {}.getType());
+        return new Gson().fromJson(json, new TypeToken<Map<String, String>>() {
+        }.getType());
     }
 
     /**
@@ -114,7 +115,7 @@ public class GsonUtil {
         JsonElement element = jsonParser.parse(json);
         if (element.isJsonArray()) {
             return element.getAsJsonArray();
-        }else if (element.isJsonObject()) {
+        } else if (element.isJsonObject()) {
             JsonArray array = new JsonArray();
             array.add(element.getAsJsonObject());
             return array;
@@ -160,11 +161,7 @@ public class GsonUtil {
      * @return 格式化以后的json
      */
     public static String formatJson(Object obj) throws Exception {
-        String json = toJson(obj);
-        Gson google = new GsonBuilder().setPrettyPrinting().create();
-        JsonParser jp = new JsonParser();
-        JsonElement je = jp.parse(json);
-        return google.toJson(je);
+        return new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(toJson(obj)));
     }
 
     /**
