@@ -83,7 +83,7 @@ public class TracerContext {
             setCurrentSpanMethod = method;
 
             Method method2 = clazz.getDeclaredMethod("getCurrentSpan");
-            method.setAccessible(true);
+            method2.setAccessible(true);
             getCurrentSpanMethod = method2;
         } catch (Exception e) {
             e.printStackTrace(System.out);
