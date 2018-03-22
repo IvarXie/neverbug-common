@@ -37,6 +37,8 @@ import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Method;
+
 /**
  * trace日志追踪的上下文
  * <p>
@@ -128,5 +130,30 @@ public class TracerContext {
      */
     public void addTag(String key, String value) {
         tracer.getCurrentSpan().tag(key, value);
+    }
+
+    /**
+     * 获取span
+     *
+     * @return
+     */
+    public Span getCurrentSpan() {
+        return tracer.getCurrentSpan();
+    }
+
+    /**
+     * 设置  setCurrentSpan
+     *
+     * @param span
+     */
+    public void setCurrentSpan(Span span) {
+        try {
+            Class<?> clazz = Class.forName("org.springframework.cloud.sleuth.trace.SpanContextHolder");
+            Method method = clazz.getDeclaredMethod("setCurrentSpan", Span.class);
+            method.setAccessible(true);
+            method.invoke(null, span);
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
     }
 }
