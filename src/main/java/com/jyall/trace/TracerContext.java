@@ -72,7 +72,24 @@ public class TracerContext implements InitializingBean {
     /**
      * 设置CurrentSpan的私有方法
      */
-    private Method setCurrentSpanMethod;
+    private static Method setCurrentSpanMethod;
+
+    private static Method getCurrentSpanMethod;
+
+    static {
+        try {
+            Class<?> clazz = Class.forName("org.springframework.cloud.sleuth.trace.SpanContextHolder");
+            Method method = clazz.getDeclaredMethod("setCurrentSpan", Span.class);
+            method.setAccessible(true);
+            setCurrentSpanMethod = method;
+
+            Method method2 = clazz.getDeclaredMethod("getCurrentSpan");
+            method.setAccessible(true);
+            getCurrentSpanMethod = method2;
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
+    }
 
     @Autowired
     private Tracer tracer;
@@ -142,8 +159,12 @@ public class TracerContext implements InitializingBean {
      *
      * @return
      */
-    public Span getCurrentSpan() {
-        return tracer.getCurrentSpan();
+    public static Span getCurrentSpan() {
+        try {
+            return Span.class.cast(getCurrentSpanMethod.invoke(null));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
@@ -151,7 +172,7 @@ public class TracerContext implements InitializingBean {
      *
      * @param span
      */
-    public void setCurrentSpan(Span span) {
+    public static void setCurrentSpan(Span span) {
         if (span != null) {
             try {
                 setCurrentSpanMethod.invoke(null, span);
@@ -163,13 +184,16 @@ public class TracerContext implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
+
+    }
+
+    public static Runnable getRunnable(Runnable runnable) {
         try {
-            Class<?> clazz = Class.forName("org.springframework.cloud.sleuth.trace.SpanContextHolder");
-            Method method = clazz.getDeclaredMethod("setCurrentSpan", Span.class);
-            method.setAccessible(true);
-            this.setCurrentSpanMethod = method;
+            Span current = Span.class.cast(getCurrentSpanMethod.invoke(null));
+            return new SpanRunnable(current, runnable);
         } catch (Exception e) {
-            e.printStackTrace(System.out);
+            return runnable;
         }
     }
+
 }
