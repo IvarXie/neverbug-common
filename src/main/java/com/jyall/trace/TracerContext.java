@@ -32,6 +32,7 @@
 */
 package com.jyall.trace;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
@@ -50,7 +51,7 @@ import java.lang.reflect.Method;
  * Copyright is 金色家园网络科技有限公司
  */
 @Component
-public class TracerContext {
+public class TracerContext implements InitializingBean {
 
     /**
      * 商户code的静态常量
@@ -68,6 +69,8 @@ public class TracerContext {
      * tokenid的静态常量
      **/
     public static final String TOKEN_ID = "tokenid";
+
+    private Method setCurrentSpanMethod;
 
     @Autowired
     private Tracer tracer;
@@ -149,13 +152,22 @@ public class TracerContext {
     public void setCurrentSpan(Span span) {
         if (span != null) {
             try {
-                Class<?> clazz = Class.forName("org.springframework.cloud.sleuth.trace.SpanContextHolder");
-                Method method = clazz.getDeclaredMethod("setCurrentSpan", Span.class);
-                method.setAccessible(true);
-                method.invoke(null, span);
+                setCurrentSpanMethod.invoke(null, span);
             } catch (Exception e) {
                 e.printStackTrace(System.out);
             }
+        }
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        try {
+            Class<?> clazz = Class.forName("org.springframework.cloud.sleuth.trace.SpanContextHolder");
+            Method method = clazz.getDeclaredMethod("setCurrentSpan", Span.class);
+            method.setAccessible(true);
+            this.setCurrentSpanMethod = method;
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
         }
     }
 }
