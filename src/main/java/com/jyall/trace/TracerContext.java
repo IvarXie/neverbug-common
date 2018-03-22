@@ -147,13 +147,15 @@ public class TracerContext {
      * @param span
      */
     public void setCurrentSpan(Span span) {
-        try {
-            Class<?> clazz = Class.forName("org.springframework.cloud.sleuth.trace.SpanContextHolder");
-            Method method = clazz.getDeclaredMethod("setCurrentSpan", Span.class);
-            method.setAccessible(true);
-            method.invoke(null, span);
-        } catch (Exception e) {
-            e.printStackTrace(System.out);
+        if (span != null) {
+            try {
+                Class<?> clazz = Class.forName("org.springframework.cloud.sleuth.trace.SpanContextHolder");
+                Method method = clazz.getDeclaredMethod("setCurrentSpan", Span.class);
+                method.setAccessible(true);
+                method.invoke(null, span);
+            } catch (Exception e) {
+                e.printStackTrace(System.out);
+            }
         }
     }
 }
