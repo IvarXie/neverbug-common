@@ -97,15 +97,12 @@ public class TraceMvcInterceptor implements HandlerInterceptor {
             logger.error("header error", e);
         }
         logger.debug("mvc preHandle add trace span end");
-        Set<String> setlog = traceProperty.getHeaders();
-        setlog.forEach(k -> logger.info("trace header [{}={}]", k, tracerContext.getTag(k)));
+        traceProperty.getHeaders().forEach(k -> logger.info("trace header [{}={}]", k, tracerContext.getTag(k)));
         return true;
     }
 
     @Override
-    public void postHandle(HttpServletRequest request,
-                           HttpServletResponse response, Object handler,
-                           ModelAndView modelAndView) throws Exception {
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
     }
 
     /**
@@ -113,7 +110,6 @@ public class TraceMvcInterceptor implements HandlerInterceptor {
      * 这个方法的主要作用是用于进行资源清理工作的。
      */
     @Override
-    public void afterCompletion(HttpServletRequest request,
-                                HttpServletResponse response, Object handler, Exception ex) throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
     }
 }

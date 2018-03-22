@@ -3,15 +3,16 @@ package com.jyall.jyctrller;
 import com.google.common.collect.Maps;
 import com.netflix.appinfo.ApplicationInfoManager;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.eureka.CloudEurekaClient;
 import org.springframework.cloud.netflix.eureka.EurekaClientConfigBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Singleton;
@@ -26,11 +27,12 @@ import java.util.Map;
  * create on 2017/2/14 9:45
  * the email is zhao.weiwei@jyall.com.
  */
+@Order(0)
 @Singleton
 @Component
 @ConditionalOnBean(annotation = EnableDiscoveryClient.class)
 @ConditionalOnExpression("'${os.name}'=='Linux' && '${eureka.client.jyctrller.registered}'=='true'")
-public class JyctrllerRegister implements InitializingBean {
+public class JyctrllerRegister implements CommandLineRunner {
 
     /**
      * 注入原有的服务注册与发现的配置
@@ -54,7 +56,7 @@ public class JyctrllerRegister implements InitializingBean {
     private ApplicationContext applicationContext;
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void run(String... args) {
         EurekaClientConfigBean bean = new EurekaClientConfigBean();
         /* 将原来的服务发现的属性copy到属性 */
         BeanUtils.copyProperties(this.config, bean);
