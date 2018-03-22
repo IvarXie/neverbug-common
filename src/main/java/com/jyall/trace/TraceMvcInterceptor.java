@@ -72,8 +72,7 @@ public class TraceMvcInterceptor implements HandlerInterceptor {
      * 主要是添加trace的Tag，配置的属性
      */
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-            throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         logger.debug("mvc preHandle add trace span start");
         try {
             Set<String> set = traceProperty.getHeaders();
