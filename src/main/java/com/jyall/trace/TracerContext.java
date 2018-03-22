@@ -69,7 +69,9 @@ public class TracerContext implements InitializingBean {
      * tokenid的静态常量
      **/
     public static final String TOKEN_ID = "tokenid";
-
+    /**
+     * 设置CurrentSpan的私有方法
+     */
     private Method setCurrentSpanMethod;
 
     @Autowired
