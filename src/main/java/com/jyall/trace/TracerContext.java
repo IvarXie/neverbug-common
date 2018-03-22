@@ -32,7 +32,6 @@
 */
 package com.jyall.trace;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
@@ -51,7 +50,7 @@ import java.lang.reflect.Method;
  * Copyright is 金色家园网络科技有限公司
  */
 @Component
-public class TracerContext implements InitializingBean {
+public class TracerContext {
 
     /**
      * 商户code的静态常量
@@ -180,11 +179,6 @@ public class TracerContext implements InitializingBean {
                 e.printStackTrace(System.out);
             }
         }
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-
     }
 
     public static Runnable getRunnable(Runnable runnable) {
