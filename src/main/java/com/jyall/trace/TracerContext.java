@@ -90,6 +90,7 @@ public class TracerContext {
             getCurrentSpanMethod.setAccessible(true);
         } catch (Exception e) {
             e.printStackTrace(System.out);
+            throw new Error(e);
         }
     }
 
