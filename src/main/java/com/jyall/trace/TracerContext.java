@@ -72,25 +72,22 @@ public class TracerContext {
 
     @Autowired
     private Tracer tracer;
-
-
     /**
      * 设置CurrentSpan的私有方法
      */
     private static Method setCurrentSpanMethod;
-
+    /**
+     * 获取CurrentSpan的私有方法
+     */
     private static Method getCurrentSpanMethod;
 
     static {
         try {
             Class<?> clazz = Class.forName("org.springframework.cloud.sleuth.trace.SpanContextHolder");
-            Method method = clazz.getDeclaredMethod("setCurrentSpan", Span.class);
-            method.setAccessible(true);
-            setCurrentSpanMethod = method;
-
-            Method method2 = clazz.getDeclaredMethod("getCurrentSpan");
-            method.setAccessible(true);
-            getCurrentSpanMethod = method2;
+            setCurrentSpanMethod = clazz.getDeclaredMethod("setCurrentSpan", Span.class);
+            setCurrentSpanMethod.setAccessible(true);
+            getCurrentSpanMethod = clazz.getDeclaredMethod("getCurrentSpan");
+            getCurrentSpanMethod.setAccessible(true);
         } catch (Exception e) {
             e.printStackTrace(System.out);
         }
@@ -187,9 +184,9 @@ public class TracerContext {
     /**
      * 获取切换线程的Callable
      *
-     * @param callable
-     * @param <V>
-     * @return
+     * @param callable 多线程实现
+     * @param <V>      泛型归于
+     * @return 基于Tracer的Callable实现
      */
     public <V> Callable<V> wrap(Callable<V> callable) {
         return tracer.wrap(callable);
@@ -198,8 +195,8 @@ public class TracerContext {
     /**
      * 获取切换线程的Runnable
      *
-     * @param runnable
-     * @return
+     * @param runnable Runnable的实现
+     * @return 基于Tracer的Runnable实现
      */
     public Runnable wrap(Runnable runnable) {
         return tracer.wrap(runnable);
