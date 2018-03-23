@@ -37,6 +37,7 @@ import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
 /**
@@ -71,6 +72,57 @@ public class TracerContext {
 
     @Autowired
     private Tracer tracer;
+
+
+    /**
+     * 设置CurrentSpan的私有方法
+     */
+    private static Method setCurrentSpanMethod;
+
+    private static Method getCurrentSpanMethod;
+
+    static {
+        try {
+            Class<?> clazz = Class.forName("org.springframework.cloud.sleuth.trace.SpanContextHolder");
+            Method method = clazz.getDeclaredMethod("setCurrentSpan", Span.class);
+            method.setAccessible(true);
+            setCurrentSpanMethod = method;
+
+            Method method2 = clazz.getDeclaredMethod("getCurrentSpan");
+            method.setAccessible(true);
+            getCurrentSpanMethod = method2;
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
+    }
+
+    /**
+     * 获取span
+     *
+     * @return
+     */
+    public static Span getCurrentSpan() {
+        try {
+            return Span.class.cast(getCurrentSpanMethod.invoke(null));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * 设置  setCurrentSpan
+     *
+     * @param span
+     */
+    public static void setCurrentSpan(Span span) {
+        if (span != null) {
+            try {
+                setCurrentSpanMethod.invoke(null, span);
+            } catch (Exception e) {
+                e.printStackTrace(System.out);
+            }
+        }
+    }
 
     /**
      * 获取商户code
