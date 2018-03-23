@@ -37,7 +37,7 @@ import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Method;
+import java.util.concurrent.Callable;
 
 /**
  * trace日志追踪的上下文
@@ -68,24 +68,6 @@ public class TracerContext {
      * tokenid的静态常量
      **/
     public static final String TOKEN_ID = "tokenid";
-    /**
-     * 设置CurrentSpan的私有方法
-     */
-    private static Method setCurrentSpanMethod;
-
-    private static Method getCurrentSpanMethod;
-
-    static {
-        try {
-            Class<?> clazz = Class.forName("org.springframework.cloud.sleuth.trace.SpanContextHolder");
-            setCurrentSpanMethod = clazz.getDeclaredMethod("setCurrentSpan", Span.class);
-            setCurrentSpanMethod.setAccessible(true);
-            getCurrentSpanMethod = clazz.getDeclaredMethod("getCurrentSpan");
-            getCurrentSpanMethod.setAccessible(true);
-        } catch (Exception e) {
-            e.printStackTrace(System.out);
-        }
-    }
 
     @Autowired
     private Tracer tracer;
@@ -151,40 +133,23 @@ public class TracerContext {
     }
 
     /**
-     * 获取span
+     * 获取切换线程的Callable
      *
+     * @param callable
+     * @param <V>
      * @return
      */
-    public static Span getCurrentSpan() {
-        try {
-            return Span.class.cast(getCurrentSpanMethod.invoke(null));
-        } catch (Exception e) {
-            return null;
-        }
+    public <V> Callable<V> wrap(Callable<V> callable) {
+        return tracer.wrap(callable);
     }
 
     /**
-     * 设置  setCurrentSpan
+     * 获取切换线程的Runnable
      *
-     * @param span
+     * @param runnable
+     * @return
      */
-    public static void setCurrentSpan(Span span) {
-        if (span != null) {
-            try {
-                setCurrentSpanMethod.invoke(null, span);
-            } catch (Exception e) {
-                e.printStackTrace(System.out);
-            }
-        }
+    public Runnable wrap(Runnable runnable) {
+        return tracer.wrap(runnable);
     }
-
-    public static Runnable getRunnable(Runnable runnable) {
-        try {
-            Span current = Span.class.cast(getCurrentSpanMethod.invoke(null));
-            return new SpanRunnable(current, runnable);
-        } catch (Exception e) {
-            return runnable;
-        }
-    }
-
 }
