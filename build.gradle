@@ -31,7 +31,7 @@ apply plugin: "io.spring.dependency-management"
 apply plugin: 'org.sonarqube'
 
 // 版本信息
-version = "0.0.6-SNAPSHOT"
+version = "0.0.5-SNAPSHOT"
 group = "com.jyall"
 // 发布包的文件名前缀
 def prjArtifactId = "jyall-common"
