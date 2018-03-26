@@ -34,6 +34,7 @@ package com.jyall.feign;
 
 import com.jyall.annotation.EnableJersey;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Configuration;
 
@@ -51,7 +52,7 @@ import javax.ws.rs.ApplicationPath;
 @Configuration
 @ApplicationPath("/v1")
 @ConditionalOnBean(annotation = EnableJersey.class)
-public class JerseyConfig extends ResourceConfig {
+public class JerseyConfig extends ResourceConfig{
 
     public JerseyConfig() {
         // 注册异常处理类和swagger相关Provider
