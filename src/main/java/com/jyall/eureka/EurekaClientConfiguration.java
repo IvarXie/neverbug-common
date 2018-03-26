@@ -50,14 +50,13 @@
  ***         ___)( )(___                               ***
  ***        (((__) (__)))                              ***
  ********************************************************/
-package com.jyall.eureka;
+package com.jyall.weixin.accredit.config;
 
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.discovery.DiscoveryClient;
 import com.netflix.discovery.EurekaClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.cloud.netflix.eureka.CloudEurekaClient;
 import org.springframework.cloud.netflix.eureka.EurekaClientConfigBean;
@@ -67,7 +66,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
 /**
- * <p>
+ * 在非Linux的环境下，不注册到eureka上面
  *
  * @author zhao.weiwei
  * Created on 2018/3/26 14:25
@@ -77,20 +76,16 @@ import org.springframework.core.annotation.Order;
 @Configuration
 @Order(Integer.MIN_VALUE)
 @ConditionalOnExpression("'${os.name}'!='Linux'")
-public class EurekaClientRegister {
+public class EurekaClientConfiguration {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    private ApplicationInfoManager manager;
-    @Autowired
-    private EurekaClientConfigBean config;
-    @Autowired
-    private DiscoveryClient.DiscoveryClientOptionalArgs optionalArgs;
-    @Autowired
-    private ApplicationContext context;
-
     @Bean(destroyMethod = "shutdown")
-    public EurekaClient eurekaClient() {
+    public EurekaClient eurekaClient(
+            ApplicationInfoManager manager,
+            EurekaClientConfigBean config,
+            DiscoveryClient.DiscoveryClientOptionalArgs optionalArgs,
+            ApplicationContext context) {
+        logger.warn("curent jre env is {},it will not register to the eureka", System.getProperty("os.name"));
         config.setRegisterWithEureka(false);
         return new CloudEurekaClient(manager, config, optionalArgs, context);
     }
