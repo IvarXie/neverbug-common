@@ -50,7 +50,7 @@
  ***         ___)( )(___                               ***
  ***        (((__) (__)))                              ***
  ********************************************************/
-package com.jyall.weixin.accredit.config;
+package com.jyall.eureka;
 
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.discovery.DiscoveryClient;
@@ -74,7 +74,6 @@ import org.springframework.core.annotation.Order;
  * Copyright is 金色家园网络科技有限公司
  */
 @Configuration
-@Order(Integer.MIN_VALUE)
 @ConditionalOnExpression("'${os.name}'!='Linux'")
 public class EurekaClientConfiguration {
     private Logger logger = LoggerFactory.getLogger(getClass());

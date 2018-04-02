@@ -33,8 +33,10 @@
 package com.jyall.feign;
 
 import com.jyall.annotation.EnableJersey;
+import com.wordnik.swagger.jersey.listing.ApiListingResource;
+import com.wordnik.swagger.jersey.listing.JerseyApiDeclarationProvider;
+import com.wordnik.swagger.jersey.listing.JerseyResourceListingProvider;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Configuration;
 
@@ -52,10 +54,11 @@ import javax.ws.rs.ApplicationPath;
 @Configuration
 @ApplicationPath("/v1")
 @ConditionalOnBean(annotation = EnableJersey.class)
-public class JerseyConfig extends ResourceConfig{
+public class JerseyConfig extends ResourceConfig {
 
     public JerseyConfig() {
-        // 注册异常处理类和swagger相关Provider
-        packages("com.wordnik.swagger.jersey.listing");
+        register(ApiListingResource.class);
+        register(JerseyApiDeclarationProvider.class);
+        register(JerseyResourceListingProvider.class);
     }
 }
