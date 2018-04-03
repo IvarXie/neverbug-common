@@ -53,10 +53,21 @@
 package com.jyall.util;
 
 
+import com.google.common.collect.Lists;
 import org.springframework.beans.BeanUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.net.JarURLConnection;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * 反射的工具类
@@ -121,4 +132,56 @@ public class ReflectUtils {
         BeanUtils.copyProperties(src, t, ignore);
         return t;
     }
+
+    /**
+     * 获取所有加载的class
+     *
+     * @return
+     */
+    public static List<String> getLoadClasses() throws Exception {
+        List<String> list = Lists.newArrayList();
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        while (true) {
+            if (classLoader instanceof URLClassLoader) {
+                URLClassLoader urlClassLoader = (URLClassLoader) classLoader;
+                Field ucpField = URLClassLoader.class.getDeclaredField("ucp");
+                ucpField.setAccessible(true);
+                URL[] urls = URLClassLoader.class.cast(urlClassLoader).getURLs();
+                Arrays.stream(urls).forEach(url -> {
+                    try {
+                        String protocol = url.getProtocol();
+                        if ("jar".equals(protocol)) {
+                            JarFile jarFile = ((JarURLConnection) url.openConnection()).getJarFile();
+                            list.addAll(getClassNameByJar(jarFile));
+                        } else if ("file".equals(protocol)) {
+                            JarFile jarFile = new JarFile(URLDecoder.decode(url.getFile(), "UTF-8"));
+                            list.addAll(getClassNameByJar(jarFile));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+            classLoader = classLoader.getParent();
+            if (classLoader == null) {
+                break;
+            }
+        }
+        return list;
+    }
+
+    private static List<String> getClassNameByJar(JarFile jarFile) {
+        List<String> jarClass = new ArrayList<>();
+        Enumeration<JarEntry> entrys = jarFile.entries();
+        while (entrys.hasMoreElements()) {
+            JarEntry jarEntry = entrys.nextElement();
+            String entryName = jarEntry.getName();
+            if (entryName.endsWith(".class")) {
+                entryName = entryName.replace("/", ".").substring(0, entryName.lastIndexOf("."));
+                jarClass.add(entryName);
+            }
+        }
+        return jarClass;
+    }
+
 }
