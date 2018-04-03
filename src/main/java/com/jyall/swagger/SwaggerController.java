@@ -76,7 +76,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("/swagger")
 @ConditionalOnBean(annotation = EnableSwagger.class)
-public class SwaggerTitleController {
+public class SwaggerController {
     @Value("${spring.application.name:swagger}")
     private String application = "";
 
