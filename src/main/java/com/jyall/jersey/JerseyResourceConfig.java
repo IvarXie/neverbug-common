@@ -52,6 +52,7 @@
  ********************************************************/
 package com.jyall.jersey;
 
+import com.wordnik.swagger.jersey.listing.JerseyResourceListingProvider;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import javax.ws.rs.ApplicationPath;
@@ -68,6 +69,6 @@ import javax.ws.rs.ApplicationPath;
 public class JerseyResourceConfig extends ResourceConfig {
     public JerseyResourceConfig() {
 //        register(JerseyApiDeclarationProvider.class);
-//        register(JerseyResourceListingProvider.class);
+        register(JerseyResourceListingProvider.class);
     }
 }
