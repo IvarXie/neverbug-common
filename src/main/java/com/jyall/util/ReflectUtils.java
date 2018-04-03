@@ -54,20 +54,22 @@ package com.jyall.util;
 
 
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
+import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 /**
  * 反射的工具类
@@ -158,8 +160,13 @@ public class ReflectUtils {
                                 JarFile jarFile = ((JarURLConnection) url.openConnection()).getJarFile();
                                 list.addAll(getClassNameByJar(jarFile));
                             } else if ("file".equals(protocol)) {
-                                JarFile jarFile = new JarFile(URLDecoder.decode(url.getFile(), "UTF-8"));
-                                list.addAll(getClassNameByJar(jarFile));
+                                File file = new File(URLDecoder.decode(url.getFile(), "UTF-8"));
+                                if (file.isFile()) {
+                                    JarFile jarFile = new JarFile(file);
+                                    list.addAll(getClassNameByJar(jarFile));
+                                } else if (file.isDirectory()) {
+                                    list.addAll(getClassNameByDirectory(file));
+                                }
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -188,5 +195,31 @@ public class ReflectUtils {
             }
         }
         return jarClass;
+    }
+
+    private static List<String> getClassNameByDirectory(File file) throws Exception {
+        List<String> list = Lists.newArrayList();
+        List<File> classfiles = Lists.newArrayList();
+        Files.walkFileTree(Paths.get(file.getAbsolutePath()), new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                if (file.toFile().isFile() && file.toFile().getName().endsWith(".class")) {
+                    classfiles.add(file.toFile());
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
+        classfiles.forEach(classfile -> {
+            List<String> stack = Lists.newArrayList();
+            stack.add(classfile.getName().substring(0, classfile.getName().length() - 6));
+            File current = classfile.getParentFile();
+            while (!current.equals(file)) {
+                stack.add(current.getName());
+                current = current.getParentFile();
+            }
+            Collections.reverse(stack);
+            list.add(stack.stream().reduce("", (e1, e2) -> e1 + "." + e2));
+        });
+        return list.stream().filter(StringUtils::isNoneEmpty).collect(Collectors.toList());
     }
 }
