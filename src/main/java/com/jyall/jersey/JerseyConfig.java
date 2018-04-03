@@ -66,8 +66,8 @@ public class JerseyConfig {
      *
      * @return
      */
-    @Bean
     @ConditionalOnMissingBean
+    @Bean(name = "defaultJerseyResourceConfig")
     public ResourceConfig resourceConfig() throws Exception {
         ClassPool pool = ClassPool.getDefault();
         CtClass cc = pool.makeClass(getClass().getPackage() + "." + UUID.randomUUID().toString().replaceAll("-", "").toUpperCase());
