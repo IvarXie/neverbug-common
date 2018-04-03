@@ -25,6 +25,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
  * swagger的配置类
@@ -38,7 +40,7 @@ import org.springframework.core.annotation.Order;
 @Configuration
 @ConditionalOnBean(annotation = EnableSwagger.class)
 @EnableConfigurationProperties(SwaggerProperty.class)
-public class SwaggerConfiguration implements CommandLineRunner {
+public class SwaggerConfiguration extends WebMvcConfigurerAdapter implements CommandLineRunner {
 
     @Autowired
     private SwaggerProperty swaggerProperty;
@@ -70,5 +72,11 @@ public class SwaggerConfiguration implements CommandLineRunner {
                 null));
         ScannerFactory.setScanner(new DefaultJaxrsScanner());
         ClassReaders.setReader(new JerseyApiReader());
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/", "classpath:/templates/", "classpath:/META-INF/resources/webjars/");
+        super.addResourceHandlers(registry);
     }
 }

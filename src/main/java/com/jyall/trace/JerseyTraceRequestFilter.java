@@ -43,7 +43,6 @@ import org.springframework.stereotype.Component;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.MultivaluedMap;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
 
@@ -73,7 +72,7 @@ public class JerseyTraceRequestFilter implements ContainerRequestFilter {
     private TracerContext tracerContext;
 
     @Override
-    public void filter(ContainerRequestContext requestContext) throws IOException {
+    public void filter(ContainerRequestContext requestContext) {
         logger.debug("JerseyTraceRequestFilter add trace tag");
         Set<String> set = traceProperty.getHeaders();
         MultivaluedMap<String, String> map = requestContext.getHeaders();
@@ -94,6 +93,6 @@ public class JerseyTraceRequestFilter implements ContainerRequestFilter {
         });
         logger.debug("JerseyTraceRequestFilter add trace tag success");
         Set<String> logSet = traceProperty.getHeaders();
-        logSet.forEach(k -> logger.info("trace header [{}={}]", k, tracerContext.getTag(k)));
+        logSet.forEach(k -> logger.debug("trace header [{}={}]", k, tracerContext.getTag(k)));
     }
 }

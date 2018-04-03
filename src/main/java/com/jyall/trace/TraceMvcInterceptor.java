@@ -96,7 +96,7 @@ public class TraceMvcInterceptor implements HandlerInterceptor {
             logger.error("header error", e);
         }
         logger.debug("mvc preHandle add trace span end");
-        traceProperty.getHeaders().forEach(k -> logger.info("trace header [{}={}]", k, tracerContext.getTag(k)));
+        traceProperty.getHeaders().forEach(k -> logger.debug("trace header [{}={}]", k, tracerContext.getTag(k)));
         return true;
     }
 
