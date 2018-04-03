@@ -72,8 +72,8 @@ public class JerseyConfig {
     @Bean(name = "defaultJerseyResourceConfig")
     public ResourceConfig resourceConfig() throws Exception {
         ClassPool pool = ClassPool.getDefault();
-        ClassClassPath classPath = new ClassClassPath(this.getClass());
-        pool.insertClassPath(classPath);
+        pool.insertClassPath(new ClassClassPath(ResourceConfig.class));
+        pool.insertClassPath(new ClassClassPath(ApplicationPath.class));
         CtClass cc = pool.makeClass(getClass().getPackage() + "." + UUID.randomUUID().toString().replaceAll("-", "").toUpperCase());
         CtClass superClass = pool.get(ResourceConfig.class.getName());
         cc.setSuperclass(superClass);
