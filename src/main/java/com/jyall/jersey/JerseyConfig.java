@@ -33,12 +33,21 @@
 package com.jyall.jersey;
 
 import com.jyall.annotation.EnableJersey;
-import com.jyall.jersey.JerseyResourceConfig;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.ClassFile;
+import javassist.bytecode.ConstPool;
+import javassist.bytecode.annotation.Annotation;
+import javassist.bytecode.annotation.StringMemberValue;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import javax.ws.rs.ApplicationPath;
+import java.util.UUID;
 
 /**
  * jersey的自动加载
@@ -59,7 +68,18 @@ public class JerseyConfig {
      */
     @Bean
     @ConditionalOnMissingBean
-    public ResourceConfig resourceConfig() {
-        return new JerseyResourceConfig();
+    public ResourceConfig resourceConfig() throws Exception {
+        ClassPool pool = ClassPool.getDefault();
+        CtClass cc = pool.makeClass("com.jyall.jersey." + UUID.randomUUID().toString().replaceAll("-", ""));
+        CtClass superClass = pool.get(ResourceConfig.class.getName());
+        cc.setSuperclass(superClass);
+        ClassFile ccFile = cc.getClassFile();
+        ConstPool constPool = ccFile.getConstPool();
+        AnnotationsAttribute annotations = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
+        Annotation annotation = new Annotation(ApplicationPath.class.getName(), constPool);
+        annotation.addMemberValue("value", new StringMemberValue("/v1", constPool));
+        annotations.addAnnotation(annotation);
+        ccFile.addAttribute(annotations);
+        return ResourceConfig.class.cast(cc.toClass().newInstance());
     }
 }
