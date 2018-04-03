@@ -61,6 +61,7 @@ import org.glassfish.jersey.servlet.WebConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import scala.Some;
 import scala.collection.immutable.List;
@@ -97,28 +98,30 @@ public class ApiListingResource extends com.wordnik.swagger.jersey.listing.ApiLi
     @Override
     public Response apiDeclaration(String route, Application app, WebConfig wc, HttpHeaders httpHeaders, UriInfo uriInfo) {/*自定义的header参数*/
         Response response = super.apiDeclaration(route, app, wc, httpHeaders, uriInfo);
-        ApiListing apiListing = (ApiListing) response.getEntity();
-        Set<String> headers = traceProperty.getHeaders();
-        if (headers.size() > 0) {
-            Map<String, String> headerMap = traceProperty.getHeaderMap();
-            int count = apiListing.apis().size();
-            for (int i = 0; i < count; i++) {
-                ApiDescription description = apiListing.apis().apply(i);
-                int operations = description.operations().size();
-                for (int j = 0; j < operations; j++) {
-                    Operation operation = description.operations().apply(j);
-                    List<Parameter> list = operation.parameters();
-                    /*删除已有的header*/
-                    headers.removeAll(currentHeaderParams(list));
-                    logger.info("the method {} add the header is {}", operation.method(), headers);
-                    /* 添加自定义的header参数 */
-                    for (String header : headers) {
-                        list = list.$colon$colon(new Parameter(header, new Some<>(header), new Some<>(headerMap.getOrDefault(header, "")), false, false, "string", AnyAllowableValues$.MODULE$, "header", new Some<>("")));
-                    }
-                    try {/*使用反射获取parameters的Field*/
-                        ReflectUtils.setField(operation, "parameters", list);
-                    } catch (Exception e) {
-                        logger.error("assemeble add param error", e);
+        if (response.getStatus() == HttpStatus.OK.value()) {
+            ApiListing apiListing = (ApiListing) response.getEntity();
+            Set<String> headers = traceProperty.getHeaders();
+            if (headers.size() > 0) {
+                Map<String, String> headerMap = traceProperty.getHeaderMap();
+                int count = apiListing.apis().size();
+                for (int i = 0; i < count; i++) {
+                    ApiDescription description = apiListing.apis().apply(i);
+                    int operations = description.operations().size();
+                    for (int j = 0; j < operations; j++) {
+                        Operation operation = description.operations().apply(j);
+                        List<Parameter> list = operation.parameters();
+                        /*删除已有的header*/
+                        headers.removeAll(currentHeaderParams(list));
+                        logger.info("the method {} add the header is {}", operation.method(), headers);
+                        /* 添加自定义的header参数 */
+                        for (String header : headers) {
+                            list = list.$colon$colon(new Parameter(header, new Some<>(header), new Some<>(headerMap.getOrDefault(header, "")), false, false, "string", AnyAllowableValues$.MODULE$, "header", new Some<>("")));
+                        }
+                        try {/*使用反射获取parameters的Field*/
+                            ReflectUtils.setField(operation, "parameters", list);
+                        } catch (Exception e) {
+                            logger.error("assemeble add param error", e);
+                        }
                     }
                 }
             }
