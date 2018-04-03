@@ -58,9 +58,9 @@ import java.util.UUID;
  * Email is zhao.weiwei@jyall.com
  * Copyright is 金色家园网络科技有限公司
  */
-@Configuration(value = "defaultJerseyConfig")
+@Configuration
 @ConditionalOnBean(annotation = EnableJersey.class)
-public class JerseyConfig {
+public class JerseyConfiguration {
 
     /**
      * 用户可以自定义ResourceConfig
