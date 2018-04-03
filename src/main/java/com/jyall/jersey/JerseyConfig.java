@@ -33,6 +33,7 @@
 package com.jyall.jersey;
 
 import com.jyall.annotation.EnableJersey;
+import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.bytecode.AnnotationsAttribute;
@@ -63,6 +64,7 @@ public class JerseyConfig {
 
     /**
      * 用户可以自定义ResourceConfig
+     * 使用 javassist 动态生成一个类
      *
      * @return
      */
@@ -70,6 +72,8 @@ public class JerseyConfig {
     @Bean(name = "defaultJerseyResourceConfig")
     public ResourceConfig resourceConfig() throws Exception {
         ClassPool pool = ClassPool.getDefault();
+        ClassClassPath classPath = new ClassClassPath(this.getClass());
+        pool.insertClassPath(classPath);
         CtClass cc = pool.makeClass(getClass().getPackage() + "." + UUID.randomUUID().toString().replaceAll("-", "").toUpperCase());
         CtClass superClass = pool.get(ResourceConfig.class.getName());
         cc.setSuperclass(superClass);
