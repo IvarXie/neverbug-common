@@ -34,6 +34,8 @@ package com.jyall.jersey;
 
 import com.google.common.collect.Lists;
 import com.jyall.annotation.EnableJersey;
+import com.wordnik.swagger.jersey.listing.JerseyApiDeclarationProvider;
+import com.wordnik.swagger.jersey.listing.JerseyResourceListingProvider;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,6 +77,8 @@ public class JerseyAdvise {
 
     @PostConstruct
     public void register() {
+        resourceConfig.register(JerseyApiDeclarationProvider.class);
+        resourceConfig.register(JerseyResourceListingProvider.class);
         /*注册jersey的Resource的过滤器**/
         long start = System.currentTimeMillis();
         logger.info("init the jersey resource start");
