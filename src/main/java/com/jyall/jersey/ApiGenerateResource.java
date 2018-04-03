@@ -132,7 +132,7 @@ public class ApiGenerateResource {
                     if (classPathAnnotation != null) {
                         classPath = classPathAnnotation.value();
                     }
-                    Set<Method> methodSet = ReflectionUtils.getAllMethods(resourceClass);
+                    Set<Method> methodSet = ReflectionUtils.getAllMethods(resourceClass, (m) -> true);
                     for (Method method : methodSet) {
                         if (method.getAnnotation(GET.class) != null) {
                             importClasses.add(GET.class);
