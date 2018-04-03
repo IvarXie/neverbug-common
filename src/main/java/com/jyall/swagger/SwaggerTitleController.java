@@ -74,6 +74,7 @@ import java.util.Map;
  * Copyright is 金色家园网络科技有限公司
  */
 @Controller
+@RequestMapping("/swagger")
 @ConditionalOnBean(annotation = EnableSwagger.class)
 public class SwaggerTitleController {
     @Value("${spring.application.name:swagger}")
