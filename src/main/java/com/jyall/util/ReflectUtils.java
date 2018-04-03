@@ -78,6 +78,9 @@ import java.util.jar.JarFile;
  * Copyright is 金色家园网络科技有限公司
  */
 public class ReflectUtils {
+
+    public static List<String> classes = Lists.newArrayList();
+
     /**
      * 根据类别获取类上的注解
      *
@@ -139,35 +142,38 @@ public class ReflectUtils {
      * @return
      */
     public static List<String> getLoadClasses() throws Exception {
-        List<String> list = Lists.newArrayList();
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        while (true) {
-            if (classLoader instanceof URLClassLoader) {
-                URLClassLoader urlClassLoader = (URLClassLoader) classLoader;
-                Field ucpField = URLClassLoader.class.getDeclaredField("ucp");
-                ucpField.setAccessible(true);
-                URL[] urls = URLClassLoader.class.cast(urlClassLoader).getURLs();
-                Arrays.stream(urls).forEach(url -> {
-                    try {
-                        String protocol = url.getProtocol();
-                        if ("jar".equals(protocol)) {
-                            JarFile jarFile = ((JarURLConnection) url.openConnection()).getJarFile();
-                            list.addAll(getClassNameByJar(jarFile));
-                        } else if ("file".equals(protocol)) {
-                            JarFile jarFile = new JarFile(URLDecoder.decode(url.getFile(), "UTF-8"));
-                            list.addAll(getClassNameByJar(jarFile));
+        if (classes == null) {
+            List<String> list = Lists.newArrayList();
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            while (true) {
+                if (classLoader instanceof URLClassLoader) {
+                    URLClassLoader urlClassLoader = (URLClassLoader) classLoader;
+                    Field ucpField = URLClassLoader.class.getDeclaredField("ucp");
+                    ucpField.setAccessible(true);
+                    URL[] urls = URLClassLoader.class.cast(urlClassLoader).getURLs();
+                    Arrays.stream(urls).forEach(url -> {
+                        try {
+                            String protocol = url.getProtocol();
+                            if ("jar".equals(protocol)) {
+                                JarFile jarFile = ((JarURLConnection) url.openConnection()).getJarFile();
+                                list.addAll(getClassNameByJar(jarFile));
+                            } else if ("file".equals(protocol)) {
+                                JarFile jarFile = new JarFile(URLDecoder.decode(url.getFile(), "UTF-8"));
+                                list.addAll(getClassNameByJar(jarFile));
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
-            classLoader = classLoader.getParent();
-            if (classLoader == null) {
-                break;
+                    });
+                }
+                classLoader = classLoader.getParent();
+                if (classLoader == null) {
+                    classes = list;
+                    break;
+                }
             }
         }
-        return list;
+        return classes;
     }
 
     private static List<String> getClassNameByJar(JarFile jarFile) {
@@ -183,5 +189,4 @@ public class ReflectUtils {
         }
         return jarClass;
     }
-
 }
