@@ -22,7 +22,6 @@ buildscript {
         compile.exclude module: "jsr311-api"
     }
 }
-
 apply plugin: "java"
 apply plugin: "eclipse"
 apply plugin: "maven-publish"
@@ -30,23 +29,19 @@ apply plugin: "org.springframework.boot"
 apply plugin: "io.spring.dependency-management"
 apply plugin: 'org.sonarqube'
 
-// 版本信息
 version = "0.0.6-SNAPSHOT"
 group = "com.jyall"
-// 发布包的文件名前缀
 def prjArtifactId = "jyall-common"
-
 jar {
     baseName = prjArtifactId
 }
-
 def jdkVersion = 1.8
 sourceCompatibility = jdkVersion
 targetCompatibility = jdkVersion
 compileJava {
     sourceCompatibility = jdkVersion
     targetCompatibility = jdkVersion
-    options.compilerArgs = ['-parameters']
+    options.compilerArgs = ['-parameters','-Xlint:unchecked']
     options.fork = true
     options.forkOptions.executable = 'javac'
 }
@@ -56,7 +51,6 @@ sonarqube {
     }
 }
 repositories {
-    // 本地 Maven 镜像
     maven { url "${jyallMvnRepoRrlBase}/groups/public" }
     maven { url "http://repo.spring.io/libs-snapshot" }
     maven { url "http://repo.spring.io/libs-release" }
@@ -82,7 +76,6 @@ dependencies {
     compile "org.springframework.cloud:spring-cloud-starter-sleuth"
     compile "org.springframework.cloud:spring-cloud-stream-binder-rabbit"
 }
-// 公共Jar包
 task commonJar(type: Jar) {
     from sourceSets.main.output
     exclude "**/demo/**", "**/static/**", "**/*.yml", "**/*.xml", "**/*.sql"
@@ -94,14 +87,10 @@ task commonJar(type: Jar) {
         )
     }
 }
-
-// 源码包
 task commonSourcesJar(type: Jar) {
     classifier "sources"
-
     from sourceSets.main.allJava
     exclude "**/demo/**", "**/static/**", "**/*.yml", "**/*.xml", "**/*.sql"
-
     manifest {
         attributes(
                 "Created-By": "${System.getProperty('java.version')} (金色家园网络科技有限公司)",
@@ -119,7 +108,6 @@ publishing {
             artifacts.clear()
             artifacts = [commonJar,commonSourcesJar]
         }
-
         all {
             pom.withXml {
                 Node depsNode = asNode()
@@ -133,7 +121,6 @@ publishing {
             }
         }
     }
-
     repositories {
         maven {
             url "${jyallMvnRepoRrlBase}/repositories/jsjy-${project.version.endsWith('-SNAPSHOT') ? 'snapshot' : 'release'}"
