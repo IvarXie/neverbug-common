@@ -59,7 +59,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 /**
- * <p>
+ * 反射的工具类
  *
  * @author zhao.weiwei
  * Created on 2018/3/16 12:49
@@ -121,5 +121,4 @@ public class ReflectUtils {
         BeanUtils.copyProperties(src, t, ignore);
         return t;
     }
-
 }

@@ -41,7 +41,6 @@ import java.util.Map;
 
 /**
  * Google gson的工具类
- * <p>
  *
  * @create by zhao.weiwei
  * @create on 2017年4月18日上午9:02:20

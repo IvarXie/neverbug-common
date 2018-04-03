@@ -86,11 +86,11 @@ public class IpUtil {
      */
     public static String getIpAddr(HttpServletRequest request) {
         List<String> list = Lists.newArrayList();
-        /**开发用的测试IP**/
+        /*开发用的测试IP**/
         list.add("X-TEST-IP");
-        /** 线上环境发布CDN **/
+        /* 线上环境发布CDN **/
         list.add("Cdn-Src-Ip");
-        /** 非CDN环境使用 X-Real-IP **/
+        /* 非CDN环境使用 X-Real-IP **/
         list.add("X-Real-IP");
         list.add("x-forwarded-for");
         list.add("X-Forwarded-For");
