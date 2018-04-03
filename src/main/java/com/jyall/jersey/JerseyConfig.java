@@ -30,21 +30,18 @@
                   别人笑我忒疯癫，我笑自己命太贱；  
                   不见满街漂亮妹，哪个归得程序员？
 */
-package com.jyall.feign;
+package com.jyall.jersey;
 
 import com.jyall.annotation.EnableJersey;
-import com.wordnik.swagger.jersey.listing.ApiListingResource;
-import com.wordnik.swagger.jersey.listing.JerseyApiDeclarationProvider;
-import com.wordnik.swagger.jersey.listing.JerseyResourceListingProvider;
+import com.jyall.jersey.JerseyResourceConfig;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import javax.ws.rs.ApplicationPath;
 
 /**
  * jersey的自动加载
- * <p>
  *
  * @author zhao.weiwei
  * Created on 2017/10/30 17:05
@@ -52,13 +49,17 @@ import javax.ws.rs.ApplicationPath;
  * Copyright is 金色家园网络科技有限公司
  */
 @Configuration
-@ApplicationPath("/v1")
 @ConditionalOnBean(annotation = EnableJersey.class)
-public class JerseyConfig extends ResourceConfig {
+public class JerseyConfig {
 
-    public JerseyConfig() {
-        register(ApiListingResource.class);
-        register(JerseyApiDeclarationProvider.class);
-        register(JerseyResourceListingProvider.class);
+    /**
+     * 用户可以自定义ResourceConfig
+     *
+     * @return
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public ResourceConfig resourceConfig() {
+        return new JerseyResourceConfig();
     }
 }

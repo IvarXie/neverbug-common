@@ -50,60 +50,28 @@
  ***         ___)( )(___                               ***
  ***        (((__) (__)))                              ***
  ********************************************************/
-package com.jyall.swagger;
+package com.jyall.jersey;
 
-import com.google.common.collect.Maps;
-import com.jyall.annotation.EnableSwagger;
-import com.jyall.jersey.JerseyPathConfig;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import com.wordnik.swagger.jersey.listing.ApiListingResource;
+import com.wordnik.swagger.jersey.listing.JerseyApiDeclarationProvider;
+import com.wordnik.swagger.jersey.listing.JerseyResourceListingProvider;
+import org.glassfish.jersey.server.ResourceConfig;
 
-import java.util.Map;
+import javax.ws.rs.ApplicationPath;
 
 /**
- * swagger title的工具类
+ * jersey的Resource配置
  *
  * @author zhao.weiwei
- * Created on 2017/12/1 17:29
+ * Created on 2018/4/3 10:27
  * Email is zhao.weiwei@jyall.com
- * Copyright is 金色家园网络科技有限公司
+ * Copyright is 家园云网络科技有限公司
  */
-@Controller
-@ConditionalOnBean(annotation = EnableSwagger.class)
-public class SwaggerTitleController {
-    @Value("${spring.application.name:swagger}")
-    private String application = "";
-
-    @Autowired
-    private JerseyPathConfig jerseyPathConfig;
-
-
-    /**
-     * 获取 spring.application.name的属性
-     *
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping("/config")
-    public Map<String, String> getApplication() {
-        Map<String, String> map = Maps.newHashMap();
-        map.put("title", application);
-        map.put("path", jerseyPathConfig.getApplicationPath());
-        return map;
-    }
-
-    /**
-     * swagger映射
-     *
-     * @return
-     */
-    @RequestMapping(method = RequestMethod.GET)
-    public String redirectSwaggerIndexhtml() {
-        return "redirect:/swagger/index.html";
+@ApplicationPath("/v1")
+public class JerseyResourceConfig extends ResourceConfig {
+    public JerseyResourceConfig() {
+        register(ApiListingResource.class);
+        register(JerseyApiDeclarationProvider.class);
+        register(JerseyResourceListingProvider.class);
     }
 }

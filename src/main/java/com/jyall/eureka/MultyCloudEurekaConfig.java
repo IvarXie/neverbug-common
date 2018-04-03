@@ -50,60 +50,44 @@
  ***         ___)( )(___                               ***
  ***        (((__) (__)))                              ***
  ********************************************************/
-package com.jyall.swagger;
+package com.jyall.eureka;
 
-import com.google.common.collect.Maps;
-import com.jyall.annotation.EnableSwagger;
-import com.jyall.jersey.JerseyPathConfig;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.Map;
+import java.util.List;
 
 /**
- * swagger title的工具类
+ * spring 多注册中心的配置
  *
  * @author zhao.weiwei
- * Created on 2017/12/1 17:29
+ * Created on 2018/3/26 16:54
  * Email is zhao.weiwei@jyall.com
  * Copyright is 金色家园网络科技有限公司
  */
-@Controller
-@ConditionalOnBean(annotation = EnableSwagger.class)
-public class SwaggerTitleController {
-    @Value("${spring.application.name:swagger}")
-    private String application = "";
-
-    @Autowired
-    private JerseyPathConfig jerseyPathConfig;
-
-
+@ConfigurationProperties(prefix = "spring.cloud.multy.register")
+public class MultyCloudEurekaConfig {
     /**
-     * 获取 spring.application.name的属性
-     *
-     * @return
+     * 是否容许多注册
      */
-    @ResponseBody
-    @RequestMapping("/config")
-    public Map<String, String> getApplication() {
-        Map<String, String> map = Maps.newHashMap();
-        map.put("title", application);
-        map.put("path", jerseyPathConfig.getApplicationPath());
-        return map;
+    private boolean enabled = false;
+    /**
+     * 多注册的地址
+     */
+    private List<EurekaRegister> registers;
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
-    /**
-     * swagger映射
-     *
-     * @return
-     */
-    @RequestMapping(method = RequestMethod.GET)
-    public String redirectSwaggerIndexhtml() {
-        return "redirect:/swagger/index.html";
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public List<EurekaRegister> getRegisters() {
+        return registers;
+    }
+
+    public void setRegisters(List<EurekaRegister> registers) {
+        this.registers = registers;
     }
 }

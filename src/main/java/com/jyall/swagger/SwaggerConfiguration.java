@@ -9,6 +9,7 @@
 package com.jyall.swagger;
 
 import com.jyall.annotation.EnableSwagger;
+import com.jyall.jersey.JerseyPathConfig;
 import com.wordnik.swagger.config.ConfigFactory;
 import com.wordnik.swagger.config.ScannerFactory;
 import com.wordnik.swagger.config.SwaggerConfig;
@@ -19,33 +20,25 @@ import com.wordnik.swagger.reader.ClassReaders;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-
-import javax.annotation.PostConstruct;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import org.springframework.core.annotation.Order;
 
 /**
  * swagger的配置类
  *
- * @author: zhao.weiwei</p>
- * @date: 2017-10-30 9:37 </p>
- * @version: 0.0.1</p>
- * @Since: JDK 1.8</p>
+ * @author: zhao.weiwei
+ * @date: 2017-10-30 9:37
+ * @version: 0.0.1
+ * @Since: JDK 1.8
  */
+@Order(100)
 @Configuration
 @ConditionalOnBean(annotation = EnableSwagger.class)
 @EnableConfigurationProperties(SwaggerProperty.class)
-public class SwaggerConfigurer extends WebMvcConfigurerAdapter {
+public class SwaggerConfiguration implements CommandLineRunner {
 
     @Autowired
     private SwaggerProperty swaggerProperty;
@@ -53,47 +46,29 @@ public class SwaggerConfigurer extends WebMvcConfigurerAdapter {
     @Value("${spring.application.name:swagger}")
     private String applicationName;
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/", "classpath:/templates/", "classpath:/META-INF/resources/webjars/");
-        super.addResourceHandlers(registry);
-    }
+    @Autowired
+    private JerseyPathConfig pathConfig;
 
     /**
      * 初始化swagger的配置
      */
-    @PostConstruct
-    public void initSwagger() {
+    @Override
+    public void run(String... args) {
         String title = swaggerProperty.getTitle();
         title = StringUtils.isNotBlank(title) ? title : applicationName;
         String description = swaggerProperty.getDescription();
         SwaggerConfig config = ConfigFactory.config();
-        config.setBasePath("/v1");
+        config.setBasePath(pathConfig.getApplicationPath());
         config.setApiVersion("1.0.0");
         description = StringUtils.isNotBlank(description) ? description : title;
         config.setApiInfo(new ApiInfo(
                 title,
-                "<a href=\"/api\" target = \"_blank\">" + description + "</a>",
+                "<a href=\"" + pathConfig.getApplicationPath() + "/api\" target = \"_blank\">" + description + "</a>",
                 null,
                 null,
                 null,
                 null));
         ScannerFactory.setScanner(new DefaultJaxrsScanner());
         ClassReaders.setReader(new JerseyApiReader());
-    }
-
-    /**
-     * swagger的servlet配置
-     *
-     * @return
-     */
-    @Bean("swaggerServlet")
-    public ServletRegistrationBean swagger() {
-        return new ServletRegistrationBean(new HttpServlet() {
-            @Override
-            protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-                resp.sendRedirect("/swagger/index.html");
-            }
-        }, "/swagger");
     }
 }

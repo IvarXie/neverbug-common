@@ -50,60 +50,63 @@
  ***         ___)( )(___                               ***
  ***        (((__) (__)))                              ***
  ********************************************************/
-package com.jyall.swagger;
+package com.jyall.eureka;
 
-import com.google.common.collect.Maps;
-import com.jyall.annotation.EnableSwagger;
-import com.jyall.jersey.JerseyPathConfig;
+import com.netflix.discovery.EurekaClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Map;
-
 /**
- * swagger title的工具类
+ * Eureka 注册的管理
  *
  * @author zhao.weiwei
- * Created on 2017/12/1 17:29
+ * Created on 2018/3/27 15:34
  * Email is zhao.weiwei@jyall.com
  * Copyright is 金色家园网络科技有限公司
  */
 @Controller
-@ConditionalOnBean(annotation = EnableSwagger.class)
-public class SwaggerTitleController {
-    @Value("${spring.application.name:swagger}")
-    private String application = "";
+@RequestMapping("/eureka")
+public class EurekaRegisterController {
 
-    @Autowired
-    private JerseyPathConfig jerseyPathConfig;
+    @Autowired(required = false)
+    private EurekaClient eurekaClient;
 
+    @Autowired(required = false)
+    private MultyCloudEurekaRegister multyCloudEurekaRegister;
 
     /**
-     * 获取 spring.application.name的属性
+     * 指定配置的env进行注册
      *
+     * @param env
      * @return
+     * @throws Exception
      */
     @ResponseBody
-    @RequestMapping("/config")
-    public Map<String, String> getApplication() {
-        Map<String, String> map = Maps.newHashMap();
-        map.put("title", application);
-        map.put("path", jerseyPathConfig.getApplicationPath());
-        return map;
+    @RequestMapping("/register")
+    public boolean register(@RequestParam(name = "env") String env) throws Exception {
+        return multyCloudEurekaRegister.register(env);
     }
 
     /**
-     * swagger映射
+     * 从指定evn，取消注册
+     * 在ev为空的情况下，调用 EurekaClient的shutdown方法
      *
+     * @param env 配置的env环境
      * @return
+     * @throws Exception
      */
-    @RequestMapping(method = RequestMethod.GET)
-    public String redirectSwaggerIndexhtml() {
-        return "redirect:/swagger/index.html";
+    @ResponseBody
+    @RequestMapping("/unregister")
+    public boolean unregister(@RequestParam(name = "env", defaultValue = "") String env) throws Exception {
+        if (StringUtils.isEmpty(env)) {
+            eurekaClient.shutdown();
+            return true;
+        } else {
+            return multyCloudEurekaRegister.unregister(env);
+        }
     }
 }

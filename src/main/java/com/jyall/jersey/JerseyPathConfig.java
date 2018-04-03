@@ -50,60 +50,62 @@
  ***         ___)( )(___                               ***
  ***        (((__) (__)))                              ***
  ********************************************************/
-package com.jyall.swagger;
-
-import com.google.common.collect.Maps;
-import com.jyall.annotation.EnableSwagger;
-import com.jyall.jersey.JerseyPathConfig;
-import org.springframework.beans.factory.annotation.Autowired;
+package com.jyall.jersey;
+import com.jyall.annotation.EnableJersey;
+import com.jyall.util.ReflectUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
-import java.util.Map;
-
+import javax.ws.rs.ApplicationPath;
+import java.util.TreeMap;
 /**
- * swagger title的工具类
+ * <p>
  *
  * @author zhao.weiwei
- * Created on 2017/12/1 17:29
+ * Created on 2018/4/3 10:50
  * Email is zhao.weiwei@jyall.com
- * Copyright is 金色家园网络科技有限公司
+ * Copyright is 家园云网络科技有限公司
  */
-@Controller
-@ConditionalOnBean(annotation = EnableSwagger.class)
-public class SwaggerTitleController {
-    @Value("${spring.application.name:swagger}")
-    private String application = "";
+@Component
+@ConditionalOnBean(annotation = EnableJersey.class)
+public class JerseyPathConfig implements ApplicationContextAware {
 
-    @Autowired
-    private JerseyPathConfig jerseyPathConfig;
+    @Value("${spring.jersey.application-path:}")
+    private String applicationPath;
 
-
-    /**
-     * 获取 spring.application.name的属性
-     *
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping("/config")
-    public Map<String, String> getApplication() {
-        Map<String, String> map = Maps.newHashMap();
-        map.put("title", application);
-        map.put("path", jerseyPathConfig.getApplicationPath());
-        return map;
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        if (StringUtils.isEmpty(applicationPath)) {
+            try {
+                TreeMap<String, Object> treeMap = new TreeMap<>(applicationContext.getBeansWithAnnotation(ApplicationPath.class));
+                Class<?> clazz = treeMap.firstEntry().getValue().getClass();
+                /*循环一直到 class不是Object.class*/
+                ApplicationPath applicationPath = ReflectUtils.getAnnotation(clazz, ApplicationPath.class);
+                if (applicationPath != null) {
+                    /*处理字符串，确保是 斜杠 + 字符串的模式*/
+                    String path = applicationPath.value();
+                    if (!path.startsWith("/")) {
+                        path = "/" + path;
+                    }
+                    if (path.endsWith("/")) {
+                        path = path.substring(0, path.length() - 1);
+                    }
+                    this.applicationPath = path;
+                } else {
+                    this.applicationPath = "/v1";
+                }
+            } catch (Exception e) {
+                this.applicationPath = "/v1";
+            }
+        }
     }
 
-    /**
-     * swagger映射
-     *
-     * @return
-     */
-    @RequestMapping(method = RequestMethod.GET)
-    public String redirectSwaggerIndexhtml() {
-        return "redirect:/swagger/index.html";
+    public String getApplicationPath() {
+        return this.applicationPath;
     }
 }

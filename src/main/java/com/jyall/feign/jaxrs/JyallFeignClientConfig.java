@@ -15,9 +15,8 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnBean(annotation = EnableJersey.class)
 public class JyallFeignClientConfig {
 
-    // 使用JAX-RS 1.1 注解格式
     @Bean
     public Contract feignContract() {
-        return new JAXRSContract();
+        return new JaxrsContract();
     }
 }

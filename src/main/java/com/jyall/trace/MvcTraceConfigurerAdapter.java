@@ -43,6 +43,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * SpringMVC的适配器
  * <p>
  * 主要是添加拦截器
+ *
  * @author zhao.weiwei
  * Created on 2017/10/31 17:58
  * Email is zhao.weiwei@jyall.com
@@ -57,7 +58,7 @@ public class MvcTraceConfigurerAdapter extends WebMvcConfigurerAdapter {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        logger.info("add the traceMvcInterceptor");
+        logger.debug("add the traceMvcInterceptor");
         registry.addInterceptor(traceMvcInterceptor).addPathPatterns("/**");
         super.addInterceptors(registry);
     }

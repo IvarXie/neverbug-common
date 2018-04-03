@@ -30,7 +30,7 @@
                   别人笑我忒疯癫，我笑自己命太贱；  
                   不见满街漂亮妹，哪个归得程序员？
 */
-package com.jyall.feign;
+package com.jyall.jersey;
 
 import com.google.common.collect.Lists;
 import com.jyall.annotation.EnableJersey;
@@ -39,13 +39,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -80,7 +75,7 @@ public class JerseyAdvise {
 
     @PostConstruct
     public void register() {
-        /**注册jersey的Resource的过滤器**/
+        /*注册jersey的Resource的过滤器**/
         long start = System.currentTimeMillis();
         logger.info("init the jersey resource start");
         logger.info("get all the Component annation beans");
@@ -97,7 +92,7 @@ public class JerseyAdvise {
             resourceConfig.register(clazz);
         });
         logger.info("init the jersey resource success,use {}ms", System.currentTimeMillis() - start);
-        /**注册jersey的Request的过滤器**/
+        /*注册jersey的Request的过滤器**/
         logger.info("init the ContainerRequestFilter start");
         Map<String, ContainerRequestFilter> mapRequest = applicationContext.getBeansOfType(ContainerRequestFilter.class);
         logger.info("the register jersey ContainerRequestFilter size is {}", classes.size());
@@ -107,7 +102,7 @@ public class JerseyAdvise {
             resourceConfig.register(clazz);
         });
         logger.info("init the ContainerRequestFilter success");
-        /**注册jersey的Response的过滤器**/
+        /*注册jersey的Response的过滤器**/
         logger.info("init the ContainerResponseFilter start");
         Map<String, ContainerResponseFilter> mapResponse = applicationContext.getBeansOfType(ContainerResponseFilter.class);
         logger.info("the register jersey ContainerResponseFilter size is {}", classes.size());
@@ -117,7 +112,7 @@ public class JerseyAdvise {
             resourceConfig.register(clazz);
         });
         logger.info("init the ContainerResponseFilter success");
-        /**注册异常处理**/
+        /*注册异常处理**/
         logger.info("init the ExceptionMapper start");
         Map<String, ExceptionMapper> exceptionMapperMap = applicationContext.getBeansOfType(ExceptionMapper.class);
         exceptionMapperMap.values().forEach(v -> {
@@ -127,7 +122,7 @@ public class JerseyAdvise {
         });
         logger.info("init the ExceptionMapper success");
 
-        /**注册ReaderInterceptor**/
+        /*注册ReaderInterceptor**/
         logger.info("init the ReaderInterceptor start");
         Map<String, ReaderInterceptor> readerInterceptorMap = applicationContext.getBeansOfType(ReaderInterceptor.class);
         readerInterceptorMap.values().forEach(v -> {
@@ -136,7 +131,7 @@ public class JerseyAdvise {
             resourceConfig.register(clazz);
         });
         logger.info("init the ReaderInterceptor success");
-        /**注册WriterInterceptor**/
+        /*注册WriterInterceptor**/
         logger.info("init the WriterInterceptor start");
         Map<String, WriterInterceptor> writerInterceptorMap = applicationContext.getBeansOfType(WriterInterceptor.class);
         writerInterceptorMap.values().forEach(v -> {

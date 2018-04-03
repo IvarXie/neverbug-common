@@ -33,7 +33,7 @@ import static feign.Util.emptyToNull;
  * Please refer to the
  * <a href="https://github.com/Netflix/feign/tree/master/jaxrs">Feign JAX-RS README</a>.
  */
-public final class JAXRSContract extends Contract.BaseContract {
+public final class JaxrsContract extends Contract.BaseContract {
 
     static final String ACCEPT = "Accept";
     static final String CONTENT_TYPE = "Content-Type";

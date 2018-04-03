@@ -74,12 +74,6 @@ public class JerseyTraceRequestFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        try {
-            logger.info("\nthe jersey request method is {},url is {}", requestContext.getMethod(), requestContext.getUriInfo().getRequestUri().toString());
-            logger.debug("requestHeader is {}", requestContext.getHeaders());
-            logger.debug("requestCookie is {}", requestContext.getCookies());
-        } catch (Exception e) {
-        }
         logger.debug("JerseyTraceRequestFilter add trace tag");
         Set<String> set = traceProperty.getHeaders();
         MultivaluedMap<String, String> map = requestContext.getHeaders();
@@ -101,6 +95,5 @@ public class JerseyTraceRequestFilter implements ContainerRequestFilter {
         logger.debug("JerseyTraceRequestFilter add trace tag success");
         Set<String> logSet = traceProperty.getHeaders();
         logSet.forEach(k -> logger.info("trace header [{}={}]", k, tracerContext.getTag(k)));
-
     }
 }

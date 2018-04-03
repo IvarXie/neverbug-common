@@ -50,60 +50,76 @@
  ***         ___)( )(___                               ***
  ***        (((__) (__)))                              ***
  ********************************************************/
-package com.jyall.swagger;
+package com.jyall.util;
 
-import com.google.common.collect.Maps;
-import com.jyall.annotation.EnableSwagger;
-import com.jyall.jersey.JerseyPathConfig;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Map;
+import org.springframework.beans.BeanUtils;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 
 /**
- * swagger title的工具类
+ * <p>
  *
  * @author zhao.weiwei
- * Created on 2017/12/1 17:29
+ * Created on 2018/3/16 12:49
  * Email is zhao.weiwei@jyall.com
  * Copyright is 金色家园网络科技有限公司
  */
-@Controller
-@ConditionalOnBean(annotation = EnableSwagger.class)
-public class SwaggerTitleController {
-    @Value("${spring.application.name:swagger}")
-    private String application = "";
-
-    @Autowired
-    private JerseyPathConfig jerseyPathConfig;
-
-
+public class ReflectUtils {
     /**
-     * 获取 spring.application.name的属性
+     * 根据类别获取类上的注解
      *
-     * @return
+     * @param clazz  原始类
+     * @param tClass 注解类
+     * @param <T>    注解的泛型规约
+     * @return 返回注解
      */
-    @ResponseBody
-    @RequestMapping("/config")
-    public Map<String, String> getApplication() {
-        Map<String, String> map = Maps.newHashMap();
-        map.put("title", application);
-        map.put("path", jerseyPathConfig.getApplicationPath());
-        return map;
+    public static <T extends Annotation> T getAnnotation(Class<?> clazz, Class<T> tClass) {
+        while (!clazz.equals(Object.class)) {
+            T t = clazz.getAnnotation(tClass);
+            if (t != null) {
+                return t;
+            }
+            clazz = clazz.getSuperclass();
+        }
+        return null;
     }
 
     /**
-     * swagger映射
+     * 设置属性
      *
+     * @param targetObject
+     * @param fieldName
+     * @param fieldObject
+     * @throws Exception
+     */
+    public static void setField(Object targetObject, String fieldName, Object fieldObject) throws Exception {
+        Class<?> clazz = targetObject.getClass();
+        while (!clazz.equals(Object.class)) {
+            Field field = clazz.getDeclaredField(fieldName);
+            if (field != null) {
+                field.setAccessible(true);
+                field.set(targetObject, fieldObject);
+                break;
+            }
+        }
+    }
+
+    /**
+     * copy属性生成bean。
+     * 必须有默认的无参数的构造方法
+     *
+     * @param src    原对象
+     * @param target 目标对象的class
+     * @param ignore 忽略的属性
+     * @param <T>
      * @return
      */
-    @RequestMapping(method = RequestMethod.GET)
-    public String redirectSwaggerIndexhtml() {
-        return "redirect:/swagger/index.html";
+    public static <T> T copy(Object src, Class<T> target, String... ignore) throws Exception {
+        T t = target.newInstance();
+        BeanUtils.copyProperties(src, t, ignore);
+        return t;
     }
+
 }
