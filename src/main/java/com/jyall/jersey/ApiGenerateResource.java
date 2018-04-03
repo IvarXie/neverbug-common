@@ -52,6 +52,7 @@
  ********************************************************/
 package com.jyall.jersey;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.jyall.annotation.EnableJersey;
@@ -132,7 +133,8 @@ public class ApiGenerateResource {
                     if (classPathAnnotation != null) {
                         classPath = classPathAnnotation.value();
                     }
-                    for (Method method : ReflectionUtils.getAllMethods(resourceClass)) {
+                    Predicate<? super Method> predicate = (method) -> true;
+                    for (Method method : ReflectionUtils.getAllMethods(resourceClass, predicate)) {
                         if (method.getAnnotation(GET.class) != null) {
                             importClasses.add(GET.class);
                             content.append("\t@GET\n");
