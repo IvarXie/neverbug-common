@@ -18,13 +18,14 @@ import com.wordnik.swagger.jersey.JerseyApiReader;
 import com.wordnik.swagger.model.ApiInfo;
 import com.wordnik.swagger.reader.ClassReaders;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -36,12 +37,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @version: 0.0.1
  * @Since: JDK 1.8
  */
-@Order(100)
-@Configuration
+@Component
 @ConditionalOnBean(annotation = EnableSwagger.class)
 @EnableConfigurationProperties(SwaggerProperty.class)
 public class SwaggerConfiguration extends WebMvcConfigurerAdapter implements CommandLineRunner {
 
+    private Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private SwaggerProperty swaggerProperty;
 
@@ -56,6 +57,7 @@ public class SwaggerConfiguration extends WebMvcConfigurerAdapter implements Com
      */
     @Override
     public void run(String... args) {
+        logger.info("init the swagger");
         String title = swaggerProperty.getTitle();
         title = StringUtils.isNotBlank(title) ? title : applicationName;
         String description = swaggerProperty.getDescription();
@@ -72,11 +74,14 @@ public class SwaggerConfiguration extends WebMvcConfigurerAdapter implements Com
                 null));
         ScannerFactory.setScanner(new DefaultJaxrsScanner());
         ClassReaders.setReader(new JerseyApiReader());
+        logger.info("init the swagger success,basebase is {}", pathConfig.getApplicationPath());
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        logger.info("add the swagger webjars start");
         registry.addResourceHandler("/**").addResourceLocations("classpath:/static/", "classpath:/templates/", "classpath:/META-INF/resources/webjars/");
         super.addResourceHandlers(registry);
+        logger.info("add the swagger webjars success");
     }
 }
