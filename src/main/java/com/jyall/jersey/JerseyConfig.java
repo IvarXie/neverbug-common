@@ -70,7 +70,7 @@ public class JerseyConfig {
     @ConditionalOnMissingBean
     public ResourceConfig resourceConfig() throws Exception {
         ClassPool pool = ClassPool.getDefault();
-        CtClass cc = pool.makeClass("com.jyall.jersey." + UUID.randomUUID().toString().replaceAll("-", "").toUpperCase());
+        CtClass cc = pool.makeClass(getClass().getPackage() + "." + UUID.randomUUID().toString().replaceAll("-", "").toUpperCase());
         CtClass superClass = pool.get(ResourceConfig.class.getName());
         cc.setSuperclass(superClass);
         ClassFile ccFile = cc.getClassFile();
