@@ -46,6 +46,7 @@ import org.springframework.cloud.netflix.eureka.CloudEurekaClient;
 import org.springframework.cloud.netflix.eureka.EurekaClientConfigBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -57,7 +58,7 @@ import java.util.Map;
  * @create on 2017年5月5日上午10:26:18
  * @email is zhao.weiwei@jyall.com.
  */
-@Configuration
+@Component
 @EnableConfigurationProperties(MultyCloudEurekaConfig.class)
 @ConditionalOnProperty(name = "spring.cloud.multy.register.enabled", havingValue = "true")
 public class MultyCloudEurekaRegister implements CommandLineRunner {
