@@ -87,6 +87,7 @@ import java.util.*;
  */
 @Component
 @Path("/api")
+@SuppressWarnings("all")
 @Produces({"application/json"})
 @ConditionalOnBean(annotation = EnableJersey.class)
 public class ApiGenerateResource {
