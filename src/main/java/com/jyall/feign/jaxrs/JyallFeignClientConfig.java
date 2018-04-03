@@ -1,8 +1,6 @@
 package com.jyall.feign.jaxrs;
 
-import com.jyall.annotation.EnableJersey;
 import feign.Contract;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
  * @author guo.guanfei
  */
 @Configuration
-@ConditionalOnBean(annotation = EnableJersey.class)
 public class JyallFeignClientConfig {
 
     @Bean
