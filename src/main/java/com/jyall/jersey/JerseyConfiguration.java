@@ -74,7 +74,7 @@ public class JerseyConfiguration {
         ClassPool pool = ClassPool.getDefault();
         pool.appendClassPath(new ClassClassPath(ResourceConfig.class));
         pool.appendClassPath(new ClassClassPath(ApplicationPath.class));
-        CtClass cc = pool.makeClass(getClass().getPackage() + "." + UUID.randomUUID().toString().replaceAll("-", "").toUpperCase());
+        CtClass cc = pool.makeClass(getClass().getPackage() + ".A" + UUID.randomUUID().toString().replaceAll("-", "").toUpperCase());
         CtClass superClass = pool.get(ResourceConfig.class.getName());
         cc.setSuperclass(superClass);
         ClassFile ccFile = cc.getClassFile();
