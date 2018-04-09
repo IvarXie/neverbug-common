@@ -15,6 +15,7 @@
  */
 package com.jyall.feign.jaxrs;
 
+import com.google.common.collect.Lists;
 import feign.Contract;
 import feign.MethodMetadata;
 
@@ -136,8 +137,26 @@ public final class JaxrsContract extends Contract.BaseContract {
                 data.formParams().add(name);
                 nameParam(data, name, paramIndex);
                 isHttpParam = true;
+            } else if (annotationType == CookieParam.class) {
+                String name = CookieParam.class.cast(parameterAnnotation).value();
+                checkState(emptyToNull(name) != null, "CookieParam.value() was empty on parameter %s", paramIndex);
+                addTemplatedCookieParam(data, name);
+                isHttpParam = true;
             }
         }
         return isHttpParam;
+    }
+
+    /**
+     * 添加Cookie 参数
+     *
+     * @param data
+     * @param name
+     */
+    private void addTemplatedCookieParam(MethodMetadata data, String name) {
+        Collection<String> cookie = data.template().headers().get("Cookie");
+        cookie = cookie == null ? Lists.newArrayList() : cookie;
+        cookie.add(String.format("%s={%s}", name, name));
+        data.template().header("Cookie", cookie);
     }
 }
