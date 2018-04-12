@@ -112,7 +112,7 @@ public class ApiListingResource extends com.wordnik.swagger.jersey.listing.ApiLi
                         List<Parameter> list = operation.parameters();
                         /*删除已有的header*/
                         headers.removeAll(currentHeaderParams(list));
-                        logger.info("the method {} add the header is {}", operation.method(), headers);
+                        logger.debug("the method {} add the header is {}", operation.method(), headers);
                         /* 添加自定义的header参数 */
                         for (String header : headers) {
                             list = list.$colon$colon(new Parameter(header, new Some<>(header), new Some<>(headerMap.getOrDefault(header, "")), false, false, "string", AnyAllowableValues$.MODULE$, "header", new Some<>("")));
