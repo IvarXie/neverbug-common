@@ -44,6 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.Path;
@@ -67,6 +68,7 @@ import java.util.Map;
  */
 
 @Component
+@Order(Integer.MIN_VALUE)
 @ConditionalOnBean(annotation = EnableJersey.class)
 public class JerseyAdvise implements CommandLineRunner {
     private Logger logger = LoggerFactory.getLogger(getClass());
