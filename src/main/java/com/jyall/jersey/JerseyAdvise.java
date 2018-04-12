@@ -41,11 +41,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.ws.rs.Path;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseFilter;
@@ -68,15 +68,15 @@ import java.util.Map;
 
 @Component
 @ConditionalOnBean(annotation = EnableJersey.class)
-public class JerseyAdvise {
+public class JerseyAdvise implements CommandLineRunner {
     private Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private ApplicationContext applicationContext;
     @Autowired
     private ResourceConfig resourceConfig;
 
-    @PostConstruct
-    public void register() {
+    @Override
+    public void run(String... args) {
         resourceConfig.register(JerseyApiDeclarationProvider.class);
         resourceConfig.register(JerseyResourceListingProvider.class);
         /*注册jersey的Resource的过滤器**/
@@ -146,15 +146,21 @@ public class JerseyAdvise {
         logger.info("init the WriterInterceptor success");
     }
 
+    /**
+     * 根据注入的实体获取最原始的 Class
+     *
+     * @param bean
+     * @return
+     */
     private Class<?> getClassOfBean(Object bean) {
         Class<?> clazz = bean.getClass();
-        try {
-            if (AopUtils.isAopProxy(bean)) {
-                clazz = AopUtils.getTargetClass(bean);
+        while (!clazz.equals(Object.class)) {
+            if (clazz.getAnnotation(Component.class) != null) {
+                return clazz;
+            } else {
+                clazz = clazz.getSuperclass();
             }
-        } catch (Exception e) {
-            logger.error("getClassOfBean error", e);
         }
-        return clazz;
+        return bean.getClass();
     }
 }
