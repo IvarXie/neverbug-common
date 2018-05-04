@@ -74,7 +74,7 @@ import org.springframework.core.annotation.Order;
  * Copyright is 金色家园网络科技有限公司
  */
 @Configuration
-@ConditionalOnExpression("'${eureka.client.registerWithEureka}'=='true' && '${spring.cloud.config.label}'!='dev'")
+@ConditionalOnExpression("'${os.name}'!='Linux' && '${eureka.client.registerWithEureka}'=='true'")
 public class EurekaClientConfiguration {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
