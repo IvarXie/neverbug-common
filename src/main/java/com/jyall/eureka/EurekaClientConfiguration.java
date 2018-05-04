@@ -57,6 +57,7 @@ import com.netflix.discovery.DiscoveryClient;
 import com.netflix.discovery.EurekaClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.cloud.netflix.eureka.CloudEurekaClient;
 import org.springframework.cloud.netflix.eureka.EurekaClientConfigBean;
@@ -74,6 +75,7 @@ import org.springframework.core.annotation.Order;
  * Copyright is 金色家园网络科技有限公司
  */
 @Configuration
+@ConditionalOnProperty(value = "eureka.client.registerWithEureka.dev",matchIfMissing = true,havingValue = "true")
 @ConditionalOnExpression("'${os.name}'!='Linux' && '${eureka.client.registerWithEureka}'=='true'")
 public class EurekaClientConfiguration {
     private Logger logger = LoggerFactory.getLogger(getClass());
