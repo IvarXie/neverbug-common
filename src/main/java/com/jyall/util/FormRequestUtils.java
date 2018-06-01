@@ -314,7 +314,6 @@ public class FormRequestUtils {
                         line = reqbuf.readLine();
                         if (line.startsWith(boundary)) {
                             state = DATAHEADER;
-                        } else {
                             break;
                         }
                     }
