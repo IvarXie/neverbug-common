@@ -2,24 +2,20 @@ buildscript {
     ext {
         springBootVersion = "1.5.10.RELEASE"
         springCloudVersion = "Dalston.SR2"
-        jyallMvnRepoRrlBase = "http://10.10.10.60/nexus/content"
+        neverMvnRepoRrlBase = "http://140.143.248.15:8081/nexus/content"
     }
     repositories {
-        maven { url "${jyallMvnRepoRrlBase}/groups/public" }
+        maven { url "${neverMvnRepoRrlBase}/groups/public" }
         maven { url "http://repo.spring.io/libs-release" }
         maven { url "http://repo.spring.io/libs-snapshot" }
+        maven { url "https://plugins.gradle.org/m2" }
         jcenter()
         mavenCentral()
     }
     dependencies {
         classpath "io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE"
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.0'
-    }
-    configurations {
-        compile.exclude module: "spring-boot-starter-tomcat"
-        compile.exclude module: "jyall-commons-ms"
-        compile.exclude module: "jsr311-api"
+        classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6'
     }
 }
 apply plugin: "java"
@@ -30,8 +26,8 @@ apply plugin: "io.spring.dependency-management"
 apply plugin: 'org.sonarqube'
 
 version = "0.0.6-SNAPSHOT"
-group = "com.jyall"
-def prjArtifactId = "jyall-common"
+group = "com.neverbug"
+def prjArtifactId = "neverbug-common"
 jar {
     baseName = prjArtifactId
 }
@@ -51,7 +47,7 @@ sonarqube {
     }
 }
 repositories {
-    maven { url "${jyallMvnRepoRrlBase}/groups/public" }
+    maven { url "${neverMvnRepoRrlBase}/groups/public" }
     maven { url "http://repo.spring.io/libs-snapshot" }
     maven { url "http://repo.spring.io/libs-release" }
     maven { url "http://repo.spring.io/libs-milestone" }
@@ -123,10 +119,10 @@ publishing {
     }
     repositories {
         maven {
-            url "${jyallMvnRepoRrlBase}/repositories/jsjy-${project.version.endsWith('-SNAPSHOT') ? 'snapshot' : 'release'}"
+            url "${neverMvnRepoRrlBase}/repositories/neverbug-${project.version.endsWith('-SNAPSHOT') ? 'snapshot' : 'release'}"
             credentials {
-                username = "deploy"
-                password = "eBbef58C"
+                username = "admin"
+                password = "adminxie"
             }
         }
     }
