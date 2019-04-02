@@ -1,8 +1,8 @@
 
 
-import com.baj.newretail.common.mybatis.annotation.MyColumn;
-import com.baj.newretail.common.mybatis.annotation.MyId;
-import com.baj.newretail.common.mybatis.annotation.MyTable;
+import com.neverbug.common.mybatis.annotation.MyColumn;
+import com.neverbug.common.mybatis.annotation.MyId;
+import com.neverbug.common.mybatis.annotation.MyTable;
 
 /**
  * 测试的mybatis映射的bean

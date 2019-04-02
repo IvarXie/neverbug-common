@@ -1,6 +1,6 @@
 
 
-import com.baj.newretail.common.mybatis.mapper.BaseSqlProvider;
+import com.neverbug.common.mybatis.mapper.BaseSqlProvider;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
