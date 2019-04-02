@@ -21,6 +21,7 @@
     <modules>
         <module>common-redis</module>
         <module>common-mybatis</module>
+        <module>common-utils</module>
     </modules>
 
     <properties>
